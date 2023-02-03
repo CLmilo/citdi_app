@@ -1206,27 +1206,32 @@ container5.grid_columnconfigure(2, weight=1)
 
 
 puertos=[]
+estado_puerto = False
 
 def detectar_puertos():
 
-    global socket_tcp
+    global socket_tcp, estado_puerto
     host = "169.254.159.253"
     port = 65432
     
-    try:
-        socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        socket_tcp.connect((host, port))
-    except:
-        pass
-    print("Conectado al puerto")
-    print(host)
-        
-try:
-    detectar_puertos()
-except:
-    pass
+    if estado_puerto == False:
+        try:
+            socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket_tcp.connect((host, port))
+            estado_puerto = True
+        except:
+            print("error en el socket")
+        print("Conectado al puerto")
+        print(host)
+    else:
+        print("el socket ya existe")
 
+def detener_conexion_puerto():
 
+    global socket_tcp, estado_puerto
+    
+    estado_puerto = False
+    socket_tcp.close()
 
 bandera = True
 
@@ -1439,7 +1444,7 @@ EntryLE.grid(row=0, column=1, sticky='nsew')
 LabelLR_unidades = Label(container5_3_1_3, text="m", font=('Times',15), bg=azul_celeste, fg='White')
 LabelLR_unidades.grid(row=0, column=2, sticky='nsew')
 
-Button(container5_3_1, text="Regresar", font=('Times',15), fg='Black', command=lambda: raise_frame(Menup)).grid(row=2, column=0, sticky='nsew', pady=(40,0))
+Button(container5_3_1, text="Regresar", font=('Times',15), fg='Black', command=lambda: [detener_conexion_puerto(), raise_frame(Menup)]).grid(row=2, column=0, sticky='nsew', pady=(40,0))
 
 
 container5_4 = Frame(container5, bg=azul_oscuro)
