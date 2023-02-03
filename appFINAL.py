@@ -1146,6 +1146,7 @@ LIM_DER = Label(container3_2, text='', bg='#D9D9D9', fg='black')
 LIM_DER.grid(row=1, column=1,padx=10, pady=10, sticky='nwe')
 
 
+
 # Frame del medio
 
 container3_3 = Frame(container3, bg=azul_oscuro)
@@ -1230,8 +1231,11 @@ def detener_conexion_puerto():
 
     global socket_tcp, estado_puerto
     
-    estado_puerto = False
-    socket_tcp.close()
+    try:
+        estado_puerto = False
+        socket_tcp.close()
+    except:
+        pass
 
 bandera = True
 
@@ -1624,11 +1628,24 @@ def mostrar_alertas():
         print(valor)
         socket_tcp.send(valor.encode('utf-8'))
         time.sleep(0.1)
-        print("enviando datos de frecuneica")
+        print("enviando datos de frecuencia")
         #conexion.write(valor.encode('utf-8'))
         #conexion.close()
+
         raise_frame(Review)
         crear_columna_muestreo()
+
+def limpiar_review():
+    global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry
+    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "")
+    LIM_IZQ.config(text = "", bg='#D9D9D9', fg='black')
+    LIM_DER.config(text = "", bg='#D9D9D9', fg='black')
+    LIM_IZQ_Entry.config(text = "")
+    LIM_DER_Entry.config(text = "")
+    clear_container('arriba')
+    clear_container('abajo')
+    
 
 def eliminar_columna_muestreo():
     global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label
