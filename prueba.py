@@ -1,6 +1,7 @@
 import tkinter
 import customtkinter
 
+print("HLASASLFIJDÑLFHÑAIWUEFO OÑIAHFLDAFSAJSD")
 # Main application    
 class App(customtkinter.CTk):
 
