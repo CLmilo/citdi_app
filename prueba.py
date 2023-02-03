@@ -1,7 +1,8 @@
 import tkinter
 import customtkinter
 
-print("HLASASLFIJDÑLFHÑAIWUEFO OÑIAHFLDAFSAJSD")
+
+print("Este es otro cambio")
 # Main application    
 class App(customtkinter.CTk):
 
