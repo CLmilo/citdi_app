@@ -519,7 +519,7 @@ container2.grid_columnconfigure(1, weight=1)
 container2.grid_rowconfigure(0, weight=1)
 container2.grid_rowconfigure(1, weight=1)
 
-container2.grid(row=0,column=1, sticky='nsew', padx=(30), pady=(30))
+container2.grid(row=0,column=1, sticky='nsew', padx=(30,10), pady=(30))
 
 
 # rectangulos principales
@@ -534,9 +534,10 @@ container2_1.grid(row=0, column=0, padx=10, pady=(10,5), sticky='nsew')
 
 container2_1_1 = ctk.CTkFrame(container2_1)
 container2_1_1.grid(row=0, column=0, sticky='new')
-for i in range(7):
-    container2_1_1.grid_columnconfigure(i, weight=8)
-container2_1_1.grid_columnconfigure(7, weight=1)
+#for i in range(7):
+#    container2_1_1.grid_columnconfigure(i, weight=8)
+container2_1_1.grid_columnconfigure(0, weight=10)
+container2_1_1.grid_columnconfigure(1, weight=1)
 container2_1_1.grid_rowconfigure(0, weight=1)
 
 container2_1_2 = ctk.CTkFrame(container2_1)
@@ -573,9 +574,10 @@ container2_2.grid(row=1, column=0, padx=10, pady=(5,10), sticky='new')
 
 container2_2_1 = ctk.CTkFrame(container2_2)
 container2_2_1.grid(row=0, column=0, sticky='new')
-for i in range(7):
-    container2_2_1.grid_columnconfigure(i, weight=8)
-container2_2_1.grid_columnconfigure(7, weight=1)
+#for i in range(7):
+#    container2_2_1.grid_columnconfigure(i, weight=8)
+container2_2_1.grid_columnconfigure(0, weight=10)
+container2_2_1.grid_columnconfigure(1, weight=1)
 container2_2_1.grid_rowconfigure(0, weight=1)
 
 container2_2_2 = ctk.CTkFrame(container2_2)
@@ -616,27 +618,73 @@ texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DE
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[0], command=lambda: [cambiar_magnitud_grafica("arriba", 0), actualizar_magnitud("arriba", 0)]).grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[1], command=lambda: [cambiar_magnitud_grafica("arriba", 1), actualizar_magnitud("arriba", 1)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0)) 
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[2], command=lambda: [cambiar_magnitud_grafica("arriba", 2), actualizar_magnitud("arriba", 2)]).grid(row=0,column=2, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[3], command=lambda: [cambiar_magnitud_grafica("arriba", 3), actualizar_magnitud("arriba", 3)]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[4], command=lambda: [cambiar_magnitud_grafica("arriba", 4), actualizar_magnitud("arriba", 4)]).grid(row=0,column=4, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[5], command=lambda: [cambiar_magnitud_grafica("arriba", 5), actualizar_magnitud("arriba", 5)]).grid(row=0,column=5, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_1_1, text=texto_botones_frame[6], command=lambda: [cambiar_magnitud_grafica("arriba", 6), actualizar_magnitud("arriba", 6)]).grid(row=0,column=6, sticky='nsew', pady=5, padx=(5,0))
+def segmented_button_callback1(value):
+    global texto_botones_frame
+    colorear_botones_seleccion_grafica(1)
+    match value:
+        case "ACELERACIÓN":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "VELOCIDAD":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "DEFORMACIÓN":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "FUERZA":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "DESPLAZAMIENTO":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "F vs V":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "Avg ED":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            
+def segmented_button_callback2(value):
+    global texto_botones_frame
+    colorear_botones_seleccion_grafica(2)
+    match value:
+        case "ACELERACIÓN":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "VELOCIDAD":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "DEFORMACIÓN":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "FUERZA":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "DESPLAZAMIENTO":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "F vs V":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "Avg ED":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+
+
+segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
+segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
+segemented_button.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
+
+segemented_button_var2 = ctk.StringVar(value="ACELERACIÓN")
+segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
+segemented_button2.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
+
 Boton_seleccion_grafica1 = ctk.CTkRadioButton(container2_1_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(1), value=0)
-Boton_seleccion_grafica1.grid(row=0,column=7,  sticky='ns', pady=5, padx=(5,5))
+Boton_seleccion_grafica1.grid(row=0,column=1,  sticky='ns', pady=5, padx=(5,5))
 Boton_seleccion_grafica1.select()
 
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[0], command=lambda: [cambiar_magnitud_grafica("abajo", 0), actualizar_magnitud("abajo", 0)]).grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[1], command=lambda: [cambiar_magnitud_grafica("abajo", 1), actualizar_magnitud("abajo", 1)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[2], command=lambda: [cambiar_magnitud_grafica("abajo", 2), actualizar_magnitud("abajo", 2)]).grid(row=0,column=2, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[3], command=lambda: [cambiar_magnitud_grafica("abajo", 3), actualizar_magnitud("abajo", 3)]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[4], command=lambda: [cambiar_magnitud_grafica("abajo", 4), actualizar_magnitud("abajo", 4)]).grid(row=0,column=4, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[5], command=lambda: [cambiar_magnitud_grafica("abajo", 5), actualizar_magnitud("abajo", 5)]).grid(row=0,column=5, sticky='nsew', pady=5, padx=(5,0))
-ctk.CTkButton(container2_2_1, text=texto_botones_frame[6], command=lambda: [cambiar_magnitud_grafica("abajo", 6), actualizar_magnitud("abajo", 6)]).grid(row=0,column=6, sticky='nsew', pady=5, padx=(5,0))
 Boton_seleccion_grafica2 = ctk.CTkRadioButton(container2_2_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(2), value=1)
-Boton_seleccion_grafica2.grid(row=0,column=7, sticky='ns', pady=5, padx=(5,5))
-
+Boton_seleccion_grafica2.grid(row=0,column=1, sticky='ns', pady=5, padx=(5,5))
 
 # Barra lateral de la columna de la derecha
 
@@ -667,7 +715,6 @@ def colorear_botones_seleccion_grafica(num):
 
 def cambiar_magnitud_grafica(posicion,magnitud):
 
-    print("los datos cambiando de gráfica son:",posicion, dic_magnitud_botones[magnitud], 1, "original", "NO", "SI")
     if magnitud == 6:
         Creacion_Grafica(posicion, dic_magnitud_botones[magnitud], dic_ultima_grafica[posicion], "original", "NO", "SI")
 
@@ -703,6 +750,9 @@ def moverlimite(posicion, magnitud, num, direccion, mantener_relacion_aspecto, m
     print("estoy moviendo los límites creando la siguiente gráfica: ", posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, p_primera_marca, p_segunda_marca)
     Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, p_primera_marca, p_segunda_marca)
     
+class Toolbar(NavigationToolbar2TkAgg):
+    def set_message(self, s):
+        pass
 
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
@@ -827,6 +877,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
 
     imax = F.index(Fmax_original)
     ajuste = V.index(Vmax_original)-imax
+
+    print("el ajuste es ",ajuste)
     #primera_marca = segundos[imax]
     primera_marca = segundo_inicial
     segunda_marca = segundo_final
@@ -840,13 +892,16 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         valor_primera_marca = primera_marca + a_primera_marca
         if valor_primera_marca < primera_marca:
             valor_primera_marca = primera_marca
+            p_primera_marca = 0.0
         elif valor_primera_marca > segunda_marca:
             valor_primera_marca = segunda_marca
+            
         valor_segunda_marca = segunda_marca + a_segunda_marca
         if valor_segunda_marca < primera_marca:
             valor_segunda_marca = primera_marca
         elif valor_segunda_marca > segunda_marca:
             valor_segunda_marca = segunda_marca
+            p_segunda_marca = 0.0
 
     elif mantener_limites == 'MODIFICAR_EXACTO':
         valor_primera_marca = a_primera_marca
@@ -995,7 +1050,9 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
 
     canvas.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
 
-    toolbar = NavigationToolbar2TkAgg(canvas, dic_posicion[posicion][1])
+
+
+    toolbar = Toolbar(canvas, dic_posicion[posicion][1])
     toolbar.config(background="#2A2A2A")
     toolbar.update()
     canvas._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
@@ -1078,21 +1135,19 @@ def desplazar_grafica(direccion):
     
     Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], direccion, "SI", "SI")
 
-botones_barra_lateral = ['DEL','˄','˅','DD','DI','AJ','>','<','>>','<<']
+botones_barra_lateral = ['DEL','DD','DI','AJ','>','<','>>','<<']
 
 for i in range(len(botones_barra_lateral)):
     container2_3.grid_rowconfigure(i, weight=1)
 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[0], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: eliminar_grafica()).grid(row=0,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: print(1)).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: print(2)).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("derecha")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("izquierda")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("centrar")).grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha")).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[9], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=9,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("derecha")).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("centrar")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 #----------------------------------------------------
 # Frame de la derecha 
