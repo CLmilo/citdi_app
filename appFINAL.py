@@ -42,7 +42,7 @@ azul_claro = "#BDD7EE"
 azul_celeste = "#2F6CDF"
 
 ctk.set_appearance_mode("dark")  # Modes: system (default), light, dark
-ctk.set_default_color_theme("green")  # Themes: blue (default), dark-blue, green
+ctk.set_default_color_theme("dark-blue")  # Themes: blue (default), dark-blue, green
 
 # Funcionalidades
 
@@ -160,7 +160,7 @@ def browseFiles():
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
-    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("Text files", "*.ct")])   
+    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
     numero_grafica_actual = 1
     try:
         with open(ruta_data_inicial, "r") as file:
@@ -248,7 +248,7 @@ def click_grafica_abajo(event):
 
 def Obtencion_data_serial(num):
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
-    global orden_sensores
+    global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
     segundos = []
     S1 = []
@@ -261,12 +261,8 @@ def Obtencion_data_serial(num):
     SIN4 = []
     NULL = []
 
-    #print("El orden de los sensores es: ", matriz_data_archivos[0])
-
-    try:
-        print("lo que hay en la matriz_data_archivos es ", num,  matriz_data_archivos[num][0], "separacion",  matriz_data_archivos[num][1], len(matriz_data_archivos[num]))
-    except:
-        print("no se guarda ninguna gráfica 1 todavía")
+    print("Estamos en obtencion data serial")
+    print("El orden de los sensores es2: ", orden_sensores)
 
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
@@ -275,7 +271,7 @@ def Obtencion_data_serial(num):
     print("la fila orden es", orden_sensores[-1])
 
     if len(orden[4])>1:
-        frecuencia_muestreo.append(orden[4])
+        frecuencia_muestreo.append(int(orden[4]))
 
     try:
         pile_area = orden[5]
@@ -291,29 +287,41 @@ def Obtencion_data_serial(num):
     except:
         ET_valor_original = 981
     
-    for index,linea in enumerate(matriz_data_archivos[num]):
-        linea = linea.split("|")
-        if index > 0 and index < len(matriz_data_archivos[num])-1:
-            segundos.append(float(linea[0])/1000)
+    extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
+    print(extension)
+    if extension == "ct":
+        for index,linea in enumerate(matriz_data_archivos[num]):
+            linea = linea.split("|")
+            if index > 0 and index < len(matriz_data_archivos[num])-1:
+                segundos.append(float(linea[0])/1000)
+                for i in range(4):
+                    dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
+            else:
+                pass
+        segundo_inicial = segundos[0]
+        segundo_final = segundos[-1]
 
-            for i in range(4):
-                #dic_orden_sensores2[orden[i]].append(float(linea[i+1])*dic_factor_conversion_producto[orden[i]]+dic_factor_conversion_suma[orden[i]])
-                dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
-        else:
-            pass
-    segundo_inicial = segundos[0]
-    segundo_final = segundos[-1]
+        for i in range(4):
 
-    for i in range(4):
+            if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
+                for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+                    dic_orden_sensores[orden[i]].append(datos)
+            elif (int(orden[i])!=0):
+                for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
+                    dic_orden_sensores[orden[i]].append(datos)
+    else:
+        data = matriz_data_archivos[num]
+        
+        for linea in data:
+            linea = linea.split("|")
+            segundos.append(float(linea[0])/10)
+            for j in range(4):
+                dic_orden_sensores[orden[j]].append(round(float(linea[j+1]),2))
+        segundo_inicial = segundos[0]
+        segundo_final = segundos[-1]
 
-        if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-            for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                dic_orden_sensores[orden[i]].append(datos)
-        elif (int(orden[i])!=0):
-            for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
-                dic_orden_sensores[orden[i]].append(datos)
+    return segundos, S1, S2, A3, A4
 
-    return segundos, S1, S2, A3, A4 
 
 # Interfaz
 
@@ -368,12 +376,12 @@ container4c.grid_columnconfigure(4, weight=1)
 container4c.grid_columnconfigure(5, weight=1)
 
 # Botones
-lista_botones = ["Salir", "Review", "Settings", "Collet Wire", "Manual", "About"]
+lista_botones = ["Salir", "Review", "Preparar Data", "Collet Wire", "Manual", "About"]
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=('Arial', 25), fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=('Arial', 25), command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
 ctk.CTkButton(container4c, text=lista_botones[1], font=('Arial', 25), command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", numero_grafica_actual, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", numero_grafica_actual, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[2], font=('Arial', 25), command=lambda:print("settings")).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[2], font=('Arial', 25), command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[3], font=('Arial', 25), command=lambda:[raise_frame(Collect_Wire)]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[4], font=('Arial', 25), command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[5], font=('Arial', 25), command=lambda:create_toplevel_about()).grid(row=0,column=5, sticky='nsew', pady=5, padx=(0,5))
@@ -813,6 +821,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     suma_velocidadv1 = 0
     suma_velocidadv2 = 0
     longitud = max(len(A3), len(A4))
+    
     for i in range(longitud):
         try:
             if i == 0:
@@ -820,7 +829,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
             else:
                 suma_velocidadv1 += ((A3[i]+A3[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
             V1.append(suma_velocidadv1)
-        except:
+        except Exception as e:
             pass
 
         try:
@@ -829,7 +838,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
             else:
                 suma_velocidadv2 += ((A4[i]+A4[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
             V2.append(suma_velocidadv2)
-        except:
+        except Exception as e:
             pass
         promedio = (suma_velocidadv1 + suma_velocidadv2)/2
         V.append(promedio)
@@ -837,7 +846,9 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         V = V2
     elif A4 == []:
         V = V1
-        
+
+    
+
     Vmax = round(max(V), 2)
 
     Vmax_original = max(V)
@@ -845,6 +856,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     suma_desplazamientov1 = 0
     suma_desplazamientov2 = 0
     longitud = max(len(S1), len(S2))
+    print("la longitud maxima es:", longitud)
+    print("otras longitudes: ", len(V1), len(V2), len(V))
     for i in range(longitud):
         try:
             if i == 0:
@@ -2559,6 +2572,8 @@ def create_toplevel_about():
     about_frame = ctk.CTkToplevel()
     #about_frame.geometry("800x400")
     about_frame.title("About")
+    about_frame.grab_set()
+    about_frame.focus()
     # create label on CTkToplevel window
     container7 = ctk.CTkFrame((about_frame))
     container7.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
@@ -2572,8 +2587,26 @@ def create_toplevel_about():
     label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Ortiz Salas\nGrover Rios Soto\nRoberto Raucana Sulca\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
     label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
 
+# programa convertir rpn a ctn
 
+def create_toplevel_preparar():
+    preparar_frame = ctk.CTkToplevel()
 
+    preparar_frame.title("Preparar Datos")
+    preparar_frame.grab_set()
+    preparar_frame.focus()
+    # create label on CTkToplevel window
+    container7 = ctk.CTkFrame((preparar_frame))
+    container7.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
+
+    container7.grid_rowconfigure(0, weight=1)
+    container7.grid_rowconfigure(1, weight=2)
+    container7.grid_columnconfigure(0, weight=1)
+
+    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor hecho por el CITDI", font=('Times', 30))
+    label1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
+    label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Ortiz Salas\nGrover Rios Soto\nRoberto Raucana Sulca\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
+    label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
 
 
 

@@ -2,3 +2,9 @@ fpdf2
 matplotlib
 obspy
 lib_platform
+BaselineRemoval
+customtkinter
+tk
+pyserial
+
+pip install fpdf2 obspy BaselineRemoval pyserial tk customtkinter matplotlib 
