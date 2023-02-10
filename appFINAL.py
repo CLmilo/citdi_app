@@ -2594,8 +2594,6 @@ def escoger_ruta_guardado():
     #ruta_guardado += "/"
     return archivos
 
-
-
 def leer_data_cabecera(ruta):
     with open(ruta) as file:
         filas = file.readlines()
@@ -2628,8 +2626,10 @@ def leer_data_cabecera(ruta):
         orden.append(fila_orden[4].split("@")[0])
         orden.append(fila_orden[5].split("@")[0])
     except:
-        pass
-    dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2"}
+        orden.append("0")
+        orden.append("0")
+        
+    dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2", "0":"0"}
     orden_string = ""
     for index, elemento in enumerate(orden):
         orden_string += dic_orden[elemento] +"|"
@@ -2658,13 +2658,11 @@ def lectura_data(frecuencia_post, filas):
             nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|" + str(V4) + "|"
         except:
             try:
-                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|"
+                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|0|"
             except:
-                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|"
+                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|0|0|"
         string_data+=nueva_fila+"\n"
     return string_data
-
-#archivos = ('E:/proyectos/Citdi/citdi_app/archivos_rpn/ejemplo1_part1.csv',)
 
 def crear_ctn(profundidad, ruta_guardado_combinado):
     texto = ""
