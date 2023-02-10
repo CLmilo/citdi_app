@@ -998,14 +998,21 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         a.axvline(valor_primera_marca, color='r', ls="dotted")
         a.axvline(valor_segunda_marca, color='r', ls="dotted")
 
-    suma_energia = 0
+
+    rango_inferior = segundos.index(round(valor_primera_marca,2))
+    rango_superior = segundos.index(round(valor_segunda_marca,2))
+
+    E = []
+    producto = np.multiply(F[rango_inferior:rango_superior],V_Transformado_valor_real[rango_inferior:rango_superior])
+    tr = Trace(data=np.array(producto))
+    tr.stats.sampling_rate = 50000
+    st = tr.copy()
+    st.integrate(method = "cumtrapz")
+    for datos in np.ndarray.tolist(st.data):
+        E.append(datos)
+    
     j = 0
     for i in range(segundos.index(round(valor_primera_marca,2)),segundos.index(round(valor_segunda_marca,2))):
-        if i == 0:
-            suma_energia += ((V_Transformado_valor_real[i]*F[i])+(0))*(1/(int(frecuencia_muestreo[-1])))/2
-        else:
-            suma_energia += ((V_Transformado_valor_real[i]*F[i])+(V_Transformado_valor_real[i-1]*F[i-1]))*(1/(int(frecuencia_muestreo[-1])))/2
-        E.append(suma_energia)
         n = round(valor_primera_marca+(j/(int(frecuencia_muestreo[-1]))),2)
         j+=1
         segundos_Transformado.append(n)
@@ -1014,7 +1021,6 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     
     if magnitud == 'avged':
         segundos = segundos_Transformado
-    
     
     ET = float(ET_valor_original)
     ETR = round(100*(Emax/ET),2)
@@ -2582,25 +2588,234 @@ def create_toplevel_about():
 
 # programa convertir rpn a ctn
 
+def escoger_ruta_guardado():
+    global ruta_guardado
+    archivos = filedialog.askopenfilenames(initialdir = "/", title = "Seleccione los archivos a convertir")
+    #ruta_guardado += "/"
+    return archivos
+
+
+
+def leer_data_cabecera(ruta):
+    with open(ruta) as file:
+        filas = file.readlines()
+    for index, fila in enumerate(filas):
+        fila = fila.replace("\n", "").split(",")
+        if fila[0] == "AR":
+            ar_pos = index
+        if fila[0] == "EM":
+            em_pos = index
+        if fila[0] == "EFV":
+            efv_pos = index
+        if fila[0] == "ETR":
+            etr_pos = index
+        if fila[0] == "Record":
+            frecuencia_post = index+3
+    
+    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
+    et = round((efv/etr)*100,2)
+
+
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
+
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
+    print(fila_orden)
+    orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
+    try:
+        orden.append(fila_orden[4].split("@")[0])
+        orden.append(fila_orden[5].split("@")[0])
+    except:
+        pass
+    dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2"}
+    orden_string = ""
+    for index, elemento in enumerate(orden):
+        orden_string += dic_orden[elemento] +"|"
+    print(orden_string)
+    print(frecuencia)
+    print(ar, em, et)
+    return frecuencia_post, filas, orden_string, frecuencia, ar, em, et
+
+    # lectura de la data 
+def lectura_data(frecuencia_post, filas):
+    string_data = ""
+    for i in range(frecuencia_post-1, len(filas)):
+        fila = filas[i].replace("\n", "").split(",")
+        segundos = round(float(fila[1])*10000,2)
+        V1 = float(fila[2])
+        V2 = float(fila[3])
+        try:
+            V3 = float(fila[4])
+        except:
+            pass
+        try:
+            V4 = float(fila[5])
+        except:
+            pass
+        try:
+            nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|" + str(V4) + "|"
+        except:
+            try:
+                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|"
+            except:
+                nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|"
+        string_data+=nueva_fila+"\n"
+    return string_data
+
+#archivos = ('E:/proyectos/Citdi/citdi_app/archivos_rpn/ejemplo1_part1.csv',)
+
+def crear_ctn(profundidad, ruta_guardado_combinado):
+    texto = ""
+    for index in range(len(ruta_guardado_combinado)):
+        if index == 0:
+            texto += "profundidad:"+profundidad
+        frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[0])
+        cabecera = orden_string+str(frecuencia)+"|"+str(ar)+"|"+str(em)+"|"+str(et)
+        texto+="\nINICIO_ARCHIVO\nARCHIVO:"+str(index+1)+"\n"+cabecera+"\n"
+        texto+=lectura_data(frecuencia_post, filas)
+        texto+="FIN_ARCHIVO"
+    return texto, str(frecuencia), str(ar), str(em), str(et)
+
+label_frecuencia = ""
+label_AR = ""
+label_EM = ""
+label_ET = ""
+Entry_archivo_inicio = ""
+Entry_archivo_final = ""
+ruta_guardado_combinado = ""
+ruta_combinados = ""
+scrollable_frame = ""
+ruta_guardado_label_combinado = ""
+
+def boton_escoger_archivos_combinar():
+    global ruta_combinados
+    ruta_combinados =  escoger_ruta_guardado()
+    string = ""
+    for i in ruta_combinados:
+        string += i +"\n"
+
+    scrollable_frame.insert(0.0, string)
+
+def boton_preparar(inicio, fin):
+    global scrollable_frame, label_frecuencia, label_AR, label_EM, label_ET, ruta_guardado_combinado
+
+    nombre = str(inicio) +","+str(fin)
+    texto, frecuencia, ar, em, et = crear_ctn(nombre, ruta_combinados)
+
+    label_frecuencia.configure(text=frecuencia)
+    label_AR.configure(text=ar)
+    label_EM.configure(text=em)
+    label_ET.configure(text=et)
+
+    with open(ruta_guardado_combinado+"\profundidad_"+str(inicio)+"-"+str(fin)+".ctn", "w") as file:
+        file.write(texto)
+
+def escoger_ruta_combinado():
+    global ruta_guardado_combinado, Entry_archivo_inicio, Entry_archivo_final, ruta_guardado_label_combinado
+    ruta_guardado_combinado = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
+    ruta_guardado_label_combinado.insert(0,ruta_guardado_combinado+"/profundidad_"+str(Entry_archivo_inicio.get())+"-"+str(Entry_archivo_final.get())+".ctn") 
+
 def create_toplevel_preparar():
+    global scrollable_frame, label_frecuencia, label_AR, label_EM, label_ET, Entry_archivo_final, Entry_archivo_inicio, ruta_guardado_label_combinado
+
     preparar_frame = ctk.CTkToplevel()
 
     preparar_frame.title("Preparar Datos")
     preparar_frame.grab_set()
     preparar_frame.focus()
     # create label on CTkToplevel window
-    container7 = ctk.CTkFrame((preparar_frame))
-    container7.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
+    container8 = ctk.CTkFrame((preparar_frame))
+    container8.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
 
-    container7.grid_rowconfigure(0, weight=1)
-    container7.grid_rowconfigure(1, weight=2)
-    container7.grid_columnconfigure(0, weight=1)
+    container8.grid_rowconfigure(0, weight=1)
+    container8.grid_rowconfigure(1, weight=1)
+    container8.grid_rowconfigure(2, weight=1)
+    container8.grid_rowconfigure(3, weight=1)
+    container8.grid_rowconfigure(4, weight=1)
+    container8.grid_rowconfigure(5, weight=1)
+    container8.grid_columnconfigure(0, weight=1)
+    container8.grid_columnconfigure(1, weight=1)
 
-    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor hecho por el CITDI", font=('Times', 30))
-    label1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
-    label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Ortiz Salas\nGrover Rios Soto\nRoberto Raucana Sulca\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
-    label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
+    ctk.CTkLabel(container8, text="Indique el inicio y fin de la profundidad").grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
 
+    container8_0 = ctk.CTkFrame(container8)
+    container8_0.grid(row=1, column=0, sticky='nsew', padx=20, pady=10)
+    container8_0.grid_columnconfigure(0, weight=2)
+    container8_0.grid_columnconfigure(1, weight=1)
+    container8_0.grid_columnconfigure(2, weight=2)
+
+    Entry_archivo_inicio = ctk.CTkEntry(container8_0)
+    Entry_archivo_inicio.grid(row=0, column=0, sticky='nsew', padx=20, pady=(10))
+
+    Entry_archivo_final = ctk.CTkEntry(container8_0)
+    Entry_archivo_final.grid(row=0, column=2, sticky='nsew', padx=20, pady=10)
+
+    ctk.CTkLabel(container8_0, text=" - ").grid(row=0, column=1, sticky='nsew', padx=5, pady=20)
+
+    button_escoger_archivos = ctk.CTkButton(container8, text="Seleccionar archivos", font=('Times', 15), command=lambda:[boton_escoger_archivos_combinar()])
+    button_escoger_archivos.grid(row=2, column=0, sticky='nsew', padx=20, pady=(10,20))
+
+    scrollable_frame = ctk.CTkTextbox(container8, width=150, height=200)
+    scrollable_frame.grid(row=3, column=0, rowspan=3, sticky='nsew', padx=20, pady=(0,20))
+
+
+    container8_1 = ctk.CTkFrame(container8)
+    container8_1.grid(row=0, column=1, rowspan=3, sticky='nsew', padx=(0,20), pady=20)
+    container8_1.grid_rowconfigure(0, weight=1)
+    container8_1.grid_rowconfigure(1, weight=1)
+    container8_1.grid_rowconfigure(2, weight=1)
+    container8_1.grid_rowconfigure(3, weight=1)
+    container8_1.grid_columnconfigure(0, weight=1)
+    container8_1.grid_columnconfigure(1, weight=1)
+
+    container8_1_1 = ctk.CTkFrame(container8_1)
+    container8_1_1.grid(row=0, column=0, sticky='nsew', padx=20, pady=(20,10))
+    container8_1_1.grid_columnconfigure(0, weight=3)
+    container8_1_1.grid_columnconfigure(0, weight=1)
+
+    ctk.CTkLabel(container8_1_1, text="Frecuencia: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    label_frecuencia = ctk.CTkLabel(container8_1_1, text="")
+    label_frecuencia.grid(row=0, column=1, sticky='nswe', padx=20, pady=(20))
+
+
+    container8_1_2 = ctk.CTkFrame(container8_1)
+    container8_1_2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(10,20))
+    container8_1_2.grid_columnconfigure(0, weight=3)
+    container8_1_2.grid_columnconfigure(0, weight=1)
+
+    ctk.CTkLabel(container8_1_2, text="AR: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    label_AR = ctk.CTkLabel(container8_1_2, text="")
+    label_AR.grid(row=0, column=1, sticky='nswe', padx=20, pady=(20))
+
+  
+    container8_1_3 = ctk.CTkFrame(container8_1)
+    container8_1_3.grid(row=0, column=1, sticky='nsew', padx=20,  pady=(20,10))
+    container8_1_3.grid_columnconfigure(0, weight=3)
+    container8_1_3.grid_columnconfigure(0, weight=1)
+
+    ctk.CTkLabel(container8_1_3, text="EM: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=20)
+    label_EM = ctk.CTkLabel(container8_1_3, text="")
+    label_EM.grid(row=0, column=1, sticky='nswe', padx=20, pady=10)
+
+   
+    container8_1_4 = ctk.CTkFrame(container8_1)
+    container8_1_4.grid(row=1, column=1, sticky='nsew', padx=20, pady=(10,20))
+    container8_1_4.grid_columnconfigure(0, weight=3)
+    container8_1_4.grid_columnconfigure(0, weight=1)
+
+    ctk.CTkLabel(container8_1_4, text="ET: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    label_ET = ctk.CTkLabel(container8_1_4, text="")
+    label_ET.grid(row=0, column=1, sticky='nswe', padx=20, pady=(10,20))
+
+
+    ctk.CTkButton(container8, text="Escoger Ruta Guardado", command=lambda:[escoger_ruta_combinado()]).grid(row=3, column=1, padx=20, pady=(20))
+
+    ruta_guardado_label_combinado = ctk.CTkEntry(container8)
+    ruta_guardado_label_combinado.grid(row=4, column=1, sticky='nsew', padx=20, pady=10)
+
+    ctk.CTkButton(container8, text="Unir", command=lambda:[boton_preparar(Entry_archivo_inicio.get(), Entry_archivo_final.get())]).grid(row=5, column=1, padx=20, pady=(20))
 
 
 raise_frame(Menup)

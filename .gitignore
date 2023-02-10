@@ -1,7 +1,5 @@
 *.ct*
 Pipfile
 prueba.py
-compil
-compil2
-compil3
+compil*
 archivos_rpn
