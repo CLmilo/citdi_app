@@ -108,14 +108,14 @@ def filtered(stream, type, f1, f2):
 
 def correcion_linea_cero(valores):
     z = []
-    tr = Trace(data=np.array(valores))
+    tr = Trace(data=np.array(valores)*0.1475)
     st2 = detrend(tr,type = 2)
     z = np.ndarray.tolist(st2.data)
     return z
 
 def correcion_linea_cero2(valores):
     z = []
-    tr = Trace(data=np.array(valores))
+    tr = Trace(data=np.array(valores)*1.3317)
     st2 = detrend(tr,type = 1)
     z = np.ndarray.tolist(st2.data)
     return z
@@ -123,9 +123,10 @@ def correcion_linea_cero2(valores):
 def filtrado(valores):
     z = []
     tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.012,freqmax = 0.032)
-    st3.filter(type="bandpass",freqmin=0.0000000012,freqmax = 0.5)
+    st3.filter(type="bandpass",freqmin=1000,freqmax = 3500)
     z = np.ndarray.tolist(st3.data)
     return z
 
@@ -133,7 +134,7 @@ def filtrado2(valores):
     z = []
     tr = Trace(data=np.array(valores))
     st3 = tr.copy()
-    st3.filter(type="bandpass",freqmin=0.00012,freqmax = 0.5)
+    st3.filter(type="bandpass",freqmin=0.0011,freqmax = 1500000)
     z = np.ndarray.tolist(st3.data)
     return z
 
