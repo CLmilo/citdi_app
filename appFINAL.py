@@ -755,6 +755,28 @@ class Toolbar(NavigationToolbar2TkAgg):
     def set_message(self, s):
         pass
 
+def velocity(acel, freq):
+    tr_a = Trace(data=acel)
+    tr_a.stats.sampling_rate = freq
+    tr_v = tr_a.copy()
+    tr_v.integrate(method = "cumtrapz")
+    return tr_v
+
+def integrate(tr_00):
+    tr_0 = tr_00.copy()
+    tr_0.integrate(method = "cumtrapz")
+    return tr_0
+
+def energy(F, V, freq):
+    E = []
+    producto = np.multiply(F, V)
+    tr_potencia = Trace(data=np.array(producto))
+    tr_potencia.stats.sampling_rate = freq
+    tr_energy = tr_potencia.copy()
+    tr_energy.integrate(method = "cumtrapz")
+    return tr_energy
+
+
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
     
@@ -811,70 +833,55 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     Fmax = round(max(F), 2)
     Fmax_original = max(F)
     
-    suma_velocidadv1 = 0
-    suma_velocidadv2 = 0
     longitud = max(len(A3), len(A4))
-    
-    for i in range(longitud):
-        try:
-            if i == 0:
-                suma_velocidadv1 += ((A3[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_velocidadv1 += ((A3[i]+A3[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            V1.append(suma_velocidadv1)
-        except Exception as e:
-            pass
 
-        try:
-            if i == 0:
-                suma_velocidadv2 += ((A4[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_velocidadv2 += ((A4[i]+A4[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            V2.append(suma_velocidadv2)
-        except Exception as e:
-            pass
-        promedio = (suma_velocidadv1 + suma_velocidadv2)/2
-        V.append(promedio)
+    # Calculando velocidad 1
+    try:
+        V1 = velocity(np.array(A3[:longitud]), int(frecuencia_muestreo[-1]))
+    except Exception as e:
+        print(f"Error al calcular la velocidad V1 {e}")
+    
+    try:
+        V2 = velocity(np.array(A4[:longitud]), int(frecuencia_muestreo[-1]))
+    except Exception as e:
+        print(f"Error al calcular la velocidad V2 {e}")
+
     if A3 == []:
-        V = V2
+        V = V2.data
     elif A4 == []:
-        V = V1
-
+        V = V1.data
+    else:
+        V = (V1.data + V2.data)/2
     
+
 
     Vmax = round(max(V), 2)
 
     Vmax_original = max(V)
 
-    suma_desplazamientov1 = 0
-    suma_desplazamientov2 = 0
     longitud = max(len(S1), len(S2))
     print("la longitud maxima es:", longitud)
     print("otras longitudes: ", len(V1), len(V2), len(V))
-    for i in range(longitud):
-        try:
-            if i == 0:
-                suma_desplazamientov1 += ((V1[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_desplazamientov1 += ((V1[i]+V1[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            D1.append(suma_desplazamientov1)
-        except:
-            pass
-        try:
-            if i == 0:
-                suma_desplazamientov2 += ((V2[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_desplazamientov2 += ((V2[i]+V2[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            D2.append(suma_desplazamientov2)
-        except:
-            pass
-        promedio = (suma_desplazamientov1 + suma_desplazamientov2)/2
-        D.append(promedio)
-    if V1 == []:
-        D = D2
-    elif V2 == []:
-        D = D1
+
+    try:
+        D1 = integrate(V1)
+    except Exception as e:
+        print(f"Error al calcular el desplazamiento D1 {e}")
     
+    try:
+        D2 = integrate(V2)
+    except Exception as e:
+        print(f"Error al calcular el desplazamiento D2 {e}")
+
+    if V1 == []:
+        D = D2.data
+    elif V2 == []:
+        D = D1.data
+    elif len(V1.data) == len(V2.data):
+        D = (D1.data + D2.data)/2
+    else:
+        D = D1.data if len(V1.data) > len(V2.data) else D2.data
+
     Dmax = round(max(D), 2)
     
     ajuste = 0
@@ -882,7 +889,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     Z = Fmax_original/Vmax_original
 
     imax = F.index(Fmax_original)
-    ajuste = V.index(Vmax_original)-imax
+    ajuste = list(V).index(Vmax_original)-imax
 
     print("el ajuste es ",ajuste)
     #primera_marca = segundos[imax]
@@ -1002,14 +1009,12 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     rango_inferior = segundos.index(round(valor_primera_marca,2))
     rango_superior = segundos.index(round(valor_segunda_marca,2))
 
-    E = []
-    producto = np.multiply(F[rango_inferior:rango_superior],V_Transformado_valor_real[rango_inferior:rango_superior])
-    tr = Trace(data=np.array(producto))
-    tr.stats.sampling_rate = 50000
-    st = tr.copy()
-    st.integrate(method = "cumtrapz")
-    for datos in np.ndarray.tolist(st.data):
-        E.append(datos)
+    try:
+        E = energy(F[rango_inferior:rango_superior],V[rango_inferior:rango_superior], int(frecuencia_muestreo[-1])).data
+    except Exception as e:
+        print(f"Error al calcular la Energía E {E}")
+
+
     
     j = 0
     for i in range(segundos.index(round(valor_primera_marca,2)),segundos.index(round(valor_segunda_marca,2))):
@@ -2260,57 +2265,91 @@ def obtener_datos_grafica(j):
     suma_velocidadv1 = 0
     suma_velocidadv2 = 0
     longitud = max(len(A3), len(A4))
-    for i in range(longitud):
-        try:
-            if i == 0:
-                suma_velocidadv1 += ((A3[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_velocidadv1 += ((A3[i]+A3[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            V1.append(suma_velocidadv1)
-        except:
-            pass
-        try:    
-            if i == 0:
-                suma_velocidadv2 += ((A4[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_velocidadv2 += ((A4[i]+A4[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            V2.append(suma_velocidadv2)
-        except:
-            pass
-        promedio = (suma_velocidadv1 + suma_velocidadv2)/2
-        V.append(promedio)
+
+    # Calculando velocidad 1
+    try:
+        V1 = velocity(np.array(A3[:longitud]), int(frecuencia_muestreo[-1]))
+    except Exception as e:
+        print(f"Error al calcular la velocidad V1 {e}")
+    
+    try:
+        V2 = velocity(np.array(A4[:longitud]), int(frecuencia_muestreo[-1]))
+    except Exception as e:
+        print(f"Error al calcular la velocidad V2 {e}")
+
+
+    # for i in range(longitud):
+    #     try:
+    #         if i == 0:
+    #             suma_velocidadv1 += ((A3[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         else:
+    #             suma_velocidadv1 += ((A3[i]+A3[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         V1.append(suma_velocidadv1)
+    #     except Exception as e:
+    #         pass
+
+    #     try:
+    #         if i == 0:
+    #             suma_velocidadv2 += ((A4[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         else:
+    #             suma_velocidadv2 += ((A4[i]+A4[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         V2.append(suma_velocidadv2)
+    #     except Exception as e:
+    #         pass
+    #     promedio = (suma_velocidadv1 + suma_velocidadv2)/2
+    #     V.append(promedio)
     if A3 == []:
-        V = V2
+        V = V2.data
     elif A4 == []:
-        V = V1
+        V = V1.data
+    else:
+        V = (V1.data + V2.data)/2
+
+
+
+    
     Vmax = round(max(V), 2)
     Vmax_original = max(V)
     suma_desplazamientov1 = 0
     suma_desplazamientov2 = 0
     longitud = max(len(S1), len(S2))
-    for i in range(longitud):
-        try:
-            if i == 0:
-                suma_desplazamientov1 += ((V1[i]+0))*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_desplazamientov1 += ((V1[i]+V1[i-1]))*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            D1.append(suma_desplazamientov1)
-        except:
-            pass
-        try:
-            if i == 0:
-                suma_desplazamientov2 += ((V2[i]+0))*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            else:
-                suma_desplazamientov2 += ((V2[i]+V2[i-1]))*(1/(int(frecuencia_muestreo[-1])*1000))/2
-            D2.append(suma_desplazamientov2)
-        except:
-            pass
-        promedio = (suma_desplazamientov1 + suma_desplazamientov2)/2
-        D.append(promedio)
+
+    try:
+        D1 = integrate(V1)
+    except Exception as e:
+        print(f"Error al calcular el desplazamiento D1 {e}")
+    
+    try:
+        D2 = integrate(V2)
+    except Exception as e:
+        print(f"Error al calcular el desplazamiento D2 {e}")
+
+    # for i in range(longitud):
+    #     try:
+    #         if i == 0:
+    #             suma_desplazamientov1 += ((V1[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         else:
+    #             suma_desplazamientov1 += ((V1[i]+V1[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         D1.append(suma_desplazamientov1)
+    #     except:
+    #         pass
+    #     try:
+    #         if i == 0:
+    #             suma_desplazamientov2 += ((V2[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         else:
+    #             suma_desplazamientov2 += ((V2[i]+V2[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
+    #         D2.append(suma_desplazamientov2)
+    #     except:
+    #         pass
+    #     promedio = (suma_desplazamientov1 + suma_desplazamientov2)/2
+    #     D.append(promedio)
     if V1 == []:
-        D = D2
+        D = D2.data
     elif V2 == []:
-        D = D1
+        D = D1.data
+    else:
+        D = (D1.data + D2.data)/2
+
 
     Dmax = round(max(D), 2)
     
@@ -2331,15 +2370,12 @@ def obtener_datos_grafica(j):
     segundos_Transformado = []
     segundo_inicial = float(segundo_inicial)
     segundo_final = float(segundo_final)
-    for i in range(segundos.index(round(segundo_inicial,2)),segundos.index(round(segundo_final,2))):
-        if i == 0:
-            suma_energia += (((V_Transformado_valor_real[i]*F[i])+(0)))*(1/(int(frecuencia_muestreo[-1])))/2
-        else:
-            suma_energia += (((V_Transformado_valor_real[i]*F[i])+(V_Transformado_valor_real[i-1]*F[i-1])))*(1/(int(frecuencia_muestreo[-1])))/2
-        E.append(suma_energia)
-        n = round(segundo_inicial+(j/(int(frecuencia_muestreo[-1]))),2)
-        j+=1
-        segundos_Transformado.append(n)
+
+    try:
+        E = energy(F[segundos.index(round(segundo_inicial,2)):segundos.index(round(segundo_final,2))],V[segundos.index(round(segundo_inicial,2)):segundos.index(round(segundo_final,2))], int(frecuencia_muestreo[-1])).data
+    except Exception as e:
+        print(f"Error al calcular la Energía E {E}")
+
     try:
         Emax = round(max(E), 2)
     except:
