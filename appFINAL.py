@@ -2588,7 +2588,7 @@ def create_toplevel_about():
 
 # programa convertir rpn a ctn
 
-def escoger_ruta_guardado():
+def escoger_ruta_guardado2():
     global ruta_guardado
     archivos = filedialog.askopenfilenames(initialdir = "/", title = "Seleccione los archivos a convertir")
     #ruta_guardado += "/"
@@ -2691,7 +2691,7 @@ ruta_guardado_label_combinado = ""
 
 def boton_escoger_archivos_combinar():
     global ruta_combinados
-    ruta_combinados =  escoger_ruta_guardado()
+    ruta_combinados =  escoger_ruta_guardado2()
     string = ""
     for i in ruta_combinados:
         string += i +"\n"
