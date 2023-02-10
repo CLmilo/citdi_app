@@ -115,7 +115,7 @@ def correcion_linea_cero(valores):
 
 def correcion_linea_cero2(valores):
     z = []
-    tr = Trace(data=np.array(valores)*1.3317)
+    tr = Trace(data=np.array(valores))
     st2 = detrend(tr,type = 1)
     z = np.ndarray.tolist(st2.data)
     return z
@@ -126,16 +126,30 @@ def filtrado(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.012,freqmax = 0.032)
-    st3.filter(type="bandpass",freqmin=1000,freqmax = 3500)
+    st3.filter(type="bandpass",freqmin=1,freqmax = 5000)
     z = np.ndarray.tolist(st3.data)
     return z
 
 def filtrado2(valores):
     z = []
-    tr = Trace(data=np.array(valores))
+    nuevo = []
+    nuevo.append(valores[0])
+    for i in range(1,len(valores)-1):
+        valor_anterior = valores[i-1]
+        valor_despues = valores[i+1]
+        valor_actual = valores[i]
+        promedio = (valor_anterior+valor_despues)/2
+        if valor_actual>70000 and (valor_anterior<30000 and valor_despues<30000):
+            nuevo.append(promedio)
+        else:
+            nuevo.append(valor_actual)
+    nuevo.append(valores[-1])
+    print("esto es lo nuevo", len(nuevo))
+    tr = Trace(data=np.array(nuevo))
+    tr.stats.sampling_rate = 50000
     st3 = tr.copy()
-    st3.filter(type="bandpass",freqmin=0.0011,freqmax = 1500000)
-    z = np.ndarray.tolist(st3.data)
+    st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
+    z = np.ndarray.tolist(st3.data/200)
     return z
 
 def velocidad(valores):
@@ -848,11 +862,11 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         print(f"Error al calcular la velocidad V2 {e}")
 
     if A3 == []:
-        V = V2.data
+        V = V2.data*9.81
     elif A4 == []:
-        V = V1.data
+        V = V1.data*9.81
     else:
-        V = (V1.data + V2.data)/2
+        V = (V1.data*9.81 + V2.data*9.81)/2
     
 
 
@@ -2232,7 +2246,7 @@ def obtener_datos_grafica(j):
             for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (int(orden[i])!=0):
-            for datos in dic_orden_sensores2[orden[i]]:               
+            for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
@@ -2300,11 +2314,11 @@ def obtener_datos_grafica(j):
     #     promedio = (suma_velocidadv1 + suma_velocidadv2)/2
     #     V.append(promedio)
     if A3 == []:
-        V = V2.data
+        V = V2.data*9.81
     elif A4 == []:
-        V = V1.data
+        V = V1.data*9.81
     else:
-        V = (V1.data + V2.data)/2
+        V = (V1.data*9.81 + V2.data*9.81)/2
 
 
 
