@@ -289,7 +289,19 @@ def Obtencion_data_serial(num):
     
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     print(extension)
-    if extension == "ct":
+    if extension == "ctn":
+        data = matriz_data_archivos[num]
+        
+        for linea in data:
+            linea = linea.split("|")
+            segundos.append(float(linea[0])/10)
+            for j in range(4):
+                dic_orden_sensores[orden[j]].append(round(float(linea[j+1]),2))
+        segundo_inicial = segundos[0]
+        segundo_final = segundos[-1]
+
+        
+    else:
         for index,linea in enumerate(matriz_data_archivos[num]):
             linea = linea.split("|")
             if index > 0 and index < len(matriz_data_archivos[num])-1:
@@ -309,16 +321,6 @@ def Obtencion_data_serial(num):
             elif (int(orden[i])!=0):
                 for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
                     dic_orden_sensores[orden[i]].append(datos)
-    else:
-        data = matriz_data_archivos[num]
-        
-        for linea in data:
-            linea = linea.split("|")
-            segundos.append(float(linea[0])/10)
-            for j in range(4):
-                dic_orden_sensores[orden[j]].append(round(float(linea[j+1]),2))
-        segundo_inicial = segundos[0]
-        segundo_final = segundos[-1]
 
     return segundos, S1, S2, A3, A4
 
@@ -536,7 +538,7 @@ container2.grid(row=0,column=1, sticky='nsew', padx=(30,10), pady=(30))
 container2_1 = ctk.CTkFrame(container2)
 container2_1.grid_columnconfigure(0, weight=1)
 container2_1.grid_rowconfigure(0, minsize= 40, weight=1)
-container2_1.grid_rowconfigure(1, weight=1)
+container2_1.grid_rowconfigure(1, weight=20)
 container2_1.grid_rowconfigure(2, minsize=40, weight=1)
 container2_1.grid(row=0, column=0, padx=10, pady=(10,5), sticky='nsew')
 
@@ -554,19 +556,15 @@ container2_1_3 = ctk.CTkFrame(container2_1)
 container2_1_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
 
 container2_1_3.grid_rowconfigure(0, weight=1)
-#container2_1_3.grid_propagate(False)
+
 container2_1_3.grid_columnconfigure(0, weight=250)
 container2_1_3.grid_columnconfigure(1, weight=1)
-container2_1_3.grid_columnconfigure(2, weight=1)
 
 container2_1_3_1 = ctk.CTkFrame(container2_1_3)
 container2_1_3_1.grid(row=0, column=0, sticky='w')
 
-container2_1_3_2 = ctk.CTkFrame(container2_1_3)
-container2_1_3_2.grid(row=0, column=1, sticky='e')
-
 container2_1_3_3 = ctk.CTkFrame(container2_1_3)
-container2_1_3_3.grid(row=0, column=2, sticky='e')
+container2_1_3_3.grid(row=0, column=1, sticky='e')
 container2_1_3_3.grid_columnconfigure(0, weight=1)
 container2_1_3_3.grid_columnconfigure(1, weight=1)
 container2_1_3_3.grid_columnconfigure(2, weight=1)
@@ -576,7 +574,7 @@ container2_1_3_3.grid_columnconfigure(3, weight=1)
 container2_2 = ctk.CTkFrame(container2)
 container2_2.grid_columnconfigure(0, weight=1)
 container2_2.grid_rowconfigure(0, minsize=40, weight=1)
-container2_2.grid_rowconfigure(1, weight=1)
+container2_2.grid_rowconfigure(1, weight=20)
 container2_2.grid_rowconfigure(2, minsize=40, weight=1)
 container2_2.grid(row=1, column=0, padx=10, pady=(5,10), sticky='new')
 
@@ -594,19 +592,14 @@ container2_2_3 = ctk.CTkFrame(container2_2)
 container2_2_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
 
 container2_2_3.grid_rowconfigure(0, weight=1)
-#container2_2_3.grid_propagate(False)
 container2_2_3.grid_columnconfigure(0, weight=250)
 container2_2_3.grid_columnconfigure(1, weight=1)
-container2_2_3.grid_columnconfigure(2, weight=1)
 
 container2_2_3_1 = ctk.CTkFrame(container2_2_3)
 container2_2_3_1.grid(row=0, column=0, sticky='sw')
 
-container2_2_3_2 = ctk.CTkFrame(container2_2_3)
-container2_2_3_2.grid(row=0, column=1, sticky='e')
-
 container2_2_3_3 = ctk.CTkFrame(container2_2_3)
-container2_2_3_3.grid(row=0, column=2, sticky='e')
+container2_2_3_3.grid(row=0, column=1, sticky='e')
 container2_2_3_3.grid_columnconfigure(0, weight=1)
 container2_2_3_3.grid_columnconfigure(1, weight=1)
 container2_2_3_3.grid_columnconfigure(2, weight=1)
@@ -683,7 +676,7 @@ segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
 segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
 segemented_button.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
 
-segemented_button_var2 = ctk.StringVar(value="ACELERACIÓN")
+segemented_button_var2 = ctk.StringVar(value="DEFORMACIÓN")
 segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
 segemented_button2.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
 
@@ -729,7 +722,7 @@ def cambiar_magnitud_grafica(posicion,magnitud):
     else:
         Creacion_Grafica(posicion, dic_magnitud_botones[magnitud], dic_ultima_grafica[posicion], "original", "NO", "NO")
 
-dic_posicion = {"arriba":[container2_1_2, container2_1_3_1, container2_1_3_2, container2_1_3_3], "abajo":[container2_2_2, container2_2_3_1, container2_2_3_2, container2_2_3_3]}
+dic_posicion = {"arriba":[container2_1_2, container2_1_3_1, container2_1_3_3], "abajo":[container2_2_2, container2_2_3_1, container2_2_3_3]}
 
 def clear_container(posicion):
     for container in dic_posicion[posicion]:
@@ -990,13 +983,13 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     else:
         condicion = 'SI'
 
-    B1_izquierda = ctk.CTkButton(dic_posicion[posicion][3], text="<", width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'izquierda'))
+    B1_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<", width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'izquierda'))
     B1_izquierda.grid(row=0, column=0, padx=(5,5))
-    B1_derecha = ctk.CTkButton(dic_posicion[posicion][3], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'derecha'))
+    B1_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'derecha'))
     B1_derecha.grid(row=0, column=1, padx=(0,5))
-    B2_izquierda = ctk.CTkButton(dic_posicion[posicion][3], text="<",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'izquierda'))
+    B2_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'izquierda'))
     B2_izquierda.grid(row=0, column=2, padx=(0,5))
-    B2_derecha = ctk.CTkButton(dic_posicion[posicion][3], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'derecha'))
+    B2_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'derecha'))
     B2_derecha.grid(row=0, column=3, padx=(0,5))
 
     segundos_Transformado = []
@@ -1075,7 +1068,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE)
 
     try:
-        ctk.CTkLabel(dic_posicion[posicion][2], text="actual:"+str(dic_ultima_grafica[posicion])+",ultima:"+str(len(matriz_data_archivos)-1)+",total:"+str((len(matriz_data_archivos)-1))).pack(side=LEFT)     
+        #ctk.CTkLabel(dic_posicion[posicion][2], text="actual:"+str(dic_ultima_grafica[posicion])+",ultima:"+str(len(matriz_data_archivos)-1)+",total:"+str((len(matriz_data_archivos)-1))).pack(side=LEFT)     
         L_T_Grafico.configure(text=str(dic_ultima_grafica[posicion]))
     except Exception as e:
         pass
@@ -1271,6 +1264,7 @@ def detectar_puertos():
             socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket_tcp.connect((host, port))
             estado_puerto = True
+            MessageBox.showinfo(title="Conectado", message="Se ha conectado con éxito.")
         except:
             MessageBox.showerror("Error", "No se puede conectar")
         print("Conectado al puerto")
@@ -1403,10 +1397,7 @@ Label_sensor4_data = ctk.CTkLabel(container5_1_2, text="No disponible", font=('T
 Label_sensor4_data.grid(row=3, column=1, sticky='nsew', padx=(0,20), pady=(10,20))
 
 
-#lista_opciones =ctk.CTkComboBox(container5_1_1, state='readonly', values=puertos)
-#lista_opciones.grid(row=0, column=0, sticky='nsew', padx=(5,0), pady=5)
-
-ctk.CTkButton(container5_1_1, text="Conectar al servidor", font=('Times',15), command=lambda: [detectar_puertos(), lista_opciones.configure(values=puertos)]).grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
+ctk.CTkButton(container5_1_1, text="Conectar al servidor", font=('Times',15), command=lambda: [detectar_puertos()]).grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
 ctk.CTkButton(container5_1_1, text="Actualizar orden de sensores", font=('Times',15),command=lambda: [verificacion_orden_sensores(), Generar_Tabla_Sensores()]).grid(row=0, column=1, sticky='nsew', padx=(0,5), pady=5)
 
 container5_2 = ctk.CTkFrame(container5)
@@ -1628,30 +1619,42 @@ container5_5_1_1 = ctk.CTkFrame(container5_5_1)
 container5_5_1_1.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10)
 container5_5_1_1.grid_rowconfigure(0, weight=1)
 container5_5_1_1.grid_rowconfigure(1, weight=1)
-container5_5_1_1.grid_columnconfigure(0, weight=1)
+container5_5_1_1.grid_columnconfigure(0, weight=5)
 container5_5_1_1.grid_columnconfigure(1, weight=1)
+container5_5_1_1.grid_columnconfigure(2, weight=5)
+container5_5_1_1.grid_columnconfigure(3, weight=1)
 
 def mod_frecuencia_muestreo(n):
     global frecuencia_muestreo
     frecuencia_muestreo.append(n)
 
-B_50 = ctk.CTkButton(container5_5_1_1, text="50khz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=('Times',15))
-B_50.grid(row=0, column=0, padx=(20,10), pady=(20,10), sticky='nsew')
-B_100 = ctk.CTkButton(container5_5_1_1, text="100khz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=('Times',15))
-B_100.grid(row=0, column=1, padx=(10,20), pady=(20,10), sticky='nsew')
-B_150 = ctk.CTkButton(container5_5_1_1, text="150khz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=('Times',15))
-B_150.grid(row=1, column=0, padx=(20,10), pady=(10,20), sticky='nsew')
-B_200 = ctk.CTkButton(container5_5_1_1, text="200khz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=('Times',15))
-B_200.grid(row=1, column=1, padx=(10,20), pady=(10,20), sticky='nsew')
-
-dic_botones_frecuencia = {'50':B_50, '100':B_100, '150':B_150, '200':B_200}
-
 def colorear_botones(n):
     for termino in dic_botones_frecuencia:
         if termino == str(n):
-            dic_botones_frecuencia[termino].configure(fg_color="#325882")
+            dic_botones_frecuencia[termino].select()
         else:
-            dic_botones_frecuencia[termino].configure(fg_color='#325882')
+            dic_botones_frecuencia[termino].deselect()
+
+B_50 = ctk.CTkButton(container5_5_1_1, text="50khz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=('Times',15))
+B_50.grid(row=0, column=0, padx=(20,10), pady=(20,10), sticky='nsew')
+B_50_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
+B_50_radio.grid(row=0, column=1, sticky = 'nswe')
+B_100 = ctk.CTkButton(container5_5_1_1, text="100khz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=('Times',15))
+B_100.grid(row=0, column=2, padx=(10,20), pady=(20,10), sticky='nsew')
+B_100_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
+B_100_radio.grid(row=0, column=3, sticky = 'nswe')
+B_150 = ctk.CTkButton(container5_5_1_1, text="150khz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=('Times',15))
+B_150.grid(row=1, column=0, padx=(20,10), pady=(10,20), sticky='nsew')
+B_150_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
+B_150_radio.grid(row=1, column=1, sticky = 'nswe')
+B_200 = ctk.CTkButton(container5_5_1_1, text="200khz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=('Times',15))
+B_200.grid(row=1, column=2, padx=(10,20), pady=(10,20), sticky='nsew')
+B_200_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
+B_200_radio.grid(row=1, column=3, sticky = 'nswe')
+
+dic_botones_frecuencia = {'50':B_50_radio, '100':B_100_radio, '150':B_150_radio, '200':B_200_radio}
+
+B_50.invoke()
 
 
 container5_5_1_2 = ctk.CTkFrame(container5_5_1)
@@ -1660,8 +1663,9 @@ container5_5_1_2.grid(row=2, column=0, columnspan=2, sticky='nsew', padx =10, pa
 container5_5_1_2.grid_rowconfigure(0, weight=4)
 container5_5_1_2.grid_rowconfigure(1, weight=4)
 container5_5_1_2.grid_rowconfigure(2, weight=1)
-container5_5_1_2.grid_rowconfigure(3, weight=2)
-container5_5_1_2.grid_rowconfigure(4, weight=4)
+container5_5_1_2.grid_rowconfigure(3, weight=1)
+container5_5_1_2.grid_rowconfigure(4, weight=2)
+container5_5_1_2.grid_rowconfigure(5, weight=4)
 container5_5_1_2.grid_columnconfigure(0, weight=3)
 container5_5_1_2.grid_columnconfigure(1, weight=2)
 container5_5_1_2.grid_columnconfigure(2, weight=1)
@@ -1680,13 +1684,18 @@ ctk.CTkLabel(container5_5_1_2, text='ms', font=('Times',15)).grid(row=1, column=
 
 ctk.CTkButton(container5_5_1_2, text= "Seleccionar ruta \nde guardado", font=('Times', 15), command=lambda: [escoger_ruta_guardado()]).grid(row=2, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
 
-ctk.CTkButton(container5_5_1_2, text= "Siguiente", font=('Times',15), command=lambda: [mostrar_alertas()]).grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
+entry_ruta_guardado = ctk.CTkEntry(container5_5_1_2, font=('Times', 15))
+entry_ruta_guardado.grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10))
+
+
+
+ctk.CTkButton(container5_5_1_2, text= "Siguiente", font=('Times',15), command=lambda: [mostrar_alertas()]).grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
 
 def escoger_ruta_guardado():
     global ruta_guardado
     ruta_guardado = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
-    print(ruta_guardado) 
     ruta_guardado += "/"
+    entry_ruta_guardado.insert(0, ruta_guardado)
 
 
 # Container creado solo para la vista Collect Wire
@@ -1730,7 +1739,7 @@ def mostrar_alertas():
         print("enviando datos de frecuencia")
         #conexion.write(valor.encode('utf-8'))
         #conexion.close()
-
+        limpiar_review()
         raise_frame(Review)
         crear_columna_muestreo()
 
@@ -1738,10 +1747,10 @@ def limpiar_review():
     global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry
     modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "")
     modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "")
-    LIM_IZQ.configure(text = "", bg='#D9D9D9', fg='black')
-    LIM_DER.configure(text = "", bg='#D9D9D9', fg='black')
-    LIM_IZQ_Entry.configure(text = "")
-    LIM_DER_Entry.configure(text = "")
+    LIM_IZQ.configure(text="")
+    LIM_DER.configure(text="")
+    LIM_IZQ_Entry.delete(0)
+    LIM_DER_Entry.delete(0)
     clear_container('arriba')
     clear_container('abajo')
     
@@ -1779,7 +1788,7 @@ bandera_grafica = False
 
 def crear_columna_muestreo():
     global frecuencia_muestreo, ruta_guardado
-    global lista_opciones, pile_area_label, EM_label, ET_label
+    global pile_area_label, EM_label, ET_label
     global numero_grafica_insertada, marca, L_T_Grafico, num_golpe, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
     global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad
     matriz_data_archivos = []
@@ -1798,13 +1807,12 @@ def crear_columna_muestreo():
     container1_3.grid_rowconfigure(2, weight=1)
     container1_3.grid_rowconfigure(3, weight=1)
 
-    ctk.CTkLabel(container1_3, text="Total de Gráficas:", font=("Times", 15), bg=azul_claro).grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+    ctk.CTkLabel(container1_3, text="Total de Gráficas:", font=("Times", 15)).grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
     ctk.CTkLabel(container1_3, text="Frecuencia de muestreo:", font=("Times", 15)).grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
     ctk.CTkLabel(container1_3, text="Tiempo de muestreo:", font=("Times", 15)).grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
     ctk.CTkLabel(container1_3, text="Tiempo de retardo:", font=("Times", 15)).grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
     
-
 
     L_T_Grafico = ctk.CTkLabel(container1_3, text="0", font=("Times", 15))
     L_T_Grafico.grid(row=0, column=1, padx=10, pady=10, sticky='ns')
@@ -1819,16 +1827,13 @@ def crear_columna_muestreo():
     
 
     container3_5 = ctk.CTkFrame(container3)
-    container3_5.grid(row=4, column=0, sticky='nsew')
+    container3_5.grid(row=4, column=0, sticky='nsew', padx=(20))
     container3_5.grid_rowconfigure(0, weight=1)
     container3_5.grid_columnconfigure(0, weight=1)
     container3_5.grid_columnconfigure(1, weight=1)
     
-
     Boton_play = ctk.CTkButton(container3_5, text="►", font=('Times', 20), command=lambda:[cambio_boton_play()])
-    Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
-    
-    
+    Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
 
     def graficas_tiempo_real(num):
         global bandera_grafica, L_T_Grafico, num_golpe, matriz_data_archivos
@@ -1839,8 +1844,7 @@ def crear_columna_muestreo():
         def graficar():
             global bandera_grafica, marca, L_T_Grafico, num_golpe
             while bandera_grafica and marca:
-                time.sleep(0.2)
-   
+                #time.sleep(0.2)
                 try:
                     marca = False
                     
@@ -1883,9 +1887,8 @@ def crear_columna_muestreo():
             while señal_continua == True: 
                 print("conexion abierta por inicio")
                 bandera_grafica = True
-                bandera2 = 1
                 bandera3 = 0
-                bandera4 = 1
+
                 string = ""
                 vector = []
                 acumulado = ""
@@ -1893,21 +1896,11 @@ def crear_columna_muestreo():
                 while ((bandera3 == 0 ) and (señal_continua == True)):
                     
                     print("recibiendo")
-                    #raw_string_b = conexion.read(200)
                     cata = socket_tcp.recv(10000).decode("cp437")
-                    #raw_string_b = socket_tcp.recv(10)
-                    #raw_string_s = raw_string_b.decode('utf-8')
-                    #string = str(raw_string_s).replace("\x00", "")
-                    #print(string)
-                    #if string == "":
-                    #    bandera2 = 0
-                    
-                    #if bandera2 == 0 and string != "":
+                   
                     if cata != "":
                         acumulado += cata
-                        #print("123*0"+cata+"*0456")
-                        bandera4 = 0
-                    #if bandera2 == 0 and string == "" and bandera4==0:
+
 
                     if acumulado[-5:] == "FINAL":
                         acumulado = acumulado[:-5]
@@ -1930,7 +1923,7 @@ def crear_columna_muestreo():
                 print("intentado graficar")
                 graficas_tiempo_real(num)
 
-            time.sleep(.2)
+            #time.sleep(.2)
 
             contador = 0
             bandera_grafica = False
@@ -1982,9 +1975,9 @@ def crear_columna_muestreo():
         señal_continua = True
         eliminar_botones()
         #Boton_pausa = Button(container3_5, text="〓", font=('Times', 20), command=lambda:[cambio_boton_pausa()])
-        Boton_stop = Button(container3_5, text="STOP", font=('Times', 20), command=lambda:[cambio_boton_stop()])
+        Boton_stop = ctk.CTkButton(container3_5, text="STOP", font=('Times', 20), command=lambda:[cambio_boton_stop()])
         #Boton_pausa.grid(row=0, column=0, sticky='nsew', padx=(30,10), pady=(150,10))
-        Boton_stop.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
+        Boton_stop.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
         
         inicio_secuencia_grabado()
 
@@ -1995,7 +1988,7 @@ def crear_columna_muestreo():
         eliminar_botones()
 
         socket_tcp.send("F".encode('utf-8'))
-        time.sleep(0.2)
+        #time.sleep(0.2)
         conexion.close()
 
         Boton_play = Button(container3_5, text="►", font=('Times', 20), command=lambda:[cambio_boton_play()])
