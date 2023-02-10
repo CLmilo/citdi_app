@@ -757,7 +757,7 @@ class Toolbar(NavigationToolbar2TkAgg):
 
 def velocity(acel, freq):
     tr_a = Trace(data=acel)
-    tr_a.stats.sampling_rate = freq
+    tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
     return tr_v
@@ -771,7 +771,7 @@ def energy(F, V, freq):
     E = []
     producto = np.multiply(F, V)
     tr_potencia = Trace(data=np.array(producto))
-    tr_potencia.stats.sampling_rate = freq
+    tr_potencia.stats.sampling_rate = freq*1000
     tr_energy = tr_potencia.copy()
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
