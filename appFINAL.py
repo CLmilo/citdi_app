@@ -12,7 +12,6 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from PIL import Image
 from tkinter import filedialog
 import os, sys
-import serial
 import threading
 from tkinter import messagebox as MessageBox
 import numpy as np
