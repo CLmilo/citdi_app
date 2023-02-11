@@ -771,7 +771,7 @@ class Toolbar(NavigationToolbar2TkAgg):
         pass
 
 def velocity(acel, freq):
-    tr_a = Trace(data=acel)
+    tr_a = Trace(data=np.array(acel)*9.81)
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
@@ -784,7 +784,7 @@ def integrate(tr_00):
 
 def energy(F, V, freq):
     E = []
-    producto = np.multiply(F, V)
+    producto = np.multiply(np.array(F)*1000, V)
     tr_potencia = Trace(data=np.array(producto))
     tr_potencia.stats.sampling_rate = freq*1000
     tr_energy = tr_potencia.copy()
@@ -862,11 +862,11 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         print(f"Error al calcular la velocidad V2 {e}")
 
     if A3 == []:
-        V = V2.data*9.81
+        V = V2.data
     elif A4 == []:
-        V = V1.data*9.81
+        V = V1.data
     else:
-        V = (V1.data*9.81 + V2.data*9.81)/2
+        V = (V1.data + V2.data)/2
     
 
 
@@ -1048,7 +1048,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"]}
-    dic_unidades = {'aceleracion':["milisegundos", "m/s2"], 'deformacion':["milisegundos", "m"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
+    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
     try:
         t1, = a.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
     except:
@@ -2300,13 +2300,13 @@ def obtener_datos_grafica(j):
         print(f"Error al calcular la velocidad V2 {e}")
 
     if len(A3) == 0:
-        V = V2.data*9.81
+        V = V2.data
         A = A4.copy()
     elif len(A4) == 0:
-        V = V1.data*9.81
+        V = V1.data
         A = A3.copy()
     else:
-        V = (V1.data*9.81 + V2.data*9.81)/2
+        V = (V1.data + V2.data)/2
         A = []
         for i in range(len(A3)):
             A.append((A3[i]+A4[i])/2)
