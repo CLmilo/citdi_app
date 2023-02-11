@@ -109,7 +109,7 @@ def filtered(stream, type, f1, f2):
 
 def correcion_linea_cero(valores):
     z = []
-    tr = Trace(data=np.array(valores))
+    tr = Trace(data=np.array(valores)*0.1475)
     st2 = detrend(tr,type = 2)
     z = np.ndarray.tolist(st2.data)
     return z
@@ -124,18 +124,33 @@ def correcion_linea_cero2(valores):
 def filtrado(valores):
     z = []
     tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.012,freqmax = 0.032)
-    st3.filter(type="bandpass",freqmin=0.0000000012,freqmax = 0.5)
+    st3.filter(type="bandpass",freqmin=1,freqmax = 5000)
     z = np.ndarray.tolist(st3.data)
     return z
 
 def filtrado2(valores):
     z = []
-    tr = Trace(data=np.array(valores))
+    nuevo = []
+    nuevo.append(valores[0])
+    for i in range(1,len(valores)-1):
+        valor_anterior = valores[i-1]
+        valor_despues = valores[i+1]
+        valor_actual = valores[i]
+        promedio = (valor_anterior+valor_despues)/2
+        if valor_actual>70000 and (valor_anterior<30000 and valor_despues<30000):
+            nuevo.append(promedio)
+        else:
+            nuevo.append(valor_actual)
+    nuevo.append(valores[-1])
+    print("esto es lo nuevo", len(nuevo))
+    tr = Trace(data=np.array(nuevo))
+    tr.stats.sampling_rate = 50000
     st3 = tr.copy()
-    st3.filter(type="bandpass",freqmin=0.00012,freqmax = 0.5)
-    z = np.ndarray.tolist(st3.data)
+    st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
+    z = np.ndarray.tolist(st3.data/200)
     return z
 
 def velocidad(valores):
@@ -758,7 +773,7 @@ class Toolbar(NavigationToolbar2TkAgg):
 
 def velocity(acel, freq):
     tr_a = Trace(data=acel)
-    tr_a.stats.sampling_rate = freq
+    tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
     return tr_v
@@ -772,7 +787,7 @@ def energy(F, V, freq):
     E = []
     producto = np.multiply(F, V)
     tr_potencia = Trace(data=np.array(producto))
-    tr_potencia.stats.sampling_rate = freq
+    tr_potencia.stats.sampling_rate = freq*1000
     tr_energy = tr_potencia.copy()
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
@@ -848,11 +863,11 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         print(f"Error al calcular la velocidad V2 {e}")
 
     if A3 == []:
-        V = V2.data
+        V = V2.data*9.81
     elif A4 == []:
-        V = V1.data
+        V = V1.data*9.81
     else:
-        V = (V1.data + V2.data)/2
+        V = (V1.data*9.81 + V2.data*9.81)/2
     
 
 
@@ -2232,7 +2247,7 @@ def obtener_datos_grafica(j):
             for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (int(orden[i])!=0):
-            for datos in dic_orden_sensores2[orden[i]]:               
+            for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
@@ -2286,13 +2301,13 @@ def obtener_datos_grafica(j):
         print(f"Error al calcular la velocidad V2 {e}")
 
     if len(A3) == 0:
-        V = V2.data
+        V = V2.data*9.81
         A = A4.copy()
     elif len(A4) == 0:
-        V = V1.data
+        V = V1.data*9.81
         A = A3.copy()
     else:
-        V = (V1.data + V2.data)/2
+        V = (V1.data*9.81 + V2.data*9.81)/2
         A = []
         for i in range(len(A3)):
             A.append((A3[i]+A4[i])/2)
