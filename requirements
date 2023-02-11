@@ -7,4 +7,5 @@ customtkinter
 tk
 pyserial
 
-pip install fpdf2 obspy BaselineRemoval pyserial tk customtkinter matplotlib 
+pip install fpdf2 obspy BaselineRemoval pyserial tk customtkinter matplotlib xlsxwriter
+

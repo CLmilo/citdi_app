@@ -21,6 +21,7 @@ import customtkinter as ctk
 from BaselineRemoval import BaselineRemoval
 import obspy
 from obspy.core.trace import Trace
+import xlsxwriter
 
 import socket
 
@@ -2256,14 +2257,21 @@ def obtener_datos_grafica(j):
         if S2 != []:
             F2.append(m2)
         F.append(promedio)
-    if S1 == []:
-        F = F2
-    elif S2 == []:
-        F = F1
+
+    if len(S1) == 0:
+        F = F2.copy()
+        S = S2.copy()
+    elif len(S2) == 0:
+        F = F1.copy()
+        S = S1.copy()
+    else:
+        S = []
+        for i in range(len(S1)):
+            S.append((S1[i]+S2[i])/2)
+
     Fmax = round(max(F), 2)
     Fmax_original = max(F)
-    suma_velocidadv1 = 0
-    suma_velocidadv2 = 0
+
     longitud = max(len(A3), len(A4))
 
     # Calculando velocidad 1
@@ -2277,41 +2285,22 @@ def obtener_datos_grafica(j):
     except Exception as e:
         print(f"Error al calcular la velocidad V2 {e}")
 
-
-    # for i in range(longitud):
-    #     try:
-    #         if i == 0:
-    #             suma_velocidadv1 += ((A3[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         else:
-    #             suma_velocidadv1 += ((A3[i]+A3[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         V1.append(suma_velocidadv1)
-    #     except Exception as e:
-    #         pass
-
-    #     try:
-    #         if i == 0:
-    #             suma_velocidadv2 += ((A4[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         else:
-    #             suma_velocidadv2 += ((A4[i]+A4[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         V2.append(suma_velocidadv2)
-    #     except Exception as e:
-    #         pass
-    #     promedio = (suma_velocidadv1 + suma_velocidadv2)/2
-    #     V.append(promedio)
-    if A3 == []:
+    if len(A3) == 0:
         V = V2.data
-    elif A4 == []:
+        A = A4.copy()
+    elif len(A4) == 0:
         V = V1.data
+        A = A3.copy()
     else:
         V = (V1.data + V2.data)/2
-
-
-
-    
+        A = []
+        for i in range(len(A3)):
+            A.append((A3[i]+A4[i])/2)
+        
+    print("velocidades", len(V), len(V1), len(V2) )
     Vmax = round(max(V), 2)
     Vmax_original = max(V)
-    suma_desplazamientov1 = 0
-    suma_desplazamientov2 = 0
+
     longitud = max(len(S1), len(S2))
 
     try:
@@ -2324,55 +2313,30 @@ def obtener_datos_grafica(j):
     except Exception as e:
         print(f"Error al calcular el desplazamiento D2 {e}")
 
-    # for i in range(longitud):
-    #     try:
-    #         if i == 0:
-    #             suma_desplazamientov1 += ((V1[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         else:
-    #             suma_desplazamientov1 += ((V1[i]+V1[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         D1.append(suma_desplazamientov1)
-    #     except:
-    #         pass
-    #     try:
-    #         if i == 0:
-    #             suma_desplazamientov2 += ((V2[i]+0)*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         else:
-    #             suma_desplazamientov2 += ((V2[i]+V2[i-1])*9.81)*(1/(int(frecuencia_muestreo[-1])*1000))/2
-    #         D2.append(suma_desplazamientov2)
-    #     except:
-    #         pass
-    #     promedio = (suma_desplazamientov1 + suma_desplazamientov2)/2
-    #     D.append(promedio)
-    if V1 == []:
+    if len(V1) == 0:
         D = D2.data
-    elif V2 == []:
+    elif len(V2) == 0:
         D = D1.data
     else:
         D = (D1.data + D2.data)/2
 
-
     Dmax = round(max(D), 2)
     
-    bandera = 0
-    bandera2 = 0
-    anterior = 0
     Z = Fmax_original/Vmax_original
-    
-    imax = F.index(Fmax_original)
-    ajuste = V.index(Vmax_original)-imax
     
     for i in range(len(V)):
         valor = V[i]*Z
         V_Transformado.append(valor)
         V_Transformado_valor_real.append(V[i])
-    suma_energia = 0
+
     j = 0
-    segundos_Transformado = []
+
     segundo_inicial = float(segundo_inicial)
     segundo_final = float(segundo_final)
 
+
     try:
-        E = energy(F[segundos.index(round(segundo_inicial,2)):segundos.index(round(segundo_final,2))],V[segundos.index(round(segundo_inicial,2)):segundos.index(round(segundo_final,2))], int(frecuencia_muestreo[-1])).data
+        E = energy(F,V, int(frecuencia_muestreo[-1])).data
     except Exception as e:
         print(f"Error al calcular la Energía E {E}")
 
@@ -2386,7 +2350,7 @@ def obtener_datos_grafica(j):
     Energias_teoricas.append(round(Emax*100/float(ET_valor_original),2))
     Impedancias.append(Fmax/Vmax)
     
-    return F, V_Transformado, segundos, Z
+    return F, V_Transformado, segundos, Z, E, V, D, A, S
 
 Energias = []
 Fuerzas = []
@@ -2416,14 +2380,35 @@ def Calcular_Promedios():
     Velocidades = [] 
     Energias_teoricas = []
     Impedancias = []
+
+    Aceleraciones_data = []
+    Deformaciones_data = []
+    Fuerzas_data = []
+    Segundos_data = []
+    Energias_data = []
+    Velocidades_data = []
+    Desplazamientos_data = []
+
     for j in range(1, len(matriz_data_archivos)):
-        obtener_datos_grafica(j)
-        
+        F, Velocidad_transformados, segundos, Z, E, V, D, A, S = obtener_datos_grafica(j)
+        Aceleraciones_data.append(A)
+        Deformaciones_data.append(S)
+        Fuerzas_data.append(F)
+        segundos_corregidos = []
+        for i in segundos:
+            segundos_corregidos.append(float(i)/10)
+        Segundos_data.append(segundos_corregidos)
+        Energias_data.append(E)
+        Velocidades_data.append(V)
+        Desplazamientos_data.append(D)
+    
     maxZ = Impedancias.index(max(Impedancias))
     
     #Aquí se añade una fila más a cada variable de arriba Energias, fuerzas, etc, por lo cual se le quita una fila a cada una abajo
 
-    Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, Z = obtener_datos_grafica(maxZ+1)
+
+
+    Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t = obtener_datos_grafica(maxZ+1)
 
     Energias.pop()
     Fuerzas.pop()
@@ -2439,10 +2424,6 @@ def Calcular_Promedios():
     for i in range(len(Num_golpes)-1):
         acumulado += Num_golpes[len(Num_golpes)-i-2]
         Num_golpes_modificado2.append(acumulado)
-
-    #print("datos generacion pdf",Num_golpes, Num_golpes_modificado2, len(Energias), len(Velocidades), len(Fuerzas), len(matriz_data_archivos))
-    # Estos Arreglos energias, velocidades, etc, son globales así que en las funciones obtener_datos_grafica ya se añaden los valores
-    # recortando las energias, velocidades, fuerzas y energias teoricas máximas
         
     Energias_recortadas = Energias[Num_golpes[-2]:]
     Velocidades_recortadas = Velocidades[Num_golpes[-2]:]
@@ -2494,8 +2475,56 @@ def Calcular_Promedios():
     canvas = FigureCanvas(f)
     canvas.draw()
     img = Image.fromarray(np.asarray(canvas.buffer_rgba()))
+    
     crear_pdf(datas, img)
+    crear_excel(Segundos_data, Aceleraciones_data, Deformaciones_data, Fuerzas_data, Velocidades_data, Energias_data, Desplazamientos_data)
+
     MessageBox.showinfo(title="Exportado", message="Se ha exportado con éxito")
+
+def crear_excel(Segundos, A, S, F, V, E, D):
+    global ruta_guardado_pdf, ruta_data_inicial
+
+    data = [Segundos, A, S, F, V, E, D]
+    cadenas =ruta_data_inicial.split("/")[-1][:-3]
+    nombre_archivo = 'Reporte_' + cadenas + '.xlsx'
+
+    workbook = xlsxwriter.Workbook(ruta_guardado_pdf + "/" + nombre_archivo)
+    
+    for i in range(len(F)):
+        worksheet = workbook.add_worksheet('Datos del impacto '+str(i+1))
+
+        cell_format4 = workbook.add_format()
+        cell_format4.set_align('center')
+        cell_format4.set_align('vcenter')
+        cell_format4.set_text_wrap()
+
+        cell_format3 = workbook.add_format()
+        cell_format3.set_text_wrap()
+        cell_format3.set_align('center')
+        cell_format3.set_align('vcenter')
+        cell_format3.set_font_color('white')
+        cell_format3.set_bold()
+        cell_format3.set_bg_color('#1F246D')
+
+        for j in range(len(data)):
+            for k in range(len(data[j][i])):
+                worksheet.write(k+2, j+1, data[j][i][k], cell_format4)
+        
+        columnas = ["Segundos", "Aceleración", "Deformación", "Fuerza", "Velocidad", "Energía", "Desplazamiento"]
+
+        worksheet.set_column("A:A",5)
+        worksheet.set_column("B:B",25)#
+        worksheet.set_column("C:C",25)
+        worksheet.set_column("D:D",25)
+        worksheet.set_column("E:E",25)
+        worksheet.set_column("F:F",25)#
+        worksheet.set_column("G:G",25)
+        worksheet.set_column("H:H",25)
+
+        for i in range(1, len(columnas)+1):
+            worksheet.write(1, i ,columnas[i-1], cell_format3)
+        
+    workbook.close()
 
 def crear_pdf(datas, img):
     global pile_area, EM_valor_original, ET_valor_original, fila_resumen, ruta_data_inicial, ruta_guardado_pdf
