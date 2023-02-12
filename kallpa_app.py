@@ -387,15 +387,12 @@ container4b.grid_columnconfigure(2, weight=1)
 container4c = ctk.CTkFrame(container4a, corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
-container4c.grid_columnconfigure(0, weight=1)
-container4c.grid_columnconfigure(1, weight=1)
-container4c.grid_columnconfigure(2, weight=1)
-container4c.grid_columnconfigure(3, weight=1)
-container4c.grid_columnconfigure(4, weight=1)
-container4c.grid_columnconfigure(5, weight=1)
-
 # Botones
 lista_botones = ["Salir", "Review", "Preparar Data", "Collet Wire", "Manual", "About"]
+
+for i in range(len(lista_botones)):
+    container4c.grid_columnconfigure(i, weight=1)
+
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=('Arial', 25), fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=('Arial', 25), command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
@@ -480,9 +477,9 @@ container1.grid_columnconfigure(0, weight=1)
 # Frames internos
 
 container1_0 = ctk.CTkFrame(container1)
-container1_0.grid(row=0, column=0, padx=20, pady=(40,0), sticky='new')
+container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
 
-ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew')
+ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
 
 container1_1 = ctk.CTkFrame(container1)
 container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
@@ -496,7 +493,7 @@ container1_2.grid_columnconfigure(1, weight=1)
 
 # Textos y Entrys Primer Frame
 #textos_primer_frame = ["Pile ID", "Total Length(m)", "Pile Length(m)", "Penetration(m)", "Pile Area(m^2)", "Wave Speed(m/s)", "Overall WS(m/s)", "Density(m^3)", "Elastic Modulus(GPa)", "Jc" ]
-textos_primer_frame = ["Pile Area(cm^2)", "Elastic Modulus(MPa)", "Energía Teórica(J)"]
+textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
 
 #ET_Entry
 
@@ -576,7 +573,7 @@ container2_1.grid_rowconfigure(1, weight=20)
 container2_1.grid_rowconfigure(2, minsize=40, weight=1)
 container2_1.grid(row=0, column=0, padx=10, pady=(10,5), sticky='nsew')
 
-container2_1_1 = ctk.CTkFrame(container2_1)
+container2_1_1 = ctk.CTkFrame(container2_1, corner_radius=0)
 container2_1_1.grid(row=0, column=0, sticky='new')
 #for i in range(7):
 #    container2_1_1.grid_columnconfigure(i, weight=8)
@@ -612,7 +609,7 @@ container2_2.grid_rowconfigure(1, weight=20)
 container2_2.grid_rowconfigure(2, minsize=40, weight=1)
 container2_2.grid(row=1, column=0, padx=10, pady=(5,10), sticky='new')
 
-container2_2_1 = ctk.CTkFrame(container2_2)
+container2_2_1 = ctk.CTkFrame(container2_2, corner_radius=0)
 container2_2_1.grid(row=0, column=0, sticky='new')
 #for i in range(7):
 #    container2_2_1.grid_columnconfigure(i, weight=8)
@@ -723,7 +720,7 @@ Boton_seleccion_grafica2.grid(row=0,column=1, sticky='ns', pady=5, padx=(5,5))
 
 # Barra lateral de la columna de la derecha
 
-container2_3 = ctk.CTkFrame(container2)
+container2_3 = ctk.CTkFrame(container2, corner_radius=0)
 container2_3.grid(row=0, rowspan=2, column=1, sticky='nsew')
 container2_3.grid_rowconfigure(0, weight=1)
 container2_3.grid_columnconfigure(0, weight=1)
@@ -1570,7 +1567,7 @@ EntryLR.grid(row=0, column=1, sticky='nsew')
 LabelLR_unidades = ctk.CTkLabel(container5_3_1_3, text="m", font=('Times',15))
 LabelLR_unidades.grid(row=0, column=2, sticky='nsew')
 
-ctk.CTkButton(container5_3_1, text="Regresar", font=('Times',15), command=lambda: [detener_conexion_puerto(), raise_frame(Menup)]).grid(row=2, column=0, sticky='nsew', pady=(40,0))
+ctk.CTkButton(container5_3_1, text="Regresar", font=('Times',15), command=lambda: [detener_conexion_puerto(), raise_frame(Menup)]).grid(row=2, column=0, sticky='nsew', pady=(40,10))
 
 container5_4 = ctk.CTkFrame(container5)
 container5_4.grid(row=3, column=1, sticky='nsew', padx=(10,20), pady=20)
@@ -2427,6 +2424,7 @@ def Calcular_Promedios():
         Aceleraciones_data.append(A)
         Deformaciones_data.append(S)
         Fuerzas_data.append(F)
+        print("LA FUERZA EN ", j, "ES:", F[20])
         segundos_corregidos = []
         for i in segundos:
             segundos_corregidos.append(float(i)/10)
@@ -2687,7 +2685,6 @@ def create_toplevel_about():
 # programa convertir rpn a ctn
 
 def escoger_ruta_guardado2():
-    global ruta_guardado
     archivos = filedialog.askopenfilenames(initialdir = "/", title = "Seleccione los archivos a convertir")
     #ruta_guardado += "/"
     return archivos
@@ -2767,7 +2764,7 @@ def crear_ctn(profundidad, ruta_guardado_combinado):
     for index in range(len(ruta_guardado_combinado)):
         if index == 0:
             texto += "profundidad:"+profundidad
-        frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[0])
+        frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[index])
         cabecera = orden_string+str(frecuencia)+"|"+str(ar)+"|"+str(em)+"|"+str(et)
         texto+="\nINICIO_ARCHIVO\nARCHIVO:"+str(index+1)+"\n"+cabecera+"\n"
         texto+=lectura_data(frecuencia_post, filas)
