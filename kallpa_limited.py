@@ -251,9 +251,10 @@ def click_grafica_abajo(event):
 
 
 def Obtencion_data_serial(num):
-    global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
+    global estado_parametros, frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
+    global ET_valor_original, EM_valor_original_backup, pile_area_backup
     segundos = []
     S1 = []
     S2 = []
@@ -277,20 +278,26 @@ def Obtencion_data_serial(num):
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
 
-    try:
-        pile_area = orden[5]
-    except:
-        pile_area = "15.6"
-    try:
-        EM_valor_original = orden[6]
-    except:
-        EM_valor_original = "207000"
+    if estado_parametros == "original":
+        try:
+            pile_area = orden[5]
+        except:
+            pile_area = "15.6"
+        try:
+            EM_valor_original = orden[6]
+        except:
+            EM_valor_original = "207000"
 
-    try:
-        ET_valor_original = orden[7]
-    except:
-        ET_valor_original = 981
-    
+        try:
+            ET_valor_original = orden[7]
+        except:
+            ET_valor_original = 981
+        EM_valor_original_backup = EM_valor_original
+        ET_valor_original_backup = ET_valor_original
+        pile_area_backup = pile_area
+    else:
+        pass
+
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     print(extension)
     if extension == "ctn":
@@ -362,7 +369,7 @@ container4a.grid_rowconfigure(1, weight=1)
 container4a.grid_columnconfigure(0, weight=1)
 container4a.grid(row=0, column=0, sticky='nsew', padx=40, pady=40)
 
-container4b = ctk.CTkFrame(container4a, corner_radius=20)
+container4b = ctk.CTkFrame(container4a, corner_radius=20, fg_color="#BADCF1")
 container4b.grid(row=0, column=0, sticky='nsew', padx=40, pady=(40,0))
 
 container4b.grid_rowconfigure(0, weight=10)
@@ -458,8 +465,105 @@ container1.grid_columnconfigure(0, weight=1)
 
 container1_0 = ctk.CTkFrame(container1)
 container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
+container1_0.grid_columnconfigure(0, weight=1)
+container1_0.grid_columnconfigure(1, weight=1)
+
+estado_parametros = "original"
+EM_valor_original_backup = ""
+ET_valor_original_backup = ""
+pile_area_backup = ""
+
+def actualizar_magnitud(posicion,i):
+    global ultima_magnitud_abajo
+    global ultima_magnitud_arriba
+    dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
+
+texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED"]
+
+# Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
+
+def segmented_button_callback1(value):
+    global texto_botones_frame
+    colorear_botones_seleccion_grafica(1)
+    match value:
+        case "ACELERACIÓN":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "VELOCIDAD":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "DEFORMACIÓN":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "FUERZA":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "DESPLAZAMIENTO":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "F vs V":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "Avg ED":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            
+def segmented_button_callback2(value):
+    global texto_botones_frame
+    colorear_botones_seleccion_grafica(2)
+    match value:
+        case "ACELERACIÓN":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "VELOCIDAD":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "DEFORMACIÓN":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "FUERZA":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "DESPLAZAMIENTO":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "F vs V":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "Avg ED":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+
+def cambiar_valores(mod):
+    global pile_area, EM_valor_original, ET_valor_original, estado_parametros
+    global pile_area_entry, EM_Entry, ET_Entry
+    global ET_valor_original, EM_valor_original_backup, pile_area_backup
+    if mod == "modificado":
+        estado_parametros = "modificado"
+        pile_area = pile_area_entry.get()
+        EM_valor_original = EM_Entry.get()
+        ET_valor_original = ET_Entry.get()
+        segmented_button_callback2("DEFORMACIÓN")
+        segmented_button_callback1("ACELERACIÓN")
+        
+    else:
+        estado_parametros = "original"
+        pile_area_entry.delete(0, END)
+        EM_Entry.delete(0, END)
+        ET_Entry.delete(0, END)
+
+        pile_area_entry.insert(0, pile_area_backup)
+        EM_Entry.insert(0, EM_valor_original_backup)
+        ET_Entry.insert(0, ET_valor_original)
+
+        cambiar_magnitud_grafica("arriba", 0)
+        actualizar_magnitud("arriba", 0)
+        cambiar_magnitud_grafica("abajo", 0)
+        actualizar_magnitud("abajo", 0)
+
 
 ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
+ctk.CTkButton(container1_0, text='Calcular', command=lambda:cambiar_valores("modificado")).grid(row=0,column=1, sticky='nsew', padx=(5) , pady=5)
 
 container1_1 = ctk.CTkFrame(container1)
 container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
@@ -489,24 +593,26 @@ ctk.CTkLabel(container1_1, text=textos_primer_frame[2]).grid(row=2,column=0, pad
 ET_Entry = ctk.CTkEntry(container1_1)
 ET_Entry.grid(row=2, column=1, padx=10, pady=10, sticky='new')
 
+ctk.CTkButton(container1_1, text='Restaurar', command=lambda:cambiar_valores("original")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=(10) , pady=10)
+
 def actualizar_valores_cabecera():
     try:
-        pile_area_entry.delete(0)
+        pile_area_entry.delete(0, END)
         pile_area_entry.insert(0, str(round(float(pile_area),2)))
     except:
-        pile_area_entry.delete(0)
+        pile_area_entry.delete(0, END)
         pile_area_entry.insert(0, "7.56")
     try:
-        EM_Entry.delete(0)
+        EM_Entry.delete(0, END)
         EM_Entry.insert(0, str(round(float(EM_valor_original),2)))
     except:
-        EM_Entry.delete(0)
+        EM_Entry.delete(0, END)
         EM_Entry.insert(0, "20700")
     try:
-        ET_Entry.delete(0)
+        ET_Entry.delete(0, END)
         ET_Entry.insert(0, str(round(float(ET_valor_original),2)))
     except:
-        ET_Entry.delete(0)
+        ET_Entry.delete(0, END)
         ET_Entry.insert(0, "473")
 
 
@@ -644,67 +750,6 @@ container2_2_3_3.grid_columnconfigure(3, weight=1)
 dic_magnitud_botones = {0:'aceleracion', 1:'velocidad', 2:'deformacion', 3:'fuerza', 4:'desplazamiento', 5:'fuerzaxvelocidad', 6:'avged'}
 dic_ultima_grafica_magnitud = {"arriba": ultima_magnitud_arriba, "abajo": ultima_magnitud_abajo}
 
-def actualizar_magnitud(posicion,i):
-    global ultima_magnitud_abajo
-    global ultima_magnitud_arriba
-    dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
-
-texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED"]
-
-# Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
-
-def segmented_button_callback1(value):
-    global texto_botones_frame
-    colorear_botones_seleccion_grafica(1)
-    match value:
-        case "ACELERACIÓN":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "VELOCIDAD":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "DEFORMACIÓN":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "FUERZA":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "DESPLAZAMIENTO":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "F vs V":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "Avg ED":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            
-def segmented_button_callback2(value):
-    global texto_botones_frame
-    colorear_botones_seleccion_grafica(2)
-    match value:
-        case "ACELERACIÓN":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "VELOCIDAD":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "DEFORMACIÓN":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "FUERZA":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "DESPLAZAMIENTO":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "F vs V":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "Avg ED":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-
 
 segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
 segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
@@ -839,9 +884,11 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
     Z = 0
+
     EM = float(EM_valor_original)
     AR = float(pile_area)
     factor = EM*AR
+    print("El factor es ", factor)
     longitud = max(len(S1), len(S2))
     m1 = 0
     m2 = 0

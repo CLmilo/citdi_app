@@ -374,7 +374,7 @@ container4a.grid_rowconfigure(1, weight=1)
 container4a.grid_columnconfigure(0, weight=1)
 container4a.grid(row=0, column=0, sticky='nsew', padx=40, pady=40)
 
-container4b = ctk.CTkFrame(container4a, corner_radius=20)
+container4b = ctk.CTkFrame(container4a, corner_radius=20, fg_color="#BADCF1")
 container4b.grid(row=0, column=0, sticky='nsew', padx=40, pady=(40,0))
 
 container4b.grid_rowconfigure(0, weight=10)
@@ -477,6 +477,7 @@ container1.grid_columnconfigure(0, weight=1)
 # Frames internos
 
 container1_0 = ctk.CTkFrame(container1)
+
 container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
 
 ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
@@ -492,7 +493,6 @@ container1_2.grid_columnconfigure(0, weight=1)
 container1_2.grid_columnconfigure(1, weight=1)
 
 # Textos y Entrys Primer Frame
-#textos_primer_frame = ["Pile ID", "Total Length(m)", "Pile Length(m)", "Penetration(m)", "Pile Area(m^2)", "Wave Speed(m/s)", "Overall WS(m/s)", "Density(m^3)", "Elastic Modulus(GPa)", "Jc" ]
 textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
 
 #ET_Entry
