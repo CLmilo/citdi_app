@@ -101,6 +101,7 @@ def detrend(trace,type=0):
     
     return st
 
+
 def filtered(stream, type, f1, f2):
     st = stream.copy()
     if type == 0:
@@ -121,6 +122,13 @@ def correcion_linea_cero(valores):
     return z
 
 def correcion_linea_cero2(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    st2 = detrend(tr,type = 1)
+    z = np.ndarray.tolist(st2.data)
+    return z
+
+def correcion_linea_cero_velocidad(valores):
     z = []
     tr = Trace(data=np.array(valores))
     st2 = detrend(tr,type = 1)
