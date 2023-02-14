@@ -24,7 +24,7 @@ import xlsxwriter
 
 import socket
 
-host = "169.254.159.253"
+host = "192.168.0.10"
 print(host)
 port = 65432
 BUFFER_SIZE = 16
@@ -1312,7 +1312,7 @@ estado_puerto = False
 def detectar_puertos():
 
     global socket_tcp, estado_puerto
-    host = "169.254.159.253"
+    host = "192.168.0.10"
     port = 65432
     
     if estado_puerto == False:
