@@ -2097,10 +2097,9 @@ def escoger_ruta_combinado():
     ruta_guardado_combinado = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
     ruta_guardado_label_combinado.insert(0,ruta_guardado_combinado+"/profundidad_"+str(Entry_archivo_inicio.get())+"-"+str(Entry_archivo_final.get())+".ctn") 
 
-def f_select(event, text_content):
-    print("-------------------")
-    print(event)
-    print("New Position")
+def f_select(event):
+    data = textbox_content.index(INSERT).split('.')
+    stringvar.set("CURSOR INFO | LINE: %s | POS: %s"%(data[0], data[1])) 
 
 def preview_data():
     # ask for a file to read
@@ -2134,12 +2133,19 @@ def preview_data():
     container_controls.grid_rowconfigure(0, weight=1)
     main_container_preview.grid_columnconfigure(0, weight=1)
     main_container_preview.grid_columnconfigure(1, weight=1)
+    main_container_preview.grid_columnconfigure(2, weight=1)
 
     label_first_line = ctk.CTkLabel(container_controls, text='First Line : ')
     label_first_line.grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
 
-    label_first_line = ctk.CTkLabel(container_controls, text='Last Line : ')
-    label_first_line.grid(row=1, column=0, sticky='nsew', padx=20, pady=10)
+    label_last_line = ctk.CTkLabel(container_controls, text='Last Line : ')
+    label_last_line.grid(row=1, column=0, sticky='nsew', padx=20, pady=10)
+
+    entry_firt_line = ctk.CTkEntry(container_controls)
+    entry_firt_line.grid(row = 0, column = 1, sticky='nsew', padx=20, pady=10)
+
+    entry_last_line = ctk.CTkEntry(container_controls)
+    entry_last_line.grid(row = 1, column = 1, sticky='nsew', padx=20, pady=10)
 
     # CONTAINER of the content
     container_content = ctk.CTkFrame(main_container_preview)
@@ -2148,15 +2154,17 @@ def preview_data():
     container_content.grid_rowconfigure(1, weight=1)
     container_content.grid_columnconfigure(0, weight=1)
 
-    textbox_content = ctk.CTkTextbox(container_content, width = 800, height = 600)
-    textbox_content.grid(row=0, column=0, sticky='nsew')
-    textbox_content.insert(f"0.0", lineas)
-    textbox_content.bind("<ButtonRelease-1>", f_select)
-
+    global stringvar
     stringvar = StringVar()
     stringvar.set("CURSOR INFO | LINE: %d | POS: %d"%(0,0))
     label_cursor = ctk.CTkLabel(container_content, textvariable = stringvar)
     label_cursor.grid(row = 1, columnspan = 2)
+   
+    global textbox_content
+    textbox_content = ctk.CTkTextbox(container_content, width = 800, height = 600)
+    textbox_content.grid(row=0, column=0, sticky='nsew')
+    textbox_content.insert(INSERT, lineas)
+    textbox_content.bind("<ButtonRelease-1>", command= f_select)
 
 def create_toplevel_preparar():
     global scrollable_frame, label_frecuencia, label_AR, label_EM, label_ET, Entry_archivo_final, Entry_archivo_inicio, ruta_guardado_label_combinado
