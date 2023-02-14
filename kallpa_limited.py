@@ -2130,7 +2130,8 @@ def preview_data():
     container_controls = ctk.CTkFrame(main_container_preview)
     container_controls.grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
     container_controls.grid_rowconfigure(0, weight=1)
-    container_controls.grid_rowconfigure(0, weight=1)
+    container_controls.grid_rowconfigure(1, weight=1)
+    container_controls.grid_rowconfigure(2, weight=1)
     main_container_preview.grid_columnconfigure(0, weight=1)
     main_container_preview.grid_columnconfigure(1, weight=1)
     main_container_preview.grid_columnconfigure(2, weight=1)
@@ -2141,11 +2142,17 @@ def preview_data():
     label_last_line = ctk.CTkLabel(container_controls, text='Last Line : ')
     label_last_line.grid(row=1, column=0, sticky='nsew', padx=20, pady=10)
 
+    label_delimitador = ctk.CTkLabel(container_controls, text='Delimitador : ')
+    label_delimitador.grid(row=2, column=0, sticky='nsew', padx=20, pady=10)
+
     entry_firt_line = ctk.CTkEntry(container_controls)
     entry_firt_line.grid(row = 0, column = 1, sticky='nsew', padx=20, pady=10)
 
     entry_last_line = ctk.CTkEntry(container_controls)
     entry_last_line.grid(row = 1, column = 1, sticky='nsew', padx=20, pady=10)
+
+    entry_delimitador = ctk.CTkComboBox(container_controls, values=["SPACE( )", "COMMA(,)", "SEMICOLON(;)", "DOT(.)", "VERTICAL-LINE(|)"])
+    entry_delimitador.grid(row = 2, column = 1, sticky='nsew', padx=20, pady=10)
 
     # CONTAINER of the content
     container_content = ctk.CTkFrame(main_container_preview)
@@ -2161,7 +2168,7 @@ def preview_data():
     label_cursor.grid(row = 1, columnspan = 2)
    
     global textbox_content
-    textbox_content = ctk.CTkTextbox(container_content, width = 800, height = 600)
+    textbox_content = ctk.CTkTextbox(container_content, width = 400, height = 250)
     textbox_content.grid(row=0, column=0, sticky='nsew')
     textbox_content.insert(INSERT, lineas)
     textbox_content.bind("<ButtonRelease-1>", command= f_select)
