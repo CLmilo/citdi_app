@@ -383,7 +383,7 @@ container4c = ctk.CTkFrame(container4a, corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
-lista_botones = ["Salir", "Review", "Preparar Data", "Manual", "About"]
+lista_botones = ["Salir", "Review", "New Review", "Preparar Data", "Manual", "About"]
 
 for i in range(len(lista_botones)):
     container4c.grid_columnconfigure(i, weight=1)
@@ -391,9 +391,10 @@ for i in range(len(lista_botones)):
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=('Arial', 25), fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=('Arial', 25), command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
 ctk.CTkButton(container4c, text=lista_botones[1], font=('Arial', 25), command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", numero_grafica_actual, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", numero_grafica_actual, "original", "NO", "NO"), actualizar_valores_cabecera(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[2], font=('Arial', 25), command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[3], font=('Arial', 25), command=lambda:print("manual")).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[4], font=('Arial', 25), command=lambda:create_toplevel_about()).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[2], font=('Arial', 25), command=lambda:preview_data()).grid(row=0,column=2,sticky='nsew',padx=5,pady=5)
+ctk.CTkButton(container4c, text=lista_botones[3], font=('Arial', 25), command=lambda:create_toplevel_preparar()).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[4], font=('Arial', 25), command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[5], font=('Arial', 25), command=lambda:create_toplevel_about()).grid(row=0,column=5, sticky='nsew', pady=5, padx=(0,5))
 
 # Mostrar Hora
 def Obtener_hora_actual():
