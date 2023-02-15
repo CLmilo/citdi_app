@@ -102,6 +102,13 @@ def correcion_linea_cero(valores):
     z = np.ndarray.tolist(st2.data)
     return z
 
+def correcion_linea_cero_PILE(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    st2 = detrend(tr,type = 1)
+    z = np.ndarray.tolist(st2.data)
+    return z
+
 def correcion_linea_cero2(valores):
     z = []
     tr = Trace(data=np.array(valores))
@@ -307,9 +314,18 @@ def Obtencion_data_serial(num):
             linea = linea.split("|")
             segundos.append(float(linea[0])/10)
             for j in range(4):
-                dic_orden_sensores[orden[j]].append(round(float(linea[j+1]),2))
+                dic_orden_sensores2[orden[j]].append(round(float(linea[j+1]),2))
         segundo_inicial = segundos[0]
         segundo_final = segundos[-1]
+
+        for i in range(4):
+
+            if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
+                for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
+                    dic_orden_sensores[orden[i]].append(datos)
+            elif (int(orden[i])!=0):
+                for datos in dic_orden_sensores2[orden[i]]:               
+                    dic_orden_sensores[orden[i]].append(datos)
 
         
     else:
