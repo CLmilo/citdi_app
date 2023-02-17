@@ -385,7 +385,7 @@ container4a.grid_rowconfigure(1, weight=1)
 container4a.grid_columnconfigure(0, weight=1)
 container4a.grid(row=0, column=0, sticky='nsew', padx=40, pady=40)
 
-container4b = ctk.CTkFrame(container4a, corner_radius=20, fg_color="#BADCF1")
+container4b = ctk.CTkFrame(container4a, corner_radius=20)
 container4b.grid(row=0, column=0, sticky='nsew', padx=40, pady=(40,0))
 
 container4b.grid_rowconfigure(0, weight=10)

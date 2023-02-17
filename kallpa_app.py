@@ -116,7 +116,7 @@ def filtered(stream, type, f1, f2):
 
 def correcion_linea_cero(valores):
     z = []
-    tr = Trace(data=np.array(valores)*0.1475)
+    tr = Trace(data=np.array(valores)*0.01475)
     st2 = detrend(tr,type = 2)
     z = np.ndarray.tolist(st2.data)
     return z
@@ -147,7 +147,7 @@ def filtrado(valores):
     tr = Trace(data=np.array(valores))
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.012,freqmax = 0.032)
+    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
     st3.filter(type="bandpass",freqmin=1,freqmax = 5000)
     z = np.ndarray.tolist(st3.data)
     return z
@@ -172,6 +172,16 @@ def filtrado2(valores):
     st3 = tr.copy()
     st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
     z = np.ndarray.tolist(st3.data/200)
+    return z
+
+def filtrado3(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
+    st3 = tr.copy()
+    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
+    st3.filter(type="bandpass",freqmin=10,freqmax = 2000)
+    z = np.ndarray.tolist(st3.data)
     return z
 
 def velocidad(valores):
@@ -359,12 +369,11 @@ def Obtencion_data_serial(num):
         segundo_final = segundos[-1]
 
         for i in range(4):
-
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
-                for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
+                for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):               
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
