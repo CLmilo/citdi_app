@@ -24,6 +24,13 @@ import xlsxwriter
 
 import socket
 
+# AÑADIR PORTADA
+
+def resolver_ruta(ruta_relativa):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, ruta_relativa)
+    return os.path.join(os.path.abspath('.'), ruta_relativa)
+
 #colores
 azul_oscuro = "#002060"
 azul_claro = "#BDD7EE"
@@ -31,7 +38,9 @@ azul_celeste = "#2F6CDF"
 
 ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
 
-ctk.set_default_color_theme("citdi_theme.json")
+tema_json = resolver_ruta("citdi_theme.json")
+
+ctk.set_default_color_theme(tema_json)
 
 # Funcionalidades
 
@@ -423,12 +432,7 @@ hora_actual = StringVar(container4b, value=Obtener_hora_actual())
 
 refrescar_reloj()
 
-# AÑADIR PORTADA
 
-def resolver_ruta(ruta_relativa):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, ruta_relativa)
-    return os.path.join(os.path.abspath('.'), ruta_relativa)
 
 
 nombre_archivo_portada = resolver_ruta("CITDI_LOGO_SINFONDO.png")
@@ -1561,10 +1565,10 @@ def obtener_datos_grafica(j):
     for i in range(4):
         #dic_orden_sensores[orden[i]] = list(correcion_linea_cero(dic_orden_sensores2[orden[i]]))
         if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-            for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+            for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (int(orden[i])!=0):
-            for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
+            for datos in dic_orden_sensores2[orden[i]]:               
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
@@ -1746,7 +1750,7 @@ def Calcular_Promedios():
     Fuerzas.pop()
     Velocidades.pop()
     Energias_teoricas.pop()
-    Energias_teoricas = [num*100 for num in Energias_teoricas]
+    Energias_teoricas = [num for num in Energias_teoricas]
 
     datas = [[["", "BL#", "BC", "FMX", "VMX", "BPM", "EFV", "ETR"],["", "", "/150mm", "tn", "m/s", "bpm", "J", "%"]], [], []]
     Num_golpes_modificado2 = []
@@ -1890,11 +1894,13 @@ def crear_pdf(datas, img):
     pdf.set_margin(20)
     col_width = pdf.epw / 2
     sensores = [["F1 : [590AW1] 204.51 PDICAL (1) FF2", "F2 : [590AW2] 203.63 PDICAL (1) FF2"],["A3 (PR): [K11669] 395.805 mv/6.4v/5000g (1) VF2", "A4 (PR): [K11670] 418.207 mv/6.4v/5000g (1) VF2"]]
+    
     for row in sensores:
         for datum in row:
             pdf.multi_cell(col_width, line_height, datum, border=0,
                     new_x="RIGHT", new_y="TOP", max_line_height=pdf.font_size)
         pdf.ln(line_height)
+
     col_width = pdf.epw / 5
     legendas = ["FMX: Fuerza Máxima", "VMX: Velocidad Máxima", "BPM: Golpes/Minuto", "EFV: Energía Máxima", "ETR: Energía Teórica"]
     for datum in legendas:
