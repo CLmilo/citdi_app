@@ -121,6 +121,23 @@ def correcion_linea_cero(valores):
     z = np.ndarray.tolist(st2.data)
     return z
 
+def correccion_linea_KALLPA(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    st2 = detrend(tr,type = 2)
+    z = np.ndarray.tolist(st2.data)
+    return z
+
+def filtrado_KALLPA(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
+    st3 = tr.copy()
+    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
+    st3.filter(type="bandpass",freqmin=0.001,freqmax = 5000)
+    z = np.ndarray.tolist(st3.data)
+    return z
+
 def correcion_linea_cero_PILE(valores):
     z = []
     tr = Trace(data=np.array(valores))
@@ -350,7 +367,7 @@ def Obtencion_data_serial(num):
         for i in range(4):
 
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
+                for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 for datos in dic_orden_sensores2[orden[i]]:               
@@ -362,7 +379,7 @@ def Obtencion_data_serial(num):
             if index > 0 and index < len(matriz_data_archivos[num])-1:
                 segundos.append(float(linea[0])/1000)
                 for i in range(4):
-                    dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
+                    dic_orden_sensores2[orden[i]].append(int(linea[i+1]))
             else:
                 pass
         segundo_inicial = segundos[0]
@@ -370,10 +387,12 @@ def Obtencion_data_serial(num):
 
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+                #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
-                for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):               
+                #for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):            
+                for datos in dic_orden_sensores2[orden[i]]:  
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
