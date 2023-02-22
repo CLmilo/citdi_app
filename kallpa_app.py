@@ -128,9 +128,26 @@ def correccion_linea_KALLPA(valores):
     z = np.ndarray.tolist(st2.data)
     return z
 
+def correccion_linea_KALLPA_strain(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    st2 = detrend(tr,type = 1)
+    z = np.ndarray.tolist(st2.data)
+    return z
+
 def filtrado_KALLPA(valores):
     z = []
     tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
+    st3 = tr.copy()
+    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
+    st3.filter(type="bandpass",freqmin=0.001,freqmax = 5000)
+    z = np.ndarray.tolist(st3.data)
+    return z
+
+def filtrado_KALLPA_strain(valores):
+    z = []
+    tr = Trace(data=np.array(valores)*1.576)
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
@@ -178,7 +195,7 @@ def filtrado2(valores):
         valor_despues = valores[i+1]
         valor_actual = valores[i]
         promedio = (valor_anterior+valor_despues)/2
-        if valor_actual>70000 and (valor_anterior<30000 and valor_despues<30000):
+        if valor_actual>100 and (valor_anterior<20 and valor_despues<20):
             nuevo.append(promedio)
         else:
             nuevo.append(valor_actual)
@@ -188,7 +205,7 @@ def filtrado2(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
-    z = np.ndarray.tolist(st3.data/200)
+    z = np.ndarray.tolist(st3.data)
     return z
 
 def filtrado3(valores):
@@ -197,7 +214,7 @@ def filtrado3(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=10,freqmax = 2000)
+    st3.filter(type="bandpass",freqmin=10,freqmax = 5000)
     z = np.ndarray.tolist(st3.data)
     return z
 
@@ -388,11 +405,13 @@ def Obtencion_data_serial(num):
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
+                #for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
+                for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 #for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):            
-                for datos in dic_orden_sensores2[orden[i]]:  
+                for datos in filtrado_KALLPA_strain(filtrado2(correccion_linea_KALLPA_strain(dic_orden_sensores2[orden[i]]))):  
+                #for datos in dic_orden_sensores2[orden[i]]:  
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
