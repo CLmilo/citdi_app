@@ -80,11 +80,8 @@ D = []
 V_Transformado = []
 V_Transformado_valor_real = []
 
-
 contador_grafica_arriba = 1
 contador_grafica_abajo = 1
-
-
 
 def detrend(trace,type=0):
     st = trace.copy()
@@ -405,8 +402,8 @@ def Obtencion_data_serial(num):
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                #for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
-                for datos in dic_orden_sensores2[orden[i]]:
+                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
+                #for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 #for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):            
@@ -914,6 +911,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     Z = 0
     EM = float(EM_valor_original)
     AR = float(pile_area)
+    print(f"El EM es :{EM} y la AR: {AR}")
     factor = EM*AR
     longitud = max(len(S1), len(S2))
     m1 = 0
@@ -1350,7 +1348,7 @@ ctk.CTkButton(container3_4, text='Exportar', command=lambda:[Seleccionar_ruta_gu
 
 def preparaciones_exportar(label_cantidad_golpes, label_inicio, label_final):
     global matriz_data_archivos
-    longitudes = matriz_data_archivos[0][12:].split(";")
+    longitudes = matriz_data_archivos[0][12:].split(",")
     label_cantidad_golpes.configure(text='Cantidad de Golpes:'+str(len(matriz_data_archivos)-1))
     label_inicio.configure(text='Inicio:'+str(longitudes[0]))
     label_final.configure(text='Final:'+str(longitudes[1]))
@@ -1568,7 +1566,7 @@ Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm2", font=fontTEXTcoll
 Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Módulo de \nElasticidad ", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
 Entry_modulo_elasticidad = ctk.CTkEntry(container5_2_2_2, font=fontTEXTcoll)
 Entry_modulo_elasticidad.grid(row=1, column=1, sticky='nsew')
-Entry_modulo_elasticidad.insert(0, "20700")
+Entry_modulo_elasticidad.insert(0, "207000")
 Label_Modulo_Elasticidad_unidad = ctk.CTkLabel(container5_2_2_2, text="MPa", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 
@@ -2226,7 +2224,7 @@ def create_toplevel_export():
     def mostrar_alertas_exportar():
         global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf
         contador = 0
-        longitudes = matriz_data_archivos[0][12:].split(";")
+        longitudes = matriz_data_archivos[0][12:].split(",")
         for fila in filas:
             for i in range(len(fila)):
                 if str(fila[i].get()) != "":
