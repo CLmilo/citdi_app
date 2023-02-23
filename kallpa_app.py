@@ -83,6 +83,8 @@ V_Transformado_valor_real = []
 contador_grafica_arriba = 1
 contador_grafica_abajo = 1
 
+calibracion_sensores = [1,1,1,1,1,1]
+
 def detrend(trace,type=0):
     st = trace.copy()
     if type == 0:
@@ -132,24 +134,24 @@ def correccion_linea_KALLPA_strain(valores):
     z = np.ndarray.tolist(st2.data)
     return z
 
-def filtrado_KALLPA(valores):
+def filtrado_KALLPA(valores,factor_calibracion):
     z = []
     tr = Trace(data=np.array(valores))
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
     st3.filter(type="bandpass",freqmin=0.001,freqmax = 5000)
-    z = np.ndarray.tolist(st3.data)
+    z = np.ndarray.tolist(st3.data*factor_calibracion)
     return z
 
-def filtrado_KALLPA_strain(valores):
+def filtrado_KALLPA_strain(valores,factor_calibracion):
     z = []
-    tr = Trace(data=np.array(valores)*1.576)
+    tr = Trace(data=np.array(valores))
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=0.001,freqmax = 5000)
-    z = np.ndarray.tolist(st3.data)
+    st3.filter(type="bandpass",freqmin=0.00001,freqmax = 1500)
+    z = np.ndarray.tolist(st3.data*factor_calibracion)
     return z
 
 def correcion_linea_cero_PILE(valores):
@@ -402,12 +404,12 @@ def Obtencion_data_serial(num):
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]])):
+                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]]),calibracion_sensores[int(orden[i])-1]):
                 #for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 #for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):            
-                for datos in filtrado_KALLPA_strain(filtrado2(correccion_linea_KALLPA_strain(dic_orden_sensores2[orden[i]]))):  
+                for datos in filtrado_KALLPA_strain(filtrado2(correccion_linea_KALLPA_strain(dic_orden_sensores2[orden[i]])),calibracion_sensores[int(orden[i])-1]):  
                 #for datos in dic_orden_sensores2[orden[i]]:  
                     dic_orden_sensores[orden[i]].append(datos)
 
@@ -477,7 +479,7 @@ ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda
 
 # Mostrar Hora
 def Obtener_hora_actual():
-    return datetime.now().strftime("%d-%m-%y,%H:%M:%S")
+    return datetime.now().strftime("%H:%M:%S\n%d/%m/%y")
 
 def refrescar_reloj():
     hora_actual.set(Obtener_hora_actual())
@@ -1140,11 +1142,11 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"]}
     dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
     try:
-        t1, = a.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
+        t1, = a.plot(segundos, dic_magnitud[magnitud][0],"#252850", label=dic_legenda[magnitud][0])
     except:
         pass
     try:
-        t2, = a.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
+        t2, = a.plot(segundos, dic_magnitud[magnitud][1],"#3B83BD", label=dic_legenda[magnitud][1])
     except:
         pass
     a.set_xlabel(dic_unidades[magnitud][0])
@@ -1844,8 +1846,6 @@ def mostrar_alertas():
     elif ruta_guardado == "":
         MessageBox.showerror("Selecciona una carpeta para guardar el .ct")
     else:
-        #conexion = serial.Serial(port=lista_opciones.get(), baudrate=1500000, timeout=0.1, write_timeout=1)
-        #conexion.write("P".encode('utf-8'))
         socket_tcp.send("P".encode('utf-8'))
         time.sleep(0.2)
         valor = str(str(frecuencia_muestreo[-1])+"|"+str(Entry_tiempo_muestreo.get())+"|"+str(Entry_tiempo_Retardo.get())+"|")
@@ -1853,8 +1853,6 @@ def mostrar_alertas():
         socket_tcp.send(valor.encode('utf-8'))
         time.sleep(0.1)
         print("enviando datos de frecuencia")
-        #conexion.write(valor.encode('utf-8'))
-        #conexion.close()
         limpiar_review()
         raise_frame(Review)
         crear_columna_muestreo()
