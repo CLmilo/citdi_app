@@ -222,6 +222,7 @@ def velocidad(valores):
     tr = Trace(data=np.array(valores))
     st3 = tr.copy()
     st3.integrate(method = "cumtrapz")
+
     
     z = np.ndarray.tolist(st3.data)
 
@@ -350,10 +351,11 @@ def Obtencion_data_serial(num):
 
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
     print("la fila orden es", orden_sensores[-1])
-
+    print(orden[4])
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
-
+        print("ENTREEEEEEEEEE")
+    print(f"sampling rate {frecuencia_muestreo}")
     try:
         pile_area = orden[5]
     except:
@@ -368,6 +370,7 @@ def Obtencion_data_serial(num):
     except:
         ET_valor_original = 981
     
+    global extension
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     print(extension)
     if extension == "ctn":
@@ -867,7 +870,27 @@ def velocity(acel, freq):
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
-    return tr_v
+    if extension == 'ctn':
+        idx_impact = int(0.01*freq*1000)
+        # Velocity before impact
+        V_bi = tr_v.data[:idx_impact]
+        # Velocity after impatc
+        V_ai = tr_v.data[idx_impact:]
+
+        tr_V_ai0 = Trace(data=V_ai)
+        tr_V_ai = tr_V_ai0.copy()
+        tr_V_ai.stats.sampling_rate = freq*1000
+        tr_V_ai.detrend("simple")
+
+        # Concatenating again
+        V_bl = np.concatenate((V_bi, tr_V_ai.data))
+
+        # Making a trace
+        tr_v_bl = Trace(data=V_bl)
+        tr_v_bl.stats.sampling_rate = freq*1000
+        return tr_v_bl
+    else:    
+        return tr_v
 
 def integrate(tr_00):
     tr_0 = tr_00.copy()
@@ -953,7 +976,9 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         V2 = velocity(np.array(A4[:longitud]), int(frecuencia_muestreo[-1]))
     except Exception as e:
         print(f"Error al calcular la velocidad V2 {e}")
-
+    
+    print(V1, type(V1))
+    print(V2, type(V2))
     if A3 == []:
         V = V2.data
     elif A4 == []:
@@ -2766,7 +2791,7 @@ def leer_data_cabecera(ruta):
     with open(ruta) as file:
         filas = file.readlines()
     for index, fila in enumerate(filas):
-        fila = fila.replace("\n", "").split(";")
+        fila = fila.replace("\n", "").split(",")
         if fila[0] == "AR":
             ar_pos = index
         if fila[0] == "EM":
@@ -2778,15 +2803,15 @@ def leer_data_cabecera(ruta):
         if fila[0] == "Record":
             frecuencia_post = index+3
     
-    ar = round(float(filas[ar_pos].replace("\n", "").split(";")[1]),2)
-    em = round(float(filas[em_pos].replace("\n", "").split(";")[1]),2)
-    efv = float(filas[efv_pos].replace("\n", "").split(";")[1])
-    etr = float(filas[etr_pos].replace("\n", "").split(";")[1])
+    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
     et = round((efv/etr)*100,2)
 
-    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(";")[1])/1000)
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
 
-    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(";")
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
     print(fila_orden)
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
@@ -2809,7 +2834,7 @@ def leer_data_cabecera(ruta):
 def lectura_data(frecuencia_post, filas):
     string_data = ""
     for i in range(frecuencia_post-1, len(filas)):
-        fila = filas[i].replace("\n", "").split(";")
+        fila = filas[i].replace("\n", "").split(",")
         segundos = round(float(fila[1])*10000,2)
         V1 = float(fila[2])
         V2 = float(fila[3])
