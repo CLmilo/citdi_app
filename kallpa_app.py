@@ -332,6 +332,8 @@ def Obtencion_data_serial(num):
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
+    global extension
+
     segundos = []
     S1 = []
     S2 = []
@@ -354,7 +356,6 @@ def Obtencion_data_serial(num):
     print(orden[4])
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
-        print("ENTREEEEEEEEEE")
     print(f"sampling rate {frecuencia_muestreo}")
     try:
         pile_area = orden[5]
@@ -370,7 +371,7 @@ def Obtencion_data_serial(num):
     except:
         ET_valor_original = 981
     
-    global extension
+    
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     print(extension)
     if extension == "ctn":
@@ -2812,14 +2813,20 @@ def leer_data_cabecera(ruta):
     frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
 
     fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
-    print(fila_orden)
-    orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
+    print("el orden de la cabecera es ", fila_orden)
+    orden = [fila_orden[2].split("@")[0]]
     try:
-        orden.append(fila_orden[4].split("@")[0])
-        orden.append(fila_orden[5].split("@")[0])
+        orden.append(fila_orden[3].split("@")[0])
     except:
         orden.append("0")
+    try:
+        orden.append(fila_orden[4].split("@")[0])
+    except:
         orden.append("0")
+    try:
+        orden.append(fila_orden[5].split("@")[0])
+    except:
+        orden.append("0")    
         
     dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2", "0":"0"}
     orden_string = ""
