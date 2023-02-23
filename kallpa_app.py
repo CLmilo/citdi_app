@@ -240,7 +240,8 @@ def browseFiles():
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
-    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
+    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])
+    print(ruta_data_inicial)   
     numero_grafica_actual = 1
     try:
         with open(ruta_data_inicial, "r") as file:
