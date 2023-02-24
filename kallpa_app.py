@@ -2,10 +2,8 @@ import random
 import time
 from tkinter import *
 from datetime import datetime
-from tkinter import ttk
 from matplotlib import style
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk as NavigationToolbar2TkAgg
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -18,7 +16,6 @@ import numpy as np
 from fpdf import FPDF
 import customtkinter as ctk
 from BaselineRemoval import BaselineRemoval
-import obspy
 from obspy.core.trace import Trace
 import xlsxwriter
 
@@ -80,10 +77,11 @@ D = []
 V_Transformado = []
 V_Transformado_valor_real = []
 
+
 contador_grafica_arriba = 1
 contador_grafica_abajo = 1
 
-calibracion_sensores = [1,1,1,1,1,1]
+
 
 def detrend(trace,type=0):
     st = trace.copy()
@@ -118,40 +116,6 @@ def correcion_linea_cero(valores):
     tr = Trace(data=np.array(valores)*0.01475)
     st2 = detrend(tr,type = 2)
     z = np.ndarray.tolist(st2.data)
-    return z
-
-def correccion_linea_KALLPA(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st2 = detrend(tr,type = 2)
-    z = np.ndarray.tolist(st2.data)
-    return z
-
-def correccion_linea_KALLPA_strain(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st2 = detrend(tr,type = 1)
-    z = np.ndarray.tolist(st2.data)
-    return z
-
-def filtrado_KALLPA(valores,factor_calibracion):
-    z = []
-    tr = Trace(data=np.array(valores))
-    tr.stats.sampling_rate = 50000
-    st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=0.001,freqmax = 5000)
-    z = np.ndarray.tolist(st3.data*factor_calibracion)
-    return z
-
-def filtrado_KALLPA_strain(valores,factor_calibracion):
-    z = []
-    tr = Trace(data=np.array(valores))
-    tr.stats.sampling_rate = 50000
-    st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=0.00001,freqmax = 1500)
-    z = np.ndarray.tolist(st3.data*factor_calibracion)
     return z
 
 def correcion_linea_cero_PILE(valores):
@@ -194,7 +158,7 @@ def filtrado2(valores):
         valor_despues = valores[i+1]
         valor_actual = valores[i]
         promedio = (valor_anterior+valor_despues)/2
-        if valor_actual>100 and (valor_anterior<20 and valor_despues<20):
+        if valor_actual>70000 and (valor_anterior<30000 and valor_despues<30000):
             nuevo.append(promedio)
         else:
             nuevo.append(valor_actual)
@@ -204,7 +168,7 @@ def filtrado2(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
-    z = np.ndarray.tolist(st3.data)
+    z = np.ndarray.tolist(st3.data/200)
     return z
 
 def filtrado3(valores):
@@ -213,7 +177,7 @@ def filtrado3(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=10,freqmax = 5000)
+    st3.filter(type="bandpass",freqmin=10,freqmax = 2000)
     z = np.ndarray.tolist(st3.data)
     return z
 
@@ -222,7 +186,6 @@ def velocidad(valores):
     tr = Trace(data=np.array(valores))
     st3 = tr.copy()
     st3.integrate(method = "cumtrapz")
-
     
     z = np.ndarray.tolist(st3.data)
 
@@ -241,8 +204,7 @@ def browseFiles():
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
-    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])
-    print(ruta_data_inicial)   
+    ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
     numero_grafica_actual = 1
     try:
         with open(ruta_data_inicial, "r") as file:
@@ -332,8 +294,6 @@ def Obtencion_data_serial(num):
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
-    global extension
-
     segundos = []
     S1 = []
     S2 = []
@@ -353,10 +313,10 @@ def Obtencion_data_serial(num):
 
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
     print("la fila orden es", orden_sensores[-1])
-    print(orden[4])
+
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
-    print(f"sampling rate {frecuencia_muestreo}")
+
     try:
         pile_area = orden[5]
     except:
@@ -370,7 +330,6 @@ def Obtencion_data_serial(num):
         ET_valor_original = orden[7]
     except:
         ET_valor_original = 981
-    
     
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     print(extension)
@@ -388,7 +347,7 @@ def Obtencion_data_serial(num):
         for i in range(4):
 
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                for datos in dic_orden_sensores2[orden[i]]:
+                for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 for datos in dic_orden_sensores2[orden[i]]:               
@@ -400,7 +359,7 @@ def Obtencion_data_serial(num):
             if index > 0 and index < len(matriz_data_archivos[num])-1:
                 segundos.append(float(linea[0])/1000)
                 for i in range(4):
-                    dic_orden_sensores2[orden[i]].append(int(linea[i+1]))
+                    dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
             else:
                 pass
         segundo_inicial = segundos[0]
@@ -408,14 +367,10 @@ def Obtencion_data_serial(num):
 
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                for datos in filtrado_KALLPA(correccion_linea_KALLPA(dic_orden_sensores2[orden[i]]),calibracion_sensores[int(orden[i])-1]):
-                #for datos in dic_orden_sensores2[orden[i]]:
+                for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
-                #for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):            
-                for datos in filtrado_KALLPA_strain(filtrado2(correccion_linea_KALLPA_strain(dic_orden_sensores2[orden[i]])),calibracion_sensores[int(orden[i])-1]):  
-                #for datos in dic_orden_sensores2[orden[i]]:  
+                for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):               
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
@@ -484,7 +439,7 @@ ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda
 
 # Mostrar Hora
 def Obtener_hora_actual():
-    return datetime.now().strftime("%H:%M:%S\n%d/%m/%y")
+    return datetime.now().strftime("%d-%m-%y,%H:%M:%S")
 
 def refrescar_reloj():
     hora_actual.set(Obtener_hora_actual())
@@ -541,7 +496,7 @@ container.grid(row=0, column=0, sticky='nsew')
 
 container.grid_rowconfigure(0,weight=1)
 container.grid_columnconfigure(0, weight=1)
-container.grid_columnconfigure(1, weight=20)
+container.grid_columnconfigure(1, weight=1)
 container.grid_columnconfigure(2, weight=1)
 
 
@@ -640,7 +595,7 @@ container2.grid_columnconfigure(1, weight=1)
 container2.grid_rowconfigure(0, weight=1)
 container2.grid_rowconfigure(1, weight=1)
 
-container2.grid(row=0,column=1, sticky='nsew', padx=(30,10), pady=(30))
+container2.grid(row=0,column=1, padx=(30,10), pady=(30))
 
 
 # rectangulos principales
@@ -758,6 +713,7 @@ def segmented_button_callback1(value):
             
 def segmented_button_callback2(value):
     global texto_botones_frame
+    print("el valor seleccionado es: ",value)
     colorear_botones_seleccion_grafica(2)
     match value:
         case "ACELERACIÓN":
@@ -871,27 +827,7 @@ def velocity(acel, freq):
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
-    if extension == 'ctn':
-        idx_impact = int(0.01*freq*1000)
-        # Velocity before impact
-        V_bi = tr_v.data[:idx_impact]
-        # Velocity after impatc
-        V_ai = tr_v.data[idx_impact:]
-
-        tr_V_ai0 = Trace(data=V_ai)
-        tr_V_ai = tr_V_ai0.copy()
-        tr_V_ai.stats.sampling_rate = freq*1000
-        tr_V_ai.detrend("simple")
-
-        # Concatenating again
-        V_bl = np.concatenate((V_bi, tr_V_ai.data))
-
-        # Making a trace
-        tr_v_bl = Trace(data=V_bl)
-        tr_v_bl.stats.sampling_rate = freq*1000
-        return tr_v_bl
-    else:    
-        return tr_v
+    return tr_v
 
 def integrate(tr_00):
     tr_0 = tr_00.copy()
@@ -907,12 +843,22 @@ def energy(F, V, freq):
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
 
+for posicion in ['arriba', 'abajo']:
+    B1_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<", width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'izquierda'))
+    B1_izquierda.grid(row=0, column=0, padx=(5,5))
+    B1_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'derecha'))
+    B1_derecha.grid(row=0, column=1, padx=(0,5))
+    B2_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'izquierda'))
+    B2_izquierda.grid(row=0, column=2, padx=(0,5))
+    B2_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'derecha'))
+    B2_derecha.grid(row=0, column=3, padx=(0,5))
 
-def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
+
+def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
-    
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
     global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Label_Num_Grafica
+    
     F1 = []
     F2 = []
     F = []
@@ -925,20 +871,14 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     D = []
     V_Transformado = []
     V_Transformado_valor_real = []
-    
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR, LIM_IZQ, LIM_DER
-    clear_container(posicion)
     global desplazado_arriba, desplazado_abajo
-    
-    style.use('ggplot')
-    f = Figure(figsize=(5,5), dpi=100)
-    a = f.add_subplot(111)
+
     print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
     Z = 0
     EM = float(EM_valor_original)
     AR = float(pile_area)
-    print(f"El EM es :{EM} y la AR: {AR}")
     factor = EM*AR
     longitud = max(len(S1), len(S2))
     m1 = 0
@@ -977,9 +917,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         V2 = velocity(np.array(A4[:longitud]), int(frecuencia_muestreo[-1]))
     except Exception as e:
         print(f"Error al calcular la velocidad V2 {e}")
-    
-    print(V1, type(V1))
-    print(V2, type(V2))
+
     if A3 == []:
         V = V2.data
     elif A4 == []:
@@ -1123,34 +1061,19 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         condicion = 'NO'
     else:
         condicion = 'SI'
-
-    B1_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<", width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'izquierda'))
-    B1_izquierda.grid(row=0, column=0, padx=(5,5))
-    B1_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'derecha'))
-    B1_derecha.grid(row=0, column=1, padx=(0,5))
-    B2_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'izquierda'))
-    B2_izquierda.grid(row=0, column=2, padx=(0,5))
-    B2_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'derecha'))
-    B2_derecha.grid(row=0, column=3, padx=(0,5))
-
-    segundos_Transformado = []
-    
     if magnitud == 'fuerzaxvelocidad':
-        a.axvline(valor_primera_marca, color='r', ls="dotted")
-        a.axvline(valor_segunda_marca, color='r', ls="dotted")
+        ax1.axvline(valor_primera_marca, color='r', ls="dotted")
+        ax1.axvline(valor_segunda_marca, color='r', ls="dotted")
 
 
     rango_inferior = segundos.index(round(valor_primera_marca,2))
     rango_superior = segundos.index(round(valor_segunda_marca,2))
-
     try:
         E = energy(F[rango_inferior:rango_superior],V[rango_inferior:rango_superior], int(frecuencia_muestreo[-1])).data
     except Exception as e:
         print(f"Error al calcular la Energía E {E}")
-
-
-    
     j = 0
+    segundos_Transformado = []
     for i in range(segundos.index(round(valor_primera_marca,2)),segundos.index(round(valor_segunda_marca,2))):
         n = round(valor_primera_marca+(j/(int(frecuencia_muestreo[-1]))),2)
         j+=1
@@ -1164,71 +1087,90 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     ET = float(ET_valor_original)
     ETR = round(100*(Emax/ET),2)
     CE = str(round(ETR*0.60,2))
+    
+    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z
+
+def Actualizacion_data(posicion):
+
+    if posicion == 'arriba':
+        ax1.callbacks.connect('xlim_changed', on_xlims_change_arriba)
+        ax1.callbacks.connect('ylim_changed', on_ylims_change_arriba)
+    
+    
+    # elif posicion == 'abajo':
+    #     ax2.callbacks.connect('xlim_changed', on_xlims_change_abajo)
+    #     ax2.callbacks.connect('ylim_changed', on_ylims_change_abajo)
         
+style.use('ggplot')
+
+# grafica 1
+fig1 = Figure(figsize=(10, 5), dpi=100)
+
+ax1 = fig1.add_subplot(111)
+
+canvas1 = FigureCanvasTkAgg(fig1, dic_posicion['arriba'][0])
+canvas1.draw()
+canvas1.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
+
+toolbar = Toolbar(canvas1, dic_posicion['arriba'][1])
+toolbar.config(background="#2A2A2A")
+toolbar.update()
+canvas1._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
+fig1.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
+
+t1, = ax1.plot(np.arange(1, 8001), np.arange(1, 8001))
+t2, = ax1.plot(np.arange(1, 8001), np.arange(1, 8001))
+
+# grafica 2
+fig2 = Figure(figsize=(10, 5), dpi=100)
+
+ax2 = fig2.add_subplot(111)
+
+canvas2 = FigureCanvasTkAgg(fig2, dic_posicion['abajo'][0])
+canvas2.draw()
+canvas2.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
+
+toolbar = Toolbar(canvas2, dic_posicion['abajo'][1])
+toolbar.config(background="#2A2A2A")
+toolbar.update()
+canvas2._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
+fig2.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
+
+t3, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
+t4, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
+
+#dic_posicion['arriba'][0].pack_slaves()[0].bind("<2>", click_grafica_arriba)
+#dic_posicion['abajo'][0].pack_slaves()[0].bind("<2>", click_grafica_abajo)
+
+estado = "aceleracion"
+
+def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
+    global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
+    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"]}
     dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
-    try:
-        t1, = a.plot(segundos, dic_magnitud[magnitud][0],"#252850", label=dic_legenda[magnitud][0])
-    except:
-        pass
-    try:
-        t2, = a.plot(segundos, dic_magnitud[magnitud][1],"#3B83BD", label=dic_legenda[magnitud][1])
-    except:
-        pass
-    a.set_xlabel(dic_unidades[magnitud][0])
-    a.set_ylabel(dic_unidades[magnitud][1])
-    try:
-        a.legend(handles=[t1, t2])
-    except:
-        try:
-            a.legend(handles=[t1])
-        except:
-            try:
-                a.legend(handles=[t2])
-            except:
-                pass
 
-    if posicion == 'arriba':
-        a.callbacks.connect('xlim_changed', on_xlims_change_arriba)
-        a.callbacks.connect('ylim_changed', on_ylims_change_arriba)
-    elif posicion == 'abajo':
-        a.callbacks.connect('xlim_changed', on_xlims_change_abajo)
-        a.callbacks.connect('ylim_changed', on_ylims_change_abajo)
-        
-    f.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
-    canvas = FigureCanvasTkAgg(f, dic_posicion[posicion][0])
-
-    canvas.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
-
-
-
-    toolbar = Toolbar(canvas, dic_posicion[posicion][1])
-    toolbar.config(background="#2A2A2A")
-    toolbar.update()
-    canvas._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
-    
-    texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
-
+    texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)    
     modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE)
 
-    try:
-        #ctk.CTkLabel(dic_posicion[posicion][2], text="actual:"+str(dic_ultima_grafica[posicion])+",ultima:"+str(len(matriz_data_archivos)-1)+",total:"+str((len(matriz_data_archivos)-1))).pack(side=LEFT)     
-        L_T_Grafico.configure(text=str(dic_ultima_grafica[posicion]))
-    except Exception as e:
-        pass
-
     if mantener_relacion_aspecto == 'SI':
-        a.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
-        a.set_ylim(dic_posicion_zoom[posicion][2], dic_posicion_zoom[posicion][3])
+        ax1.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
+        ax1.set_ylim(dic_posicion_zoom[posicion][2], dic_posicion_zoom[posicion][3])
 
-    try:
-        if posicion == "arriba":
-            dic_posicion[posicion][0].pack_slaves()[0].bind("<2>", click_grafica_arriba)
-        elif posicion == "abajo":
-            dic_posicion[posicion][0].pack_slaves()[0].bind("<2>", click_grafica_abajo)
-    except:
-        print("error1")
+    if posicion == 'arriba':
+        fig1.clear()
+        ax1 = fig1.add_subplot(111)
+        t1, = ax1.plot(segundos, dic_magnitud[magnitud][0])
+        t2, = ax1.plot(segundos, dic_magnitud[magnitud][1])
+        canvas1.draw()
+    elif posicion == 'abajo':
+        fig2.clear()
+        ax2 = fig2.add_subplot(111)
+        t3, = ax2.plot(segundos, dic_magnitud[magnitud][0])
+        t4, = ax2.plot(segundos, dic_magnitud[magnitud][1])
+        canvas2.draw()
 
 # Configuración de los botones comandos
 
@@ -1311,14 +1253,14 @@ container3.grid_columnconfigure(0, weight=1)
 
 container3_1 = ctk.CTkFrame(container3)
 container3_1.grid(row=0, column=0, padx=20, pady=(20,5), sticky='new')
-container3_1.grid_columnconfigure(0, weight=1)
+container3_1.grid_columnconfigure(0, weight=2)
 container3_1.grid_columnconfigure(1, weight=1)
-T_1 = ctk.CTkLabel(container3_1, text="Límites de la gráfica de arriba").grid(row=0,column=0, padx=10, pady=10, sticky='nsew')
+T_1 = ctk.CTkLabel(container3_1, text="Límites de la gráfica").grid(row=0,column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
 
 container3_2 = ctk.CTkFrame(container3)
 container3_2.grid(row=1, column=0, padx=20, pady=(20,10), sticky='new')
 
-container3_2.grid_columnconfigure(0, weight=1)
+container3_2.grid_columnconfigure(0, weight=2)
 container3_2.grid_columnconfigure(1, weight=1)
 
 textos_tercer_frame = ["límite izquierda", "límite derecha"]
@@ -1336,7 +1278,7 @@ LIM_DER.grid(row=1, column=1,padx=10, pady=10, sticky='nwe')
 
 container3_3 = ctk.CTkFrame(container3)
 container3_3.grid(row=2, column=0, padx=20, pady=10, sticky='new')
-container3_3.grid_columnconfigure(0, weight=1)
+container3_3.grid_columnconfigure(0, weight=2)
 container3_3.grid_columnconfigure(1, weight=1)
 
 container3_3.rowconfigure(0, weight=1)
@@ -1344,17 +1286,16 @@ container3_3.rowconfigure(1, weight=1)
 container3_3.rowconfigure(2, weight=1)
 container3_3.rowconfigure(3, weight=1)
 
-
 T_2 = ctk.CTkLabel(container3_3, text="Límites input").grid(row=0,column=0, padx=10, pady=10, sticky='nsew')
 
-ctk.CTkLabel(container3_3, text=textos_tercer_frame[0]).grid(row=1,column=0, padx=10, pady=10, sticky='nw') 
+ctk.CTkLabel(container3_3, text=textos_tercer_frame[0]).grid(row=1,column=0, padx=(10,0), pady=10, sticky='nw') 
 LIM_IZQ_Entry = ctk.CTkEntry(container3_3)
-LIM_IZQ_Entry.grid(row=1, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container3_3, text=textos_tercer_frame[1]).grid(row=2,column=0, padx=10, pady=10, sticky='nw') 
+LIM_IZQ_Entry.grid(row=1, column=1,padx=(0,10), pady=10, sticky='nwe')
+ctk.CTkLabel(container3_3, text=textos_tercer_frame[1]).grid(row=2,column=0, padx=(10,0), pady=10, sticky='nw') 
 LIM_DER_Entry = ctk.CTkEntry(container3_3)
-LIM_DER_Entry.grid(row=2, column=1,padx=10, pady=10, sticky='nwe')
+LIM_DER_Entry.grid(row=2, column=1,padx=(0,10), pady=10, sticky='nwe')
 
-ctk.CTkButton(container3_3, text='Actualizar', command=lambda:actualizar_limites()).grid(row=3, column=0, padx=10, pady=10, sticky='nw')
+ctk.CTkButton(container3_3, text='Actualizar', command=lambda:actualizar_limites()).grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky='nw')
 
 def actualizar_limites():
     global contador_grafica_arriba
@@ -1365,19 +1306,18 @@ def actualizar_limites():
     global LIM_IZQ_Entry, LIM_DER_Entry
     Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], 'original', "SI", 'MODIFICAR_EXACTO', float(LIM_IZQ_Entry.get()), float(LIM_DER_Entry.get()))
 
-
 # Frame de abajo
 
 container3_4 = ctk.CTkFrame(container3)
 container3_4.grid(row=3, column=0, padx=20, pady=10, sticky='new')
-container3_4.grid_columnconfigure(0, weight=1)
+container3_4.grid_columnconfigure(0, weight=2)
 container3_4.grid_rowconfigure(0, weight=1)
 
 ctk.CTkButton(container3_4, text='Exportar', command=lambda:[Seleccionar_ruta_guardado_pdf(), create_toplevel_export()]).grid(row=0, column=0, padx=10, pady=10, sticky='new')
 
 def preparaciones_exportar(label_cantidad_golpes, label_inicio, label_final):
     global matriz_data_archivos
-    longitudes = matriz_data_archivos[0][12:].split(",")
+    longitudes = matriz_data_archivos[0][12:].split(";")
     label_cantidad_golpes.configure(text='Cantidad de Golpes:'+str(len(matriz_data_archivos)-1))
     label_inicio.configure(text='Inicio:'+str(longitudes[0]))
     label_final.configure(text='Final:'+str(longitudes[1]))
@@ -1595,7 +1535,7 @@ Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm2", font=fontTEXTcoll
 Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Módulo de \nElasticidad ", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
 Entry_modulo_elasticidad = ctk.CTkEntry(container5_2_2_2, font=fontTEXTcoll)
 Entry_modulo_elasticidad.grid(row=1, column=1, sticky='nsew')
-Entry_modulo_elasticidad.insert(0, "207000")
+Entry_modulo_elasticidad.insert(0, "20700")
 Label_Modulo_Elasticidad_unidad = ctk.CTkLabel(container5_2_2_2, text="MPa", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 
@@ -1873,6 +1813,8 @@ def mostrar_alertas():
     elif ruta_guardado == "":
         MessageBox.showerror("Selecciona una carpeta para guardar el .ct")
     else:
+        #conexion = serial.Serial(port=lista_opciones.get(), baudrate=1500000, timeout=0.1, write_timeout=1)
+        #conexion.write("P".encode('utf-8'))
         socket_tcp.send("P".encode('utf-8'))
         time.sleep(0.2)
         valor = str(str(frecuencia_muestreo[-1])+"|"+str(Entry_tiempo_muestreo.get())+"|"+str(Entry_tiempo_Retardo.get())+"|")
@@ -1880,6 +1822,8 @@ def mostrar_alertas():
         socket_tcp.send(valor.encode('utf-8'))
         time.sleep(0.1)
         print("enviando datos de frecuencia")
+        #conexion.write(valor.encode('utf-8'))
+        #conexion.close()
         limpiar_review()
         raise_frame(Review)
         crear_columna_muestreo()
@@ -2249,7 +2193,7 @@ def create_toplevel_export():
     def mostrar_alertas_exportar():
         global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf
         contador = 0
-        longitudes = matriz_data_archivos[0][12:].split(",")
+        longitudes = matriz_data_archivos[0][12:].split(";")
         for fila in filas:
             for i in range(len(fila)):
                 if str(fila[i].get()) != "":
@@ -2792,7 +2736,7 @@ def leer_data_cabecera(ruta):
     with open(ruta) as file:
         filas = file.readlines()
     for index, fila in enumerate(filas):
-        fila = fila.replace("\n", "").split(",")
+        fila = fila.replace("\n", "").split(";")
         if fila[0] == "AR":
             ar_pos = index
         if fila[0] == "EM":
@@ -2804,29 +2748,23 @@ def leer_data_cabecera(ruta):
         if fila[0] == "Record":
             frecuencia_post = index+3
     
-    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
-    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
-    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
-    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
+    ar = round(float(filas[ar_pos].replace("\n", "").split(";")[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(";")[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(";")[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(";")[1])
     et = round((efv/etr)*100,2)
 
-    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(";")[1])/1000)
 
-    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
-    print("el orden de la cabecera es ", fila_orden)
-    orden = [fila_orden[2].split("@")[0]]
-    try:
-        orden.append(fila_orden[3].split("@")[0])
-    except:
-        orden.append("0")
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(";")
+    print(fila_orden)
+    orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
         orden.append(fila_orden[4].split("@")[0])
-    except:
-        orden.append("0")
-    try:
         orden.append(fila_orden[5].split("@")[0])
     except:
-        orden.append("0")    
+        orden.append("0")
+        orden.append("0")
         
     dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2", "0":"0"}
     orden_string = ""
@@ -2841,7 +2779,7 @@ def leer_data_cabecera(ruta):
 def lectura_data(frecuencia_post, filas):
     string_data = ""
     for i in range(frecuencia_post-1, len(filas)):
-        fila = filas[i].replace("\n", "").split(",")
+        fila = filas[i].replace("\n", "").split(";")
         segundos = round(float(fila[1])*10000,2)
         V1 = float(fila[2])
         V2 = float(fila[3])
