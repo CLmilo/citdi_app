@@ -476,12 +476,17 @@ switch_var = ctk.StringVar(value="off")
 def cambiar_tema(color):
     ctk.set_appearance_mode(color)
 
+switch_1 = ""
+
 def switch_event():
+    global switch_1
     print(str(switch_var.get()))
     if str(switch_var.get()) == "on":
         cambiar_tema("dark")
+        switch_1.configure(text="Tema Claro")
     else:
         cambiar_tema("light")
+        switch_1.configure(text="Tema Oscuro")
 
 switch_1 = ctk.CTkSwitch(container4b, text="Tema Oscuro", font=fontBARRA, command=switch_event,
                                    variable=switch_var, onvalue="on", offvalue="off")
@@ -879,8 +884,9 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     Z = 0
     EM = float(EM_valor_original)
     AR = float(pile_area)
-    factor = EM*AR
+    factor = EM * AR
     longitud = max(len(S1), len(S2))
+    longitud2 = max(len(A3), len(A4))
     m1 = 0
     m2 = 0
     for i in range(longitud):
@@ -893,11 +899,26 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         except:
             pass
         promedio = (m1+m2)/2
-        if S1 != []:
+        if S1 != [] and len(S1) == longitud:
             F1.append(m1)
-        if S2 != []:
+        if S2 != [] and len(S2) == longitud:
             F2.append(m2)
         F.append(promedio)
+    
+    print("longitudes de Str", len(S1), len(S2))
+    if len(S1) != longitud:
+        S1 = S2
+        F = F2
+        F1 = F2
+    if len(S2) != longitud:
+        S2 = S1
+        F = F1
+        F2 = F1
+    if len(A3) != longitud2:
+        A3 = A4
+    if len(A4) != longitud2:
+        A4 = A3
+    print("longitudes de Str2", len(S1), len(S2))    
     if S1 == []:
         F = F2
     elif S2 == []:
@@ -905,6 +926,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     Fmax = round(max(F), 2)
     Fmax_original = max(F)
     
+    print("longitudes de fuerza", len(F1), len(F2), len(F))
     longitud = max(len(A3), len(A4))
 
     # Calculando velocidad 1
@@ -924,8 +946,6 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         V = V1.data
     else:
         V = (V1.data + V2.data)/2
-    
-
 
     Vmax = round(max(V), 2)
 
@@ -933,7 +953,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
 
     longitud = max(len(S1), len(S2))
     print("la longitud maxima es:", longitud)
-    print("otras longitudes: ", len(V1), len(V2), len(V))
+    print("longitudes velocidad: ", len(V1), len(V2), len(V))
 
     try:
         D1 = integrate(V1)
@@ -1101,7 +1121,7 @@ def Actualizacion_data(posicion):
     #     ax2.callbacks.connect('xlim_changed', on_xlims_change_abajo)
     #     ax2.callbacks.connect('ylim_changed', on_ylims_change_abajo)
         
-style.use('ggplot')
+style.use('seaborn-white')
 
 # grafica 1
 fig1 = Figure(figsize=(10, 5), dpi=100)
@@ -1317,7 +1337,9 @@ ctk.CTkButton(container3_4, text='Exportar', command=lambda:[Seleccionar_ruta_gu
 
 def preparaciones_exportar(label_cantidad_golpes, label_inicio, label_final):
     global matriz_data_archivos
-    longitudes = matriz_data_archivos[0][12:].split(";")
+    # este "," no debe ser reemplazado a ";" debido a que es para identificar las profundidades
+    longitudes = matriz_data_archivos[0][12:].split(",")
+    print(longitudes)
     label_cantidad_golpes.configure(text='Cantidad de Golpes:'+str(len(matriz_data_archivos)-1))
     label_inicio.configure(text='Inicio:'+str(longitudes[0]))
     label_final.configure(text='Final:'+str(longitudes[1]))
@@ -2121,10 +2143,14 @@ def Seleccionar_ruta_guardado_pdf():
     global ruta_guardado_pdf
     ruta_guardado_pdf = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
 
+boton_exportar_pdf_excel = ""
 
 def create_toplevel_export():
-    global Num_golpes, Num_golpes_modificado, filas, contador_fila, fila_grabada, filas, contador_fila, ruta
+    global Num_golpes, Num_golpes_modificado, filas, contador_fila, fila_grabada, filas, contador_fila, ruta, boton_exportar_pdf_excel
     export_frame = ctk.CTkToplevel()
+    export_frame.resizable(False, False) 
+    export_frame.grab_set()
+    export_frame.focus()
     export_frame.title("Export")
     # create label on CTkToplevel window
     container6 = ctk.CTkFrame(export_frame)
@@ -2176,7 +2202,8 @@ def create_toplevel_export():
     ctk.CTkButton(container6_2, text="Eliminar fila", command=lambda:Eliminar_Fila()).grid(row=0, column=1, sticky='nsew', padx=(10,0), pady=10)
     ctk.CTkButton(container6_2, text="Completar", command=lambda:Completar_Filas()).grid(row=0, column=2, sticky='nsew', padx=(10,0), pady=10)
     #ctk.CTkButton(container6_2, text="Seleccionar \Ruta", command=lambda:Seleccionar_ruta_guardado_pdf()).grid(row=0, column=3, sticky='nsew')
-    ctk.CTkButton(container6_2, text="Exportar \nPDF", command=lambda: [mostrar_alertas_exportar()]).grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
+    boton_exportar_pdf_excel = ctk.CTkButton(container6_2, text="Exportar \nPDF y Excel", command=lambda: [mostrar_alertas_exportar()])
+    boton_exportar_pdf_excel.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
 
     filas = []
     contador_fila = 1
@@ -2191,16 +2218,17 @@ def create_toplevel_export():
         Insertar_Fila(container6_1_1)
 
     def mostrar_alertas_exportar():
-        global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf
+        global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf, boton_exportar_pdf_excel
         contador = 0
-        longitudes = matriz_data_archivos[0][12:].split(";")
+        longitudes = matriz_data_archivos[0][12:].split(",")
         for fila in filas:
             for i in range(len(fila)):
                 if str(fila[i].get()) != "":
                     contador += 1
         print(filas[0][0].get(), filas[-1][0].get())
+        print("las longitudes son:", longitudes)
         if contador  != len(filas)*len(filas[0]):
-            MessageBox.showerror("Error", "Inserte todos los datos")  
+            MessageBox.showerror("Error", "Inserte todos los datos") 
         elif str(float(filas[0][0].get())) != str(float(longitudes[1])) or str(float(filas[-1][0].get())) != str(float(longitudes[0])):
             MessageBox.showerror("Error", "Las longitudes iniciales y finales no coinciden")
         elif sum(Num_golpes) != len(matriz_data_archivos)-1:
@@ -2208,7 +2236,9 @@ def create_toplevel_export():
         elif ruta_guardado_pdf == "":
             MessageBox.showerror("Error", "Seleccione una ruta de guardado")
         else:
+            boton_exportar_pdf_excel.configure(state='disable')
             Calcular_Promedios()
+            boton_exportar_pdf_excel.configure(state='enable')
 
 
     def Completar_Filas():
@@ -2288,6 +2318,11 @@ def obtener_datos_grafica(j):
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
     
+    print("las unidades de la gráfica ", j)
+    print(matriz_data_archivos[j][0].split("|"))
+    print(matriz_data_archivos[j][1].split("|"))
+    print(matriz_data_archivos[j][-2].split("|"))
+
     for index,linea in enumerate(matriz_data_archivos[j]):
         linea = linea.split("|")
         if index > 0 and index < len(matriz_data_archivos[j])-1:
@@ -2479,9 +2514,6 @@ def Calcular_Promedios():
     maxZ = Impedancias.index(max(Impedancias))
     
     #Aquí se añade una fila más a cada variable de arriba Energias, fuerzas, etc, por lo cual se le quita una fila a cada una abajo
-
-
-
     Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t = obtener_datos_grafica(maxZ+1)
 
     Energias.pop()
@@ -2503,7 +2535,6 @@ def Calcular_Promedios():
     Velocidades_recortadas = Velocidades[Num_golpes[-2]:]
     Fuerzas_recortadas = Fuerzas[Num_golpes[-2]:]
     Energias_teoricas_recortadas = Energias_teoricas[Num_golpes[-2]:]
-    print("prueba",Energias_teoricas,Energias_teoricas_recortadas,Energias, Energias_recortadas, Num_golpes[-2])
     orden_golpes = []
     for i in range(len(Num_golpes)-1):
         orden_golpes.append(Num_golpes[len(Num_golpes)-i-2])
@@ -2529,8 +2560,18 @@ def Calcular_Promedios():
     style.use('ggplot')
     f = Figure(figsize=(15,5), dpi=300)
     a = f.add_subplot(111)
-    t1, = a.plot(segundos, Fuerzas_impedancia_maxima, label= "F")
-    t2, = a.plot(segundos, Velocidades_impedancia_maxima, label=str(round(Z, 2))+"*V")
+
+    segundos_grafica = []
+    Fuerzas_impedancia_maxima_grafica = []
+    Velocidades_impedancia_maxima_grafica = []
+    for i in range(len(segundos)):
+        if segundos[i] > 4.9 and segundos[i] < 40.1: 
+            segundos_grafica.append(segundos[i])
+            Fuerzas_impedancia_maxima_grafica.append(Fuerzas_impedancia_maxima[i])
+            Velocidades_impedancia_maxima_grafica.append(Velocidades_impedancia_maxima[i])
+
+    t1, = a.plot(segundos_grafica, Fuerzas_impedancia_maxima_grafica, label= "F")
+    t2, = a.plot(segundos_grafica, Velocidades_impedancia_maxima_grafica, label=str(round(Z, 2))+"*V")
     #a.axis('off')
     try:
         a.legend(handles=[t1, t2])
@@ -2710,6 +2751,7 @@ def create_toplevel_about():
     about_frame = ctk.CTkToplevel()
     #about_frame.geometry("800x400")
     about_frame.title("About")
+    about_frame.resizable(False, False) 
     about_frame.grab_set()
     about_frame.focus()
     # create label on CTkToplevel window
@@ -2761,9 +2803,12 @@ def leer_data_cabecera(ruta):
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
         orden.append(fila_orden[4].split("@")[0])
-        orden.append(fila_orden[5].split("@")[0])
     except:
         orden.append("0")
+
+    try:
+        orden.append(fila_orden[5].split("@")[0])
+    except:
         orden.append("0")
         
     dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2", "0":"0"}
@@ -2858,6 +2903,7 @@ def create_toplevel_preparar():
     preparar_frame = ctk.CTkToplevel()
 
     preparar_frame.title("Preparar Datos")
+    preparar_frame.resizable(False, False) 
     preparar_frame.grab_set()
     preparar_frame.focus()
     # create label on CTkToplevel window
