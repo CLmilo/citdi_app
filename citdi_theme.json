@@ -29,10 +29,10 @@
   "CTkEntry": {
     "corner_radius": 6,
     "border_width": 2,
-    "fg_color": ["#7C7C7D", "#343638"],
+    "fg_color": ["#B7B7B7", "#343638"],
     "border_color": ["#979DA2", "#565B5E"],
     "text_color": ["gray14", "gray84"],
-    "placeholder_text_color": ["gray52", "gray62"]
+    "placeholder_text_color": ["gray14", "gray84"]
   },
   "CTkCheckbox": {
     "corner_radius": 6,
@@ -121,7 +121,7 @@
   "CTkTextbox": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["#7C7C7D", "#343638"],
+    "fg_color": ["#B7B7B7", "#343638"],
     "border_color": ["#979DA2", "#565B5E"],
     "text_color": ["gray14", "gray84"],
     "scrollbar_button_color": ["gray55", "gray41"],

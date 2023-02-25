@@ -617,8 +617,9 @@ container2_1_1 = ctk.CTkFrame(container2_1, corner_radius=0)
 container2_1_1.grid(row=0, column=0, sticky='new')
 #for i in range(7):
 #    container2_1_1.grid_columnconfigure(i, weight=8)
-container2_1_1.grid_columnconfigure(0, weight=10)
-container2_1_1.grid_columnconfigure(1, weight=1)
+container2_1_1.grid_columnconfigure(0, weight=1)
+container2_1_1.grid_columnconfigure(1, weight=20)
+container2_1_1.grid_columnconfigure(2, weight=1)
 container2_1_1.grid_rowconfigure(0, weight=1)
 
 container2_1_2 = ctk.CTkFrame(container2_1)
@@ -653,8 +654,9 @@ container2_2_1 = ctk.CTkFrame(container2_2, corner_radius=0)
 container2_2_1.grid(row=0, column=0, sticky='new')
 #for i in range(7):
 #    container2_2_1.grid_columnconfigure(i, weight=8)
-container2_2_1.grid_columnconfigure(0, weight=10)
-container2_2_1.grid_columnconfigure(1, weight=1)
+container2_2_1.grid_columnconfigure(0, weight=1)
+container2_2_1.grid_columnconfigure(1, weight=20)
+container2_2_1.grid_columnconfigure(2, weight=1)
 container2_2_1.grid_rowconfigure(0, weight=1)
 
 container2_2_2 = ctk.CTkFrame(container2_2)
@@ -743,21 +745,26 @@ def segmented_button_callback2(value):
             cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
             actualizar_magnitud("abajo", texto_botones_frame.index(value))
 
+Button_num_grafica_arriba = ctk.CTkButton(container2_1_1, text="1", command=lambda:colorear_botones_seleccion_grafica(1))
+Button_num_grafica_arriba.grid(row=0, column=0, sticky='nsw', pady=5)
+
+Button_num_grafica_abajo = ctk.CTkButton(container2_2_1, text="1", command=lambda:colorear_botones_seleccion_grafica(2))
+Button_num_grafica_abajo.grid(row=0, column=0, sticky='nsw', pady=5)
 
 segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
 segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
-segemented_button.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
+segemented_button.grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
 
 segemented_button_var2 = ctk.StringVar(value="DEFORMACIÓN")
 segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
-segemented_button2.grid(row=0,column=0, sticky='nsew', pady=5, padx=(5,0))
+segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
 
 Boton_seleccion_grafica1 = ctk.CTkRadioButton(container2_1_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(1), value=0)
-Boton_seleccion_grafica1.grid(row=0,column=1,  sticky='ns', pady=5, padx=(5,5))
+Boton_seleccion_grafica1.grid(row=0,column=2,  sticky='ns', pady=5, padx=(5,5))
 Boton_seleccion_grafica1.select()
 
 Boton_seleccion_grafica2 = ctk.CTkRadioButton(container2_2_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(2), value=1)
-Boton_seleccion_grafica2.grid(row=0,column=1, sticky='ns', pady=5, padx=(5,5))
+Boton_seleccion_grafica2.grid(row=0,column=2, sticky='ns', pady=5, padx=(5,5))
 
 # Barra lateral de la columna de la derecha
 
@@ -1032,8 +1039,8 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         valor_primera_marca = primera_marca + p_primera_marca
         valor_segunda_marca = segunda_marca + p_segunda_marca
     
-    LIM_IZQ.configure(text = str(round(valor_primera_marca,2)))
-    LIM_DER.configure(text = str(round(valor_segunda_marca,2)))
+    LIM_IZQ.configure(text = str(round(valor_primera_marca,2))+" ms")
+    LIM_DER.configure(text = str(round(valor_segunda_marca,2))+" ms")
     
     for i in range(len(V)):
         valor = V[i]*Z
@@ -1172,7 +1179,14 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"]}
     dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
 
-    texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)    
+    texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
+    
+    if posicion == 'arriba': 
+        Button_num_grafica_arriba.configure(text=dic_ultima_grafica[posicion])
+    elif posicion == 'abajo': 
+        Button_num_grafica_abajo.configure(text=dic_ultima_grafica[posicion])
+    
+    
     modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE)
 
     if mantener_relacion_aspecto == 'SI':
@@ -2891,6 +2905,8 @@ def boton_preparar(inicio, fin):
 
     with open(ruta_guardado_combinado+"\profundidad_"+str(inicio)+"-"+str(fin)+".ctn", "w") as file:
         file.write(texto)
+    
+    MessageBox.showinfo(text="Exportado con éxito", tittle="Éxito")
 
 def escoger_ruta_combinado():
     global ruta_guardado_combinado, Entry_archivo_inicio, Entry_archivo_final, ruta_guardado_label_combinado
