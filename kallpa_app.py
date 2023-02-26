@@ -439,7 +439,7 @@ ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda
 
 # Mostrar Hora
 def Obtener_hora_actual():
-    return datetime.now().strftime("%d-%m-%y,%H:%M:%S")
+    return datetime.now().strftime("%H:%M:%S\n%d/%m/%y")
 
 def refrescar_reloj():
     hora_actual.set(Obtener_hora_actual())
