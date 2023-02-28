@@ -38,7 +38,7 @@ BUFFER_SIZE = 16
 MESSAGE = 'Hola, mundo!' # Datos que queremos enviar
 cont = 0
 
-
+extension = ""
 #colores
 azul_oscuro = "#002060"
 azul_claro = "#BDD7EE"
@@ -291,6 +291,7 @@ def click_grafica_abajo(event):
 
 
 def Obtencion_data_serial(num):
+    global extension
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
@@ -332,7 +333,6 @@ def Obtencion_data_serial(num):
         ET_valor_original = 981
     
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
-    print(extension)
     if extension == "ctn":
         data = matriz_data_archivos[num]
         
@@ -347,7 +347,8 @@ def Obtencion_data_serial(num):
         for i in range(4):
 
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
+                #for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
+                for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 for datos in dic_orden_sensores2[orden[i]]:               
@@ -368,9 +369,11 @@ def Obtencion_data_serial(num):
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+                #for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
-                for datos in filtrado3(filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]]))):               
+                for datos in filtrado3(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):
+                #for datos in dic_orden_sensores2[orden[i]]:              
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
@@ -431,7 +434,7 @@ for i in range(len(lista_botones)):
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
-ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", numero_grafica_actual, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", numero_grafica_actual, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[2], font=fontBARRA, command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[3], font=fontBARRA, command=lambda:[raise_frame(Collect_Wire)]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[4], font=fontBARRA, command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
@@ -717,6 +720,7 @@ def segmented_button_callback1(value):
         case "Avg ED":
             cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
             actualizar_magnitud("arriba", texto_botones_frame.index(value))
+    print("En la grafica de arriba es ",value)
             
 def segmented_button_callback2(value):
     global texto_botones_frame
@@ -744,6 +748,7 @@ def segmented_button_callback2(value):
         case "Avg ED":
             cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
             actualizar_magnitud("abajo", texto_botones_frame.index(value))
+    print("En la grafica de abajo es ",value)
 
 Button_num_grafica_arriba = ctk.CTkButton(container2_1_1, text="1", command=lambda:colorear_botones_seleccion_grafica(1))
 Button_num_grafica_arriba.grid(row=0, column=0, sticky='nsw', pady=5)
@@ -835,11 +840,40 @@ class Toolbar(NavigationToolbar2TkAgg):
         pass
 
 def velocity(acel, freq):
+    global extension
+    print("estoy entrando a velocity", extension)
     tr_a = Trace(data=np.array(acel)*9.81)
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
-    return tr_v
+    if extension == 'ctn':
+        print("estoy entrando a ctn")
+        idx_impact = int(0.01*freq*1000)
+        # Velocity before impact
+        V_bi = tr_v.data[:idx_impact]
+        # Velocity after impatc
+        V_ai = tr_v.data[idx_impact:]
+
+        tr_V_ai0 = Trace(data=V_ai)
+        tr_V_ai = tr_V_ai0.copy()
+        tr_V_ai.stats.sampling_rate = freq*1000
+        tr_V_ai.detrend("simple")
+
+        # Concatenating again
+        V_bl = np.concatenate((V_bi, tr_V_ai.data))
+
+        # Making a trace
+        tr_v_bl = Trace(data=V_bl)
+        tr_v_bl.stats.sampling_rate = freq*1000
+        return tr_v_bl
+    else:
+        print("estoy entrando a ct")    
+        return tr_v
+
+def calculo_wu():
+    print(1)
+def calculo_wp():
+    print(2)
 
 def integrate(tr_00):
     tr_0 = tr_00.copy()
@@ -1123,7 +1157,6 @@ def Actualizacion_data(posicion):
         ax1.callbacks.connect('xlim_changed', on_xlims_change_arriba)
         ax1.callbacks.connect('ylim_changed', on_ylims_change_arriba)
     
-    
     # elif posicion == 'abajo':
     #     ax2.callbacks.connect('xlim_changed', on_xlims_change_abajo)
     #     ax2.callbacks.connect('ylim_changed', on_ylims_change_abajo)
@@ -1165,9 +1198,6 @@ fig2.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
 
 t3, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
 t4, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
-
-#dic_posicion['arriba'][0].pack_slaves()[0].bind("<2>", click_grafica_arriba)
-#dic_posicion['abajo'][0].pack_slaves()[0].bind("<2>", click_grafica_abajo)
 
 estado = "aceleracion"
 
@@ -1565,7 +1595,7 @@ container5_2_2_2.grid_columnconfigure(2, weight=1)
 Label_Area = ctk.CTkLabel(container5_2_2_1, text="Área", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
 Entry_Area = ctk.CTkEntry(container5_2_2_1, font=fontTEXTcoll)
 Entry_Area.grid(row=1, column=1, sticky='nsew')
-Entry_Area.insert(0, "7.56")
+Entry_Area.insert(0, "7.8")
 Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm2", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Módulo de \nElasticidad ", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
@@ -1872,12 +1902,22 @@ def limpiar_review():
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
     LIM_DER_Entry.delete(0)
-    clear_container('arriba')
-    clear_container('abajo')
+    #clear_container('arriba')
+    #clear_container('abajo')
     
 
 def eliminar_columna_muestreo():
-    global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label
+    global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label, Button_num_grafica_arriba, Button_num_grafica_abajo, segemented_button, segemented_button2
+    global segmented_button_callback1, segmented_button_callback2
+    dic_ultima_grafica["abajo"] = 1
+    dic_ultima_grafica["arriba"] = 1
+    Button_num_grafica_arriba.configure(text=str(dic_ultima_grafica["arriba"]))
+    Button_num_grafica_abajo.configure(text=str(dic_ultima_grafica["abajo"]))
+    segemented_button.set("ACELERACIÓN")
+    segmented_button_callback1("ACELERACIÓN")
+    segemented_button2.set("DEFORMACIÓN")
+    segmented_button_callback2("DEFORMACIÓN")
+
     try:
         if len(container1.grid_slaves()) > 3:
             for index,l in enumerate(container1.grid_slaves()):
@@ -2792,7 +2832,7 @@ def leer_data_cabecera(ruta):
     with open(ruta) as file:
         filas = file.readlines()
     for index, fila in enumerate(filas):
-        fila = fila.replace("\n", "").split(";")
+        fila = fila.replace("\n", "").split(",")
         if fila[0] == "AR":
             ar_pos = index
         if fila[0] == "EM":
@@ -2804,15 +2844,15 @@ def leer_data_cabecera(ruta):
         if fila[0] == "Record":
             frecuencia_post = index+3
     
-    ar = round(float(filas[ar_pos].replace("\n", "").split(";")[1]),2)
-    em = round(float(filas[em_pos].replace("\n", "").split(";")[1]),2)
-    efv = float(filas[efv_pos].replace("\n", "").split(";")[1])
-    etr = float(filas[etr_pos].replace("\n", "").split(";")[1])
+    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
     et = round((efv/etr)*100,2)
 
-    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(";")[1])/1000)
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
 
-    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(";")
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
     print(fila_orden)
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
@@ -2838,7 +2878,7 @@ def leer_data_cabecera(ruta):
 def lectura_data(frecuencia_post, filas):
     string_data = ""
     for i in range(frecuencia_post-1, len(filas)):
-        fila = filas[i].replace("\n", "").split(";")
+        fila = filas[i].replace("\n", "").split(",")
         segundos = round(float(fila[1])*10000,2)
         V1 = float(fila[2])
         V2 = float(fila[3])
