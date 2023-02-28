@@ -431,12 +431,19 @@ lista_botones = ["Salir", "Review", "Preparar Data", "Collet Wire", "Manual", "A
 for i in range(len(lista_botones)):
     container4c.grid_columnconfigure(i, weight=1)
 
+Entry_Profundidad_inicial = ''
+Entry_Profundidad_final = ''
+
+def limpiar_entrys():
+    global Entry_Profundidad_inicial, Entry_Profundidad_final
+    Entry_Profundidad_inicial.configure(text='')
+    Entry_Profundidad_final.configure(text='')
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
 ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[2], font=fontBARRA, command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[3], font=fontBARRA, command=lambda:[raise_frame(Collect_Wire)]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[3], font=fontBARRA, command=lambda:[raise_frame(Collect_Wire), limpiar_entrys()]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[4], font=fontBARRA, command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda:create_toplevel_about()).grid(row=0,column=5, sticky='nsew', pady=5, padx=(0,5))
 
@@ -1925,14 +1932,14 @@ def limpiar_review():
     # arriba
     fig1.clear()
     ax1 = fig1.add_subplot(111)
-    t1, = ax1.plot(np.arrange(1, 8001), np.zeros(8000))
-    t2, = ax1.plot(np.arrange(1, 8001), np.zeros(8000))
+    t1, = ax1.plot(np.arange(1, 8001), np.zeros(8000))
+    t2, = ax1.plot(np.arange(1, 8001), np.zeros(8000))
     canvas1.draw()
     # abajo
     fig2.clear()
     ax2 = fig2.add_subplot(111)
-    t3, = ax2.plot(np.arrange(1, 8001), np.zeros(8000))
-    t4, = ax2.plot(np.arrange(1, 8001), np.zeros(8000))
+    t3, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
+    t4, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
     canvas2.draw()
     #clear_container('arriba')
     #clear_container('abajo')
