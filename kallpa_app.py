@@ -683,7 +683,7 @@ container2_2_3_3.grid_columnconfigure(3, weight=1)
 
 # botones de los frames
 
-dic_magnitud_botones = {0:'aceleracion', 1:'velocidad', 2:'deformacion', 3:'fuerza', 4:'desplazamiento', 5:'fuerzaxvelocidad', 6:'avged'}
+dic_magnitud_botones = {0:'aceleracion', 1:'velocidad', 2:'deformacion', 3:'fuerza', 4:'desplazamiento', 5:'fuerzaxvelocidad', 6:'avged', 7:'wu'}
 dic_ultima_grafica_magnitud = {"arriba": ultima_magnitud_arriba, "abajo": ultima_magnitud_abajo}
 
 def actualizar_magnitud(posicion,i):
@@ -691,7 +691,7 @@ def actualizar_magnitud(posicion,i):
     global ultima_magnitud_arriba
     dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
 
-texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED"]
+texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED", "WU"]
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
@@ -720,6 +720,9 @@ def segmented_button_callback1(value):
         case "Avg ED":
             cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
             actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "WU":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
     print("En la grafica de arriba es ",value)
             
 def segmented_button_callback2(value):
@@ -746,6 +749,9 @@ def segmented_button_callback2(value):
             cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
             actualizar_magnitud("abajo", texto_botones_frame.index(value))
         case "Avg ED":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "WU":
             cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
             actualizar_magnitud("abajo", texto_botones_frame.index(value))
     print("En la grafica de abajo es ",value)
@@ -870,8 +876,15 @@ def velocity(acel, freq):
         print("estoy entrando a ct")    
         return tr_v
 
-def calculo_wu():
-    print(1)
+def calculo_wu(F, V_transformado):
+    
+    print('las longitudes son',len(V), len(V_transformado))
+    suma = []
+    for i in range(len(F)):
+        suma.append((F[i]-V_transformado[i])/2)
+
+    return suma
+
 def calculo_wp():
     print(2)
 
@@ -915,6 +928,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     D1 = []
     D2 = []
     D = []
+    WU = []
     V_Transformado = []
     V_Transformado_valor_real = []
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR, LIM_IZQ, LIM_DER
@@ -1019,7 +1033,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     
     ajuste = 0
    
-    Z = Fmax_original/Vmax_original
+    Z = ((AR*(1000000))*EM*(0.0001))/(5103.44*1000)
 
     imax = F.index(Fmax_original)
     ajuste = list(V).index(Vmax_original)-imax
@@ -1141,6 +1155,12 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         segundos_Transformado.append(n)
     
     Emax = round(max(E), 2)
+
+    # anadiendo el calculo de wu
+    try:
+        WU = calculo_wu(F, V_Transformado)
+    except Exception as e:
+        print("Error al calcular el wu", e)
     
     if magnitud == 'avged':
         segundos = segundos_Transformado
@@ -1149,7 +1169,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     ETR = round(100*(Emax/ET),2)
     CE = str(round(ETR*0.60,2))
     
-    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z
+    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU
 
 def Actualizacion_data(posicion):
 
@@ -1178,8 +1198,8 @@ toolbar.update()
 canvas1._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
 fig1.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
 
-t1, = ax1.plot(np.arange(1, 8001), np.arange(1, 8001))
-t2, = ax1.plot(np.arange(1, 8001), np.arange(1, 8001))
+t1, = ax1.plot(np.arange(1, 8001), np.zeros(8000))
+t2, = ax1.plot(np.arange(1, 8001), np.zeros(8000))
 
 # grafica 2
 fig2 = Figure(figsize=(10, 5), dpi=100)
@@ -1196,18 +1216,18 @@ toolbar.update()
 canvas2._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
 fig2.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
 
-t3, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
-t4, = ax2.plot(np.arange(1, 8001), np.arange(1, 8001))
+t3, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
+t4, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
 
 estado = "aceleracion"
 
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
-    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2
-    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
-    dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado]}
-    dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"]}
-    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""]}
+    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
+    dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU]}
+    dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU']}
+    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', '']}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
