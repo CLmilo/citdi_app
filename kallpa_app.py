@@ -1915,13 +1915,25 @@ def mostrar_alertas():
         crear_columna_muestreo()
 
 def limpiar_review():
-    global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry
+    global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
     modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "")
     modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "")
     LIM_IZQ.configure(text="")
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
     LIM_DER_Entry.delete(0)
+    # arriba
+    fig1.clear()
+    ax1 = fig1.add_subplot(111)
+    t1, = ax1.plot(np.arrange(1, 8001), np.zeros(8000))
+    t2, = ax1.plot(np.arrange(1, 8001), np.zeros(8000))
+    canvas1.draw()
+    # abajo
+    fig2.clear()
+    ax2 = fig2.add_subplot(111)
+    t3, = ax2.plot(np.arrange(1, 8001), np.zeros(8000))
+    t4, = ax2.plot(np.arrange(1, 8001), np.zeros(8000))
+    canvas2.draw()
     #clear_container('arriba')
     #clear_container('abajo')
     
@@ -2004,7 +2016,8 @@ def crear_columna_muestreo():
     L_T_Retardo = ctk.CTkLabel(container1_3, text=Entry_tiempo_Retardo.get()+" ms", font=fontTEXTcoll)
     L_T_Retardo.grid(row=3, column=1, padx=10, pady=10, sticky='ns')
     matriz_data_archivos.append(str(Entry_Profundidad_inicial.get())+","+str(Entry_Profundidad_final.get()))
-    orden_sensores.append(str(orden_sensores[-1].replace("\n", ""))+str(frecuencia_muestreo[-1])+"|"+str(Entry_Area.get())+"|"+str(Entry_modulo_elasticidad.get())+"|"+str(int(float(Entry_masa.get())* float(Entry_altura.get())*9.81)))
+    orden_sensores2 = []
+    orden_sensores2.append(str(orden_sensores[-1].replace("\n", ""))+str(frecuencia_muestreo[-1])+"|"+str(Entry_Area.get())+"|"+str(Entry_modulo_elasticidad.get())+"|"+str(int(float(Entry_masa.get())* float(Entry_altura.get())*9.81)))
     
 
     container3_5 = ctk.CTkFrame(container3)
@@ -2127,7 +2140,7 @@ def crear_columna_muestreo():
                 for i in range(1,len(matriz_data_archivos)):
                     string += "INICIO_ARCHIVO\n"
                     string += "ARCHIVO:"+str(i)+"\n"
-                    string += orden_sensores[-1]+ "\n"
+                    string += orden_sensores2[-1]+ "\n"
                     for fila in matriz_data_archivos[i]:
                         string += fila + "\n"
                     string += "FIN_ARCHIVO\n"
