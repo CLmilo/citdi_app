@@ -2124,7 +2124,7 @@ def crear_columna_muestreo():
 
             with open(ruta_guardado+nombre_archivo, "w") as archivo:
                 string = "profundidad:"+str(Entry_Profundidad_inicial.get())+","+str(Entry_Profundidad_final.get())+" \n"
-                for i in range(1,len(matriz_data_archivos)-1):
+                for i in range(1,len(matriz_data_archivos)):
                     string += "INICIO_ARCHIVO\n"
                     string += "ARCHIVO:"+str(i)+"\n"
                     string += orden_sensores[-1]+ "\n"
