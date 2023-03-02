@@ -137,6 +137,14 @@ def linea_cero_KALLPA_acelerometros(acel, freq, before_time=10):
 
     return A_linea_cero
 
+def linea_cero_KALLPA_acelerometros2(acel, freq, before_time=10):
+    
+    tr = Trace(data=np.array(acel))
+    tr.stats.sampling_rate = freq*1000
+    tr.detrend("polynomial", order = 2).detrend("demean").taper(0.1)
+    
+    return tr.data
+
 def correcion_linea_cero(valores):
     z = []
     tr = Trace(data=np.array(valores)*0.01475)
@@ -171,10 +179,18 @@ def filtrado(valores):
     tr.stats.sampling_rate = 50000
     st3 = tr.copy()
     #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=1,freqmax = 5000)
+    st3.filter(type="bandpass",freqmin=0.00000001,freqmax = 2500)
     z = np.ndarray.tolist(st3.data)
     return z
-
+def filtrado_kallpa_deformimetro(valores):
+    z = []
+    tr = Trace(data=np.array(valores))
+    tr.stats.sampling_rate = 50000
+    st3 = tr.copy()
+    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
+    st3.filter(type="bandpass",freqmin=0.0000000001,freqmax = 500)
+    z = np.ndarray.tolist(st3.data)
+    return z
 def filtrado2(valores):
     z = []
     nuevo = []
@@ -395,11 +411,11 @@ def Obtencion_data_serial(num):
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
                 #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                for datos in linea_cero_KALLPA_acelerometros(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1])):
+                for datos in filtrado(linea_cero_KALLPA_acelerometros2(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1]))):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
                 #for datos in filtrado3(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):
-                for datos in linea_cero_KALLPA_acelerometros(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1])):              
+                for datos in filtrado_kallpa_deformimetro(linea_cero_KALLPA_acelerometros2(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1]))):              
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
@@ -906,8 +922,24 @@ def velocity(acel, freq):
         tr_v_bl.stats.sampling_rate = freq*1000
         return tr_v_bl
     else:
-        print("estoy entrando a ct")    
-        return tr_v
+        idx_impact = int(0.01*freq*1000)
+        # Velocity before impact
+        V_bi = tr_v.data[:idx_impact]
+        # Velocity after impatc
+        V_ai = tr_v.data[idx_impact:]
+
+        tr_V_ai0 = Trace(data=V_ai)
+        tr_V_ai = tr_V_ai0.copy()
+        tr_V_ai.stats.sampling_rate = freq*1000
+        tr_V_ai.detrend("polynomial",order=2)
+
+        # Concatenating again
+        V_bl = np.concatenate((V_bi, tr_V_ai.data))
+
+        # Making a trace
+        tr_v_bl = Trace(data=V_bl)
+        tr_v_bl.stats.sampling_rate = freq*1000
+        return tr_v_bl
 
 def calculo_wu(F, V_transformado):
     
