@@ -112,11 +112,8 @@ def filtered(stream, type, f1, f2):
     return st
 
 def linea_cero_KALLPA_acelerometros(acel, freq, before_time=10):
-    
     data = np.array(acel)
-
     idx_impact = int((before_time)*freq)
-
     # Aceleracion antes del impacto
     A_ai = data[:idx_impact]
     # Aceleracion despues del impacto
@@ -137,60 +134,100 @@ def linea_cero_KALLPA_acelerometros(acel, freq, before_time=10):
 
     return A_linea_cero
 
-def linea_cero_KALLPA_acelerometros2(acel, freq, before_time=10):
-    
-    tr = Trace(data=np.array(acel))
+def cuentas_a_aceleracion(cuentas, freq):
+    tr = Trace(data=np.array(cuentas))
     tr.stats.sampling_rate = freq*1000
     tr.detrend("polynomial", order = 2).detrend("demean").taper(0.1)
     
     return tr.data
 
-def correcion_linea_cero(valores):
-    z = []
-    tr = Trace(data=np.array(valores)*0.01475)
-    st2 = detrend(tr,type = 2)
-    z = np.ndarray.tolist(st2.data)
+def filtro_acelerometro(aceleracion, freq, lugar):
+    tr = Trace(data=np.array(aceleracion))
+    tr.stats.sampling_rate = freq*1000
+    tr.filter(type= "lowpass", freq=2500)
+    if lugar==1:  
+        z = np.ndarray.tolist(tr.data*1)
+    elif lugar==2:
+        z = np.ndarray.tolist(tr.data*1)
     return z
 
-def correcion_linea_cero_PILE(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st2 = detrend(tr,type = 1)
-    z = np.ndarray.tolist(st2.data)
+def cuentas_a_aceleracion2(cuentas, freq, before_time=10):
+    data = np.array(cuentas)
+    idx_impact = int((before_time)*freq)
+    # Aceleracion antes del impacto
+    A_ai = data[:idx_impact]
+    # Aceleracion despues del impacto
+    A_di = data[idx_impact:]
+
+    trace_ai = Trace(data=A_ai).copy()
+    trace_di = Trace(data=A_di).copy()
+
+    trace_ai.stats.sampling_rate = freq*1000
+    trace_di.stats.sampling_rate = freq*1000
+    
+    #trace_ai.detrend(type = "polynomial", order = 2)
+    #trace_di.detrend(type = "polynomial", order = 2)
+    
+    trace_ai.detrend(type = "linear")
+    trace_di.detrend(type = "linear")
+
+    # Concatenar
+    D_linea_cero = np.concatenate((trace_ai.data, trace_di.data))
+
+    tr = Trace(data=D_linea_cero)
+    tr.stats.sampling_rate = freq*1000
+    tr.detrend("demean").taper(0.1)
+    return tr.data
+
+def cuentas_a_deformacion(cuentas, freq):
+    tr = Trace(data=np.array(cuentas))
+    tr.stats.sampling_rate = freq*1000
+    tr.detrend("polynomial",order=2).detrend("demean").taper(0.1)
+    
+    return tr.data
+
+def cuentas_a_deformacion2(cuentas, freq, before_time=10):
+    data = np.array(cuentas)
+    idx_impact = int((before_time)*freq)
+    # Deformacion antes del impacto
+    D_ai = data[:idx_impact]
+    # Deformacion despues del impacto
+    D_di = data[idx_impact:]
+
+    trace_ai = Trace(data=D_ai).copy()
+    trace_di = Trace(data=D_di).copy()
+
+    trace_ai.stats.sampling_rate = freq*1000
+    trace_di.stats.sampling_rate = freq*1000
+    
+    #trace_ai.detrend(type = "polynomial", order = 2)
+    #trace_di.detrend(type = "polynomial", order = 2)
+    
+    trace_ai.detrend(type = "linear")
+    trace_di.detrend(type = "linear")
+
+    # Concatenar
+    D_linea_cero = np.concatenate((trace_ai.data, trace_di.data))
+
+    tr = Trace(data=D_linea_cero)
+    tr.stats.sampling_rate = freq*1000
+    tr.detrend("demean").taper(0.1)
+    return tr.data
+
+def filtro_deformimetro(deformacion, freq, lugar):
+    tr = Trace(data=np.array(deformacion))
+    tr.stats.sampling_rate = freq*1000
+    tr.filter(type= "lowpass", freq=500)
+    if lugar==3:
+        z = np.ndarray.tolist(tr.data*2)
+    elif lugar==4:
+        z = np.ndarray.tolist(tr.data*2)
+    elif lugar==5:
+        z = np.ndarray.tolist(tr.data*2)
+    elif lugar==6:
+        z = np.ndarray.tolist(tr.data*2)
     return z
 
-def correcion_linea_cero2(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st2 = detrend(tr,type = 1)
-    z = np.ndarray.tolist(st2.data)
-    return z
-
-def correcion_linea_cero_velocidad(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st2 = detrend(tr,type = 1)
-    z = np.ndarray.tolist(st2.data)
-    return z
-
-def filtrado(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    tr.stats.sampling_rate = 50000
-    st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=0.00000001,freqmax = 2500)
-    z = np.ndarray.tolist(st3.data)
-    return z
-def filtrado_kallpa_deformimetro(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    tr.stats.sampling_rate = 50000
-    st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=0.0000000001,freqmax = 500)
-    z = np.ndarray.tolist(st3.data)
-    return z
 def filtrado2(valores):
     z = []
     nuevo = []
@@ -211,26 +248,6 @@ def filtrado2(valores):
     st3 = tr.copy()
     st3.filter(type="bandpass",freqmin=1,freqmax = 3000)
     z = np.ndarray.tolist(st3.data/200)
-    return z
-
-def filtrado3(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    tr.stats.sampling_rate = 50000
-    st3 = tr.copy()
-    #st3.filter(type="bandpass",freqmin=0.00012,freqmax = 20000000)
-    st3.filter(type="bandpass",freqmin=10,freqmax = 2000)
-    z = np.ndarray.tolist(st3.data)
-    return z
-
-def velocidad(valores):
-    z = []
-    tr = Trace(data=np.array(valores))
-    st3 = tr.copy()
-    st3.integrate(method = "cumtrapz")
-    
-    z = np.ndarray.tolist(st3.data)
-
     return z
 
 def filtrado_velocidad(valores):
@@ -389,7 +406,6 @@ def Obtencion_data_serial(num):
         for i in range(4):
 
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                #for datos in correcion_linea_cero_PILE(dic_orden_sensores2[orden[i]]):
                 for datos in dic_orden_sensores2[orden[i]]:
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
@@ -408,14 +424,18 @@ def Obtencion_data_serial(num):
         segundo_inicial = segundos[0]
         segundo_final = segundos[-1]
 
+        frecuencia = int(frecuencia_muestreo[-1])
         for i in range(4):
-            if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                for datos in filtrado(linea_cero_KALLPA_acelerometros2(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1]))):
+            lugar = int(orden[i])
+            if ((lugar== 1)) or (lugar == 2):
+                #for datos in dic_orden_sensores2[orden[i]]:
+                #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
+                for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
-            elif (int(orden[i])!=0):
-                #for datos in filtrado3(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):
-                for datos in filtrado_kallpa_deformimetro(linea_cero_KALLPA_acelerometros2(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1]))):              
+            elif (lugar!=0):
+                #for datos in dic_orden_sensores2[orden[i]]:  
+                #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
+                for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
@@ -931,8 +951,8 @@ def velocity(acel, freq):
         tr_V_ai0 = Trace(data=V_ai)
         tr_V_ai = tr_V_ai0.copy()
         tr_V_ai.stats.sampling_rate = freq*1000
+        #tr_V_ai.detrend("polynomial",order=2)
         tr_V_ai.detrend("polynomial",order=2)
-
         # Concatenating again
         V_bl = np.concatenate((V_bi, tr_V_ai.data))
 
@@ -2489,10 +2509,10 @@ def obtener_datos_grafica(j):
     for i in range(4):
         #dic_orden_sensores[orden[i]] = list(correcion_linea_cero(dic_orden_sensores2[orden[i]]))
         if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-            for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+            for datos in dic_orden_sensores2[orden[i]]:
                 dic_orden_sensores[orden[i]].append(datos)
         elif (int(orden[i])!=0):
-            for datos in filtrado2(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):               
+            for datos in dic_orden_sensores2[orden[i]]:               
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
