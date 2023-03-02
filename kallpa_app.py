@@ -144,7 +144,8 @@ def cuentas_a_aceleracion(cuentas, freq):
 def filtro_acelerometro(aceleracion, freq, lugar):
     tr = Trace(data=np.array(aceleracion))
     tr.stats.sampling_rate = freq*1000
-    tr.filter(type= "lowpass", freq=2500)
+    tr.filter(type= "lowpass", freq=3000)
+    #tr.filter(type= "bandpass",freqmin=1,freqmax=3000)
     if lugar==1:  
         z = np.ndarray.tolist(tr.data*1)
     elif lugar==2:
