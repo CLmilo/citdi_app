@@ -111,6 +111,32 @@ def filtered(stream, type, f1, f2):
         st.filter(type= "highpass",freq=f1)
     return st
 
+def linea_cero_KALLPA_acelerometros(acel, freq, before_time=10):
+    
+    data = np.array(acel)
+
+    idx_impact = int((before_time)*freq)
+
+    # Aceleracion antes del impacto
+    A_ai = data[:idx_impact]
+    # Aceleracion despues del impacto
+    A_di = data[idx_impact:]
+
+    trace_ai = Trace(data=A_ai).copy()
+    trace_di = Trace(data=A_di).copy()
+
+    trace_ai.stats.sampling_rate = freq*1000
+    trace_di.stats.sampling_rate = freq*1000
+    
+    trace_ai.detrend(type = "polynomial", order = 2)
+    trace_di.detrend(type = "polynomial", order = 2)
+
+    # Concatenar
+    A_linea_cero = np.concatenate((trace_ai.data, trace_di.data))
+    #A_linea_cero = np.concatenate((A_ai, trace_di.data))
+
+    return A_linea_cero
+
 def correcion_linea_cero(valores):
     z = []
     tr = Trace(data=np.array(valores)*0.01475)
@@ -368,12 +394,12 @@ def Obtencion_data_serial(num):
 
         for i in range(4):
             if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-                for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
-                #for datos in dic_orden_sensores2[orden[i]]:
+                #for datos in filtrado(correcion_linea_cero(dic_orden_sensores2[orden[i]])):
+                for datos in linea_cero_KALLPA_acelerometros(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1])):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (int(orden[i])!=0):
-                for datos in filtrado3(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):
-                #for datos in dic_orden_sensores2[orden[i]]:              
+                #for datos in filtrado3(correcion_linea_cero2(dic_orden_sensores2[orden[i]])):
+                for datos in linea_cero_KALLPA_acelerometros(dic_orden_sensores2[orden[i]],int(frecuencia_muestreo[-1])):              
                     dic_orden_sensores[orden[i]].append(datos)
 
     return segundos, S1, S2, A3, A4
