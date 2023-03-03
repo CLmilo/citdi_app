@@ -609,49 +609,66 @@ textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(
 
 #ET_Entry
 
-ctk.CTkLabel(container1_1, text=textos_primer_frame[0]).grid(row=0,column=0, padx=10, pady=10, sticky='nw')
+ctk.CTkLabel(container1_1, text=textos_primer_frame[0]).grid(row=0,column=0, padx=10, pady=5, sticky='nw')
 pile_area_label = ctk.CTkLabel(container1_1, text=str(round(float(pile_area),2)))
-pile_area_label.grid(row=0, column=1, padx=10, pady=10, sticky='new')
-ctk.CTkLabel(container1_1, text=textos_primer_frame[1]).grid(row=1,column=0, padx=10, pady=10, sticky='nw') 
+pile_area_label.grid(row=0, column=1, padx=10, pady=5, sticky='new')
+ctk.CTkLabel(container1_1, text=textos_primer_frame[1]).grid(row=1,column=0, padx=10, pady=5, sticky='nw') 
 EM_label = ctk.CTkLabel(container1_1, text=str(round(float(EM_valor_original),2)))
-EM_label.grid(row=1, column=1, padx=10, pady=10, sticky='new')
-ctk.CTkLabel(container1_1, text=textos_primer_frame[2]).grid(row=2,column=0, padx=10, pady=10, sticky='nw')
+EM_label.grid(row=1, column=1, padx=10, pady=5, sticky='new')
+ctk.CTkLabel(container1_1, text=textos_primer_frame[2]).grid(row=2,column=0, padx=10, pady=5, sticky='nw')
 ET_label = ctk.CTkLabel(container1_1, text=str("0"))
-ET_label.grid(row=2, column=1, padx=10, pady=10, sticky='new')
+ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
 
 # Textos y Entrys Segundo Frame
 #textos_segundo_frame = ["BL #", "RSP(kN)", "RMX(kN)", "RSU(kN)", "FMX(kN)", "VMX(m/s)", "EMX(kN.m)", "DMX(mm)", "DFN(mm)", "CSX(MPa)", "TSX(MPa)", "BTA"]
 
 Label_Num_Grafica = ctk.CTkLabel(container1_2, text="")
-Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=10, sticky='new') 
+Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=5, sticky='new') 
 
-textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EMX(J)", "DMX(cm)", "ETR", "CE"]
-valores_segundo_frame_arriba = ["","", "", "", "", "", ""]
-valores_segundo_frame_abajo = ["","", "", "", "", "", ""]
+textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EMX(J)", "DMX(cm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX", "AMX(g's)"]
+valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", ""]
+valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", ""]
+# labels fijos de texto
+for i in range(len(textos_segundo_frame)):
+    ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
 
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[0]).grid(row=1,column=0, padx=10, pady=10, sticky='nw') 
+
 L_FMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[0])
-L_FMX.grid(row=1, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[1]).grid(row=2,column=0, padx=10, pady=10, sticky='nw') 
-L_VMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[1])
-L_VMX.grid(row=2, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[2]).grid(row=3,column=0, padx=10, pady=10, sticky='nw') 
-L_EMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[2])
-L_EMX.grid(row=3, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[3]).grid(row=4,column=0, padx=10, pady=10, sticky='nw') 
-L_DMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[3])
-L_DMX.grid(row=4, column=1,padx=10, pady=10, sticky='nwe')  
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[4],).grid(row=5,column=0, padx=10, pady=10, sticky='nw') 
-L_ETR = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[4])
-L_ETR.grid(row=5, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container1_2, text=textos_segundo_frame[5]).grid(row=6,column=0, padx=10, pady=10, sticky='nw') 
-L_CE = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[5])
-L_CE.grid(row=6, column=1,padx=10, pady=10, sticky='nwe')  
+L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nwe')
 
-def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE):
+L_VMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[1])
+L_VMX.grid(row=2, column=1,padx=10, pady=5, sticky='nwe')
+
+L_EMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[2])
+L_EMX.grid(row=3, column=1,padx=10, pady=5, sticky='nwe')
+
+L_DMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[3])
+L_DMX.grid(row=4, column=1,padx=10, pady=5, sticky='nwe')  
+ 
+L_ETR = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[4])
+L_ETR.grid(row=5, column=1,padx=10, pady=5, sticky='nwe')
+
+L_CE = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[5])
+L_CE.grid(row=6, column=1,padx=10, pady=5, sticky='nwe')  
+
+L_CSX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[6])
+L_CSX.grid(row=7, column=1,padx=10, pady=5, sticky='nwe')
+
+L_DFN = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[7])
+L_DFN.grid(row=8, column=1,padx=10, pady=5, sticky='nwe')
+
+L_MEX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[8])
+L_MEX.grid(row=9, column=1,padx=10, pady=5, sticky='nwe')  
+
+L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[9])
+L_AMX.grid(row=10, column=1,padx=10, pady=5, sticky='nwe')  
+
+
+
+def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX):
     global valores_segundo_frame_arriba, valores_segundo_frame_abajo
     global Label_Num_Grafica
-    global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE
+    global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE, L_CSX, L_DFN, L_MEX, L_AMX
     Label_Num_Grafica.configure(text= str(texto_label_num_grafica), font=fontTEXTcoll)
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
@@ -659,10 +676,15 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_DMX.configure(text = str(V_DMX))
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
+    L_CSX.configure(text = str(V_CSX))
+    L_DFN.configure(text = str(V_DFN))
+    L_MEX.configure(text = str(V_MEX))
+    L_AMX.configure(text = str(V_AMX))
+
     if posicion == 'arriba':
-        valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE]
+        valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX]
     else:
-        valores_segundo_frame_abajo = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE]
+        valores_segundo_frame_abajo = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX]
 
 #--------------------------------------------------
 # Frame Principal del medio
@@ -752,7 +774,7 @@ container2_2_3_3.grid_columnconfigure(3, weight=1)
 
 # botones de los frames
 
-dic_magnitud_botones = {0:'aceleracion', 1:'velocidad', 2:'deformacion', 3:'fuerza', 4:'desplazamiento', 5:'fuerzaxvelocidad', 6:'avged', 7:'wu'}
+dic_magnitud_botones = {0:'aceleracion', 1:'velocidad', 2:'deformacion', 3:'fuerza', 4:'desplazamiento', 5:'fuerzaxvelocidad', 6:'avged', 7:'wu', 8:'wd'}
 dic_ultima_grafica_magnitud = {"arriba": ultima_magnitud_arriba, "abajo": ultima_magnitud_abajo}
 
 def actualizar_magnitud(posicion,i):
@@ -760,7 +782,7 @@ def actualizar_magnitud(posicion,i):
     global ultima_magnitud_arriba
     dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
 
-texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED", "WU"]
+texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED", "WU", "WD"]
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
@@ -790,6 +812,9 @@ def segmented_button_callback1(value):
             cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
             actualizar_magnitud("arriba", texto_botones_frame.index(value))
         case "WU":
+            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+            actualizar_magnitud("arriba", texto_botones_frame.index(value))
+        case "WD":
             cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
             actualizar_magnitud("arriba", texto_botones_frame.index(value))
     print("En la grafica de arriba es ",value)
@@ -823,6 +848,9 @@ def segmented_button_callback2(value):
         case "WU":
             cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
             actualizar_magnitud("abajo", texto_botones_frame.index(value))
+        case "WD":
+            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+            actualizar_magnitud("abajo", texto_botones_frame.index(value))    
     print("En la grafica de abajo es ",value)
 
 Button_num_grafica_arriba = ctk.CTkButton(container2_1_1, text="1", command=lambda:colorear_botones_seleccion_grafica(1))
@@ -862,13 +890,13 @@ def colorear_botones_seleccion_grafica(num):
         Boton_seleccion_grafica1.select()
         Boton_seleccion_grafica2.deselect()
         v_vec = valores_segundo_frame_arriba.copy()
-        modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6])
+        modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
     else:
         ultima_grafica_seleccionada = 'abajo'
         Boton_seleccion_grafica1.deselect()
         Boton_seleccion_grafica2.select()
         v_vec = valores_segundo_frame_abajo.copy()
-        modificar_datos_segundo_frame('abajo',  v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6])
+        modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
 
 
 # cambiar magnitudes
@@ -962,16 +990,16 @@ def velocity(acel, freq):
         return tr_v_bl
 
 def calculo_wu(F, V_transformado):
-    
-    print('las longitudes son',len(V), len(V_transformado))
     suma = []
     for i in range(len(F)):
         suma.append((F[i]-V_transformado[i])/2)
-
     return suma
 
-def calculo_wp():
-    print(2)
+def calculo_wd(F, V_transformado):
+    suma = []
+    for i in range(len(F)):
+        suma.append((F[i]+V_transformado[i])/2)
+    return suma
 
 def integrate(tr_00):
     tr_0 = tr_00.copy()
@@ -1014,6 +1042,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     D2 = []
     D = []
     WU = []
+    WD = []
     V_Transformado = []
     V_Transformado_valor_real = []
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR, LIM_IZQ, LIM_DER
@@ -1054,10 +1083,12 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         S2 = S1
         F = F1
         F2 = F1
+    MEX = round(max(max(S1), max(S2)),2) 
     if len(A3) != longitud2:
         A3 = A4
     if len(A4) != longitud2:
         A4 = A3
+    AMX = round(max(max(A3), max(A4)),2) 
     print("longitudes de Str2", len(S1), len(S2))    
     if S1 == []:
         F = F2
@@ -1115,6 +1146,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         D = D1.data if len(V1.data) > len(V2.data) else D2.data
 
     Dmax = round(max(D), 2)
+    DFN = round(D[-1],2)
     
     ajuste = 0
    
@@ -1246,6 +1278,10 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         WU = calculo_wu(F, V_Transformado)
     except Exception as e:
         print("Error al calcular el wu", e)
+    try:
+        WD = calculo_wd(F, V_Transformado)
+    except Exception as e:
+        print("Error al calcular el wd", e)
     
     if magnitud == 'avged':
         segundos = segundos_Transformado
@@ -1253,20 +1289,11 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     ET = float(ET_valor_original)
     ETR = round(100*(Emax/ET),2)
     CE = str(round(ETR*0.60,2))
+    CSX = str(round(Fmax*10/AR,2))
     
-    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU
-
-def Actualizacion_data(posicion):
-
-    if posicion == 'arriba':
-        ax1.callbacks.connect('xlim_changed', on_xlims_change_arriba)
-        ax1.callbacks.connect('ylim_changed', on_ylims_change_arriba)
-    
-    # elif posicion == 'abajo':
-    #     ax2.callbacks.connect('xlim_changed', on_xlims_change_abajo)
-    #     ax2.callbacks.connect('ylim_changed', on_ylims_change_abajo)
+    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX, AMX
         
-style.use('seaborn-white')
+style.use('seaborn-v0_8-whitegrid')
 
 # grafica 1
 fig1 = Figure(figsize=(10, 5), dpi=100)
@@ -1308,11 +1335,11 @@ estado = "aceleracion"
 
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
-    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU
-    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
-    dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU]}
-    dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU']}
-    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', '']}
+    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU, WD
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
+    dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
+    dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
+    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', ''], 'wd':['milisegundos', '']}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
@@ -1322,7 +1349,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         Button_num_grafica_abajo.configure(text=dic_ultima_grafica[posicion])
     
     
-    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE)
+    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE, CSX, DFN, MEX, AMX)
 
     if mantener_relacion_aspecto == 'SI':
         ax1.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
@@ -1331,14 +1358,38 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     if posicion == 'arriba':
         fig1.clear()
         ax1 = fig1.add_subplot(111)
-        t1, = ax1.plot(segundos, dic_magnitud[magnitud][0])
-        t2, = ax1.plot(segundos, dic_magnitud[magnitud][1])
+        t1, = ax1.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
+        t2, = ax1.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
+        ax1.set_xlabel(dic_unidades[magnitud][0])
+        ax1.set_ylabel(dic_unidades[magnitud][1])
+        try:
+            ax1.legend(handles=[t1, t2])
+        except:
+            try:
+                ax1.legend(handles=[t1])
+            except:
+                try:
+                    ax1.legend(handles=[t2])
+                except:
+                    pass
         canvas1.draw()
     elif posicion == 'abajo':
         fig2.clear()
         ax2 = fig2.add_subplot(111)
-        t3, = ax2.plot(segundos, dic_magnitud[magnitud][0])
-        t4, = ax2.plot(segundos, dic_magnitud[magnitud][1])
+        t3, = ax2.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
+        t4, = ax2.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
+        ax2.set_xlabel(dic_unidades[magnitud][0])
+        ax2.set_ylabel(dic_unidades[magnitud][1])
+        try:
+            ax2.legend(handles=[t1, t2])
+        except:
+            try:
+                ax2.legend(handles=[t1])
+            except:
+                try:
+                    ax2.legend(handles=[t2])
+                except:
+                    pass
         canvas2.draw()
 
 # Configuración de los botones comandos
@@ -2001,8 +2052,8 @@ def mostrar_alertas():
 
 def limpiar_review():
     global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
-    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "")
-    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "")
     LIM_IZQ.configure(text="")
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
