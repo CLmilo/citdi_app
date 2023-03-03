@@ -218,7 +218,7 @@ def cuentas_a_deformacion2(cuentas, freq, before_time=10):
 def filtro_deformimetro(deformacion, freq, lugar):
     tr = Trace(data=np.array(deformacion))
     tr.stats.sampling_rate = freq*1000
-    tr.filter(type= "lowpass", freq=500)
+    tr.filter(type= "lowpass", freq=5000)
     if lugar==3:
         z = np.ndarray.tolist(tr.data*2)
     elif lugar==4:
@@ -2053,8 +2053,8 @@ def mostrar_alertas():
 
 def limpiar_review():
     global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
-    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "")
-    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "","")
+    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "","")
     LIM_IZQ.configure(text="")
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
@@ -2557,14 +2557,18 @@ def obtener_datos_grafica(j):
         else:
             pass
           
-
+    frecuencia = int(frecuencia_muestreo[-1])
     for i in range(4):
-        #dic_orden_sensores[orden[i]] = list(correcion_linea_cero(dic_orden_sensores2[orden[i]]))
-        if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-            for datos in dic_orden_sensores2[orden[i]]:
+        lugar = int(orden[i])
+        if ((lugar== 1)) or (lugar == 2):
+            #for datos in dic_orden_sensores2[orden[i]]:
+            #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
+            for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
-        elif (int(orden[i])!=0):
-            for datos in dic_orden_sensores2[orden[i]]:               
+        elif (lugar!=0):
+            #for datos in dic_orden_sensores2[orden[i]]:  
+            #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
+            for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
@@ -3002,7 +3006,7 @@ def leer_data_cabecera(ruta):
     with open(ruta) as file:
         filas = file.readlines()
     for index, fila in enumerate(filas):
-        fila = fila.replace("\n", "").split(",")
+        fila = fila.replace("\n", "").split(";")
         if fila[0] == "AR":
             ar_pos = index
         if fila[0] == "EM":
@@ -3014,15 +3018,15 @@ def leer_data_cabecera(ruta):
         if fila[0] == "Record":
             frecuencia_post = index+3
     
-    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
-    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
-    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
-    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
+    ar = round(float(filas[ar_pos].replace("\n", "").split(";")[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(";")[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(";")[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(";")[1])
     et = round((efv/etr)*100,2)
 
-    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(";")[1])/1000)
 
-    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(";")
     print(fila_orden)
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
@@ -3048,7 +3052,7 @@ def leer_data_cabecera(ruta):
 def lectura_data(frecuencia_post, filas):
     string_data = ""
     for i in range(frecuencia_post-1, len(filas)):
-        fila = filas[i].replace("\n", "").split(",")
+        fila = filas[i].replace("\n", "").split(";")
         segundos = round(float(fila[1])*10000,2)
         V1 = float(fila[2])
         V2 = float(fila[3])
