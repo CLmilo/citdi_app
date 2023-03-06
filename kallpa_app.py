@@ -218,7 +218,7 @@ def cuentas_a_deformacion2(cuentas, freq, before_time=10):
 def filtro_deformimetro(deformacion, freq, lugar):
     tr = Trace(data=np.array(deformacion))
     tr.stats.sampling_rate = freq*1000
-    tr.filter(type= "lowpass", freq=500)
+    tr.filter(type= "lowpass", freq=5000)
     if lugar==3:
         z = np.ndarray.tolist(tr.data*2)
     elif lugar==4:
@@ -2028,8 +2028,8 @@ def mostrar_alertas():
 
 def limpiar_review():
     global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
-    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "")
-    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "","")
+    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "","")
     LIM_IZQ.configure(text="")
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
@@ -2533,14 +2533,18 @@ def obtener_datos_grafica(j):
         else:
             pass
           
-
+    frecuencia = int(frecuencia_muestreo[-1])
     for i in range(4):
-        #dic_orden_sensores[orden[i]] = list(correcion_linea_cero(dic_orden_sensores2[orden[i]]))
-        if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
-            for datos in dic_orden_sensores2[orden[i]]:
+        lugar = int(orden[i])
+        if ((lugar== 1)) or (lugar == 2):
+            #for datos in dic_orden_sensores2[orden[i]]:
+            #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
+            for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
-        elif (int(orden[i])!=0):
-            for datos in dic_orden_sensores2[orden[i]]:               
+        elif (lugar!=0):
+            #for datos in dic_orden_sensores2[orden[i]]:  
+            #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
+            for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
