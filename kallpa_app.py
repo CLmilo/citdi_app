@@ -337,19 +337,6 @@ ultima_magnitud_arriba = "aceleracion"
 ultima_magnitud_abajo = "deformacion"
 
 
-def click_grafica_arriba(event):
-    global ultima_grafica_seleccionada, Boton_seleccion_grafica1, Boton_seleccion_grafica2
-    ultima_grafica_seleccionada = "arriba"
-    Boton_seleccion_grafica1.configure(bg="Green")
-    Boton_seleccion_grafica2.configure(bg='#CACFD2')
-
-def click_grafica_abajo(event):
-    global ultima_grafica_seleccionada, Boton_seleccion_grafica1, Boton_seleccion_grafica2
-    ultima_grafica_seleccionada = "abajo"
-    Boton_seleccion_grafica2.configure(bg="Green")
-    Boton_seleccion_grafica1.configure(bg='#CACFD2')
-
-
 def Obtencion_data_serial(num):
     global extension
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
@@ -520,8 +507,6 @@ def refrescar_reloj():
 
 hora_actual = StringVar(container4b, value=Obtener_hora_actual())
 
-
-
 refrescar_reloj()
 
 # AÑADIR PORTADA
@@ -532,7 +517,6 @@ def resolver_ruta(ruta_relativa):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, ruta_relativa)
     return os.path.join(os.path.abspath('.'), ruta_relativa)
-
 
 nombre_archivo_portada = resolver_ruta("CITDI_LOGO_SINFONDO.png")
 
@@ -583,8 +567,6 @@ container.grid_columnconfigure(2, weight=1)
 
 container1 = ctk.CTkFrame(container)
 container1.grid(row=0, column=0, sticky='nsew')
-#container1.grid_rowconfigure(0, weight=1)
-#container1.grid_rowconfigure(1, weight=1)
 container1.grid_columnconfigure(0, weight=1)
 
 # Frames internos
@@ -717,7 +699,7 @@ container2_1_1.grid_columnconfigure(1, weight=20)
 container2_1_1.grid_columnconfigure(2, weight=1)
 container2_1_1.grid_rowconfigure(0, weight=1)
 
-container2_1_2 = ctk.CTkFrame(container2_1)
+container2_1_2 = ctk.CTkFrame(container2_1, fg_color="#1359BB")
 container2_1_2.grid(row=1, column=0, sticky='nsew', padx=10, pady=(0,5))
 container2_1_3 = ctk.CTkFrame(container2_1)
 container2_1_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
@@ -754,7 +736,7 @@ container2_2_1.grid_columnconfigure(1, weight=20)
 container2_2_1.grid_columnconfigure(2, weight=1)
 container2_2_1.grid_rowconfigure(0, weight=1)
 
-container2_2_2 = ctk.CTkFrame(container2_2)
+container2_2_2 = ctk.CTkFrame(container2_2, fg_color="#94e7ff")
 container2_2_2.grid(row=1, column=0, sticky='nsew', padx=10, pady=(0,5))
 container2_2_3 = ctk.CTkFrame(container2_2)
 container2_2_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
@@ -868,13 +850,6 @@ segemented_button_var2 = ctk.StringVar(value="DEFORMACIÓN")
 segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
 segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
 
-Boton_seleccion_grafica1 = ctk.CTkRadioButton(container2_1_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(1), value=0)
-Boton_seleccion_grafica1.grid(row=0,column=2,  sticky='ns', pady=5, padx=(5,5))
-Boton_seleccion_grafica1.select()
-
-Boton_seleccion_grafica2 = ctk.CTkRadioButton(container2_2_1, text="", width= 20, command=lambda: colorear_botones_seleccion_grafica(2), value=1)
-Boton_seleccion_grafica2.grid(row=0,column=2, sticky='ns', pady=5, padx=(5,5))
-
 # Barra lateral de la columna de la derecha
 
 container2_3 = ctk.CTkFrame(container2, corner_radius=0)
@@ -884,18 +859,18 @@ container2_3.grid_columnconfigure(0, weight=1)
 
 
 def colorear_botones_seleccion_grafica(num):
-    global ultima_grafica_seleccionada, Boton_seleccion_grafica2, Boton_seleccion_grafica1, valores_segundo_frame_arriba, valores_segundo_frame_abajo
+    global ultima_grafica_seleccionada, valores_segundo_frame_arriba, valores_segundo_frame_abajo, container2_1_2, container2_2_2
     
     if num == 1:
         ultima_grafica_seleccionada = 'arriba'
-        Boton_seleccion_grafica1.select()
-        Boton_seleccion_grafica2.deselect()
+        container2_1_2.configure(fg_color="#1359BB")
+        container2_2_2.configure(fg_color="#94e7ff")
         v_vec = valores_segundo_frame_arriba.copy()
         modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
     else:
         ultima_grafica_seleccionada = 'abajo'
-        Boton_seleccion_grafica1.deselect()
-        Boton_seleccion_grafica2.select()
+        container2_2_2.configure(fg_color="#1359BB")
+        container2_1_2.configure(fg_color="#94e7ff")
         v_vec = valores_segundo_frame_abajo.copy()
         modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
 
@@ -1303,7 +1278,7 @@ ax1 = fig1.add_subplot(111)
 
 canvas1 = FigureCanvasTkAgg(fig1, dic_posicion['arriba'][0])
 canvas1.draw()
-canvas1.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
+canvas1.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
 
 toolbar = Toolbar(canvas1, dic_posicion['arriba'][1])
 toolbar.config(background="#2A2A2A")
@@ -1321,7 +1296,7 @@ ax2 = fig2.add_subplot(111)
 
 canvas2 = FigureCanvasTkAgg(fig2, dic_posicion['abajo'][0])
 canvas2.draw()
-canvas2.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH)
+canvas2.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
 
 toolbar = Toolbar(canvas2, dic_posicion['abajo'][1])
 toolbar.config(background="#2A2A2A")
@@ -2082,10 +2057,11 @@ def eliminar_columna_muestreo():
     dic_ultima_grafica["arriba"] = 1
     Button_num_grafica_arriba.configure(text=str(dic_ultima_grafica["arriba"]))
     Button_num_grafica_abajo.configure(text=str(dic_ultima_grafica["abajo"]))
-    segemented_button.set("ACELERACIÓN")
-    segmented_button_callback1("ACELERACIÓN")
     segemented_button2.set("DEFORMACIÓN")
     segmented_button_callback2("DEFORMACIÓN")
+    segemented_button.set("ACELERACIÓN")
+    segmented_button_callback1("ACELERACIÓN")
+    
 
     try:
         if len(container1.grid_slaves()) > 3:
@@ -2998,11 +2974,11 @@ def escoger_ruta_guardado2():
     #ruta_guardado += "/"
     return archivos
 
-def leer_data_cabecera(ruta):
+def leer_data_cabecera(ruta, identificador):
     with open(ruta) as file:
         filas = file.readlines()
     for index, fila in enumerate(filas):
-        fila = fila.replace("\n", "").split(",")
+        fila = fila.replace("\n", "").split(identificador)
         if fila[0] == "AR":
             ar_pos = index
         if fila[0] == "EM":
@@ -3014,15 +2990,15 @@ def leer_data_cabecera(ruta):
         if fila[0] == "Record":
             frecuencia_post = index+3
     
-    ar = round(float(filas[ar_pos].replace("\n", "").split(",")[1]),2)
-    em = round(float(filas[em_pos].replace("\n", "").split(",")[1]),2)
-    efv = float(filas[efv_pos].replace("\n", "").split(",")[1])
-    etr = float(filas[etr_pos].replace("\n", "").split(",")[1])
+    ar = round(float(filas[ar_pos].replace("\n", "").split(identificador)[1]),2)
+    em = round(float(filas[em_pos].replace("\n", "").split(identificador)[1]),2)
+    efv = float(filas[efv_pos].replace("\n", "").split(identificador)[1])
+    etr = float(filas[etr_pos].replace("\n", "").split(identificador)[1])
     et = round((efv/etr)*100,2)
 
-    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(",")[1])/1000)
+    frecuencia = round(1/float(filas[frecuencia_post].replace("\n", "").split(identificador)[1])/1000)
 
-    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(",")
+    fila_orden = filas[frecuencia_post-3].replace("\n", "").split(identificador)
     print(fila_orden)
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
@@ -3045,10 +3021,10 @@ def leer_data_cabecera(ruta):
     return frecuencia_post, filas, orden_string, frecuencia, ar, em, et
 
     # lectura de la data 
-def lectura_data(frecuencia_post, filas):
+def lectura_data(frecuencia_post, filas, identificador):
     string_data = ""
     for i in range(frecuencia_post-1, len(filas)):
-        fila = filas[i].replace("\n", "").split(",")
+        fila = filas[i].replace("\n", "").split(identificador)
         segundos = round(float(fila[1])*10000,2)
         V1 = float(fila[2])
         V2 = float(fila[3])
@@ -3070,15 +3046,15 @@ def lectura_data(frecuencia_post, filas):
         string_data+=nueva_fila+"\n"
     return string_data
 
-def crear_ctn(profundidad, ruta_guardado_combinado):
+def crear_ctn(profundidad, ruta_guardado_combinado, identificador):
     texto = ""
     for index in range(len(ruta_guardado_combinado)):
         if index == 0:
             texto += "profundidad:"+profundidad
-        frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[index])
+        frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[index], identificador)
         cabecera = orden_string+str(frecuencia)+"|"+str(ar)+"|"+str(em)+"|"+str(et)
         texto+="\nINICIO_ARCHIVO\nARCHIVO:"+str(index+1)+"\n"+cabecera+"\n"
-        texto+=lectura_data(frecuencia_post, filas)
+        texto+=lectura_data(frecuencia_post, filas, identificador)
         texto+="FIN_ARCHIVO"
     return texto, str(frecuencia), str(ar), str(em), str(et)
 
@@ -3102,11 +3078,11 @@ def boton_escoger_archivos_combinar():
 
     scrollable_frame.insert(0.0, string)
 
-def boton_preparar(inicio, fin):
+def boton_preparar(inicio, fin, identificador):
     global scrollable_frame, label_frecuencia, label_AR, label_EM, label_ET, ruta_guardado_combinado
 
     nombre = str(inicio) +","+str(fin)
-    texto, frecuencia, ar, em, et = crear_ctn(nombre, ruta_combinados)
+    texto, frecuencia, ar, em, et = crear_ctn(nombre, ruta_combinados, identificador)
 
     label_frecuencia.configure(text=frecuencia)
     label_AR.configure(text=ar)
@@ -3116,7 +3092,7 @@ def boton_preparar(inicio, fin):
     with open(ruta_guardado_combinado+"\profundidad_"+str(inicio)+"-"+str(fin)+".ctn", "w") as file:
         file.write(texto)
     
-    MessageBox.showinfo(text="Exportado con éxito", tittle="Éxito")
+    MessageBox.showinfo(message="Exportado con éxito", title="Éxito")
 
 def escoger_ruta_combinado():
     global ruta_guardado_combinado, Entry_archivo_inicio, Entry_archivo_final, ruta_guardado_label_combinado
@@ -3144,6 +3120,7 @@ def create_toplevel_preparar():
     container8.grid_rowconfigure(5, weight=1)
     container8.grid_columnconfigure(0, weight=1)
     container8.grid_columnconfigure(1, weight=1)
+    container8.grid_columnconfigure(2, weight=1)
 
     ctk.CTkLabel(container8, text="Indique el inicio y fin de la profundidad").grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
 
@@ -3169,7 +3146,7 @@ def create_toplevel_preparar():
 
 
     container8_1 = ctk.CTkFrame(container8)
-    container8_1.grid(row=0, column=1, rowspan=3, sticky='nsew', padx=(0,20), pady=20)
+    container8_1.grid(row=0, column=1, columnspan=2, rowspan=3, sticky='nsew', padx=(0,20), pady=20)
     container8_1.grid_rowconfigure(0, weight=1)
     container8_1.grid_rowconfigure(1, weight=1)
     container8_1.grid_rowconfigure(2, weight=1)
@@ -3180,7 +3157,7 @@ def create_toplevel_preparar():
     container8_1_1 = ctk.CTkFrame(container8_1)
     container8_1_1.grid(row=0, column=0, sticky='nsew', padx=20, pady=(20,10))
     container8_1_1.grid_columnconfigure(0, weight=3)
-    container8_1_1.grid_columnconfigure(0, weight=1)
+    container8_1_1.grid_columnconfigure(1, weight=1)
 
     ctk.CTkLabel(container8_1_1, text="Frecuencia: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
     label_frecuencia = ctk.CTkLabel(container8_1_1, text="")
@@ -3216,13 +3193,19 @@ def create_toplevel_preparar():
     label_ET = ctk.CTkLabel(container8_1_4, text="")
     label_ET.grid(row=0, column=1, sticky='nswe', padx=20, pady=(10,20))
 
+    ctk.CTkLabel(container8, text="Separador del CSV:").grid(row=3, column=1, padx=20, pady=20)
 
-    ctk.CTkButton(container8, text="Escoger Ruta Guardado", command=lambda:[escoger_ruta_combinado()]).grid(row=3, column=1, padx=20, pady=(20))
+    var_identificador = ctk.StringVar(value=",")
+    boton_identificador = ctk.CTkSegmentedButton(container8, values=[",", ";"], variable=var_identificador)
+    boton_identificador.grid(row=3, column=2, padx=20, pady=20)
+
+    ctk.CTkButton(container8, text="Escoger Ruta Guardado", command=lambda:[escoger_ruta_combinado()]).grid(row=5, column=1, padx=20, pady=(20))
 
     ruta_guardado_label_combinado = ctk.CTkEntry(container8)
-    ruta_guardado_label_combinado.grid(row=4, column=1, sticky='nsew', padx=20, pady=10)
+    ruta_guardado_label_combinado.grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=10)
 
-    ctk.CTkButton(container8, text="Unir", command=lambda:[boton_preparar(Entry_archivo_inicio.get(), Entry_archivo_final.get())]).grid(row=5, column=1, padx=20, pady=(20))
+    ctk.CTkButton(container8, text="Unir", command=lambda:[boton_preparar(Entry_archivo_inicio.get(), Entry_archivo_final.get(), boton_identificador.get())]).grid(row=5, column=2, padx=20, pady=(20))
+
 
 
 raise_frame(Menup)
