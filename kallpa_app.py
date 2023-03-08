@@ -144,7 +144,7 @@ def cuentas_a_aceleracion(cuentas, freq):
 def filtro_acelerometro(aceleracion, freq, lugar):
     tr = Trace(data=np.array(aceleracion))
     tr.stats.sampling_rate = freq*1000
-    tr.filter(type= "lowpass", freq=3000)
+    tr.filter(type= "lowpass", freq=5000)
     #tr.filter(type= "bandpass",freqmin=1,freqmax=3000)
     if lugar==1:  
         z = np.ndarray.tolist(tr.data*1)
@@ -220,13 +220,13 @@ def filtro_deformimetro(deformacion, freq, lugar):
     tr.stats.sampling_rate = freq*1000
     tr.filter(type= "lowpass", freq=5000)
     if lugar==3:
-        z = np.ndarray.tolist(tr.data*2)
+        z = np.ndarray.tolist(tr.data*3.048)
     elif lugar==4:
-        z = np.ndarray.tolist(tr.data*2)
+        z = np.ndarray.tolist(tr.data*3.048)
     elif lugar==5:
-        z = np.ndarray.tolist(tr.data*2)
+        z = np.ndarray.tolist(tr.data*3.048)
     elif lugar==6:
-        z = np.ndarray.tolist(tr.data*2)
+        z = np.ndarray.tolist(tr.data*3.048)
     return z
 
 def filtrado2(valores):
