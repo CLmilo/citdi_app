@@ -220,13 +220,13 @@ def filtro_deformimetro(deformacion, freq, lugar):
     tr.stats.sampling_rate = freq*1000
     tr.filter(type= "lowpass", freq=5000)
     if lugar==3:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*2)
     elif lugar==4:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*2)
     elif lugar==5:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*2)
     elif lugar==6:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*2)
     return z
 
 def filtrado2(valores):
@@ -656,11 +656,11 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
     L_EMX.configure(text = str(V_EMX))
-    L_DMX.configure(text = str(float(V_DMX)*10)) # cambiado a milimetros
+    L_DMX.configure(text = str((V_DMX))) # cambiado a milimetros
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
     L_CSX.configure(text = str(V_CSX))
-    L_DFN.configure(text = str(float(V_DFN)*10))
+    L_DFN.configure(text = str((V_DFN)))
     L_MEX.configure(text = str(V_MEX))
     L_AMX.configure(text = str(V_AMX))
 
