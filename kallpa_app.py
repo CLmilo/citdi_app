@@ -608,7 +608,7 @@ ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
 Label_Num_Grafica = ctk.CTkLabel(container1_2, text="")
 Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=5, sticky='new') 
 
-textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EMX(J)", "DMX(cm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX", "AMX(g's)"]
+textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EFV(J)", "DMX(mm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX(µE)", "AMX(g's)"]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
@@ -656,11 +656,11 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
     L_EMX.configure(text = str(V_EMX))
-    L_DMX.configure(text = str(V_DMX))
+    L_DMX.configure(text = str(float(V_DMX)*10)) # cambiado a milimetros
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
     L_CSX.configure(text = str(V_CSX))
-    L_DFN.configure(text = str(V_DFN))
+    L_DFN.configure(text = str(float(V_DFN)*10))
     L_MEX.configure(text = str(V_MEX))
     L_AMX.configure(text = str(V_AMX))
 
@@ -1315,7 +1315,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
-    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', ''], 'wd':['milisegundos', '']}
+    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", ""], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', 'KN'], 'wd':['milisegundos', 'KN']}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
