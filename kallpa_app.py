@@ -608,9 +608,9 @@ ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
 Label_Num_Grafica = ctk.CTkLabel(container1_2, text="")
 Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=5, sticky='new') 
 
-textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EFV(J)", "DMX(mm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX(µE)", "AMX(g's)"]
-valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", ""]
-valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", ""]
+textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EFV(J)", "DMX(mm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX1(µE)", "MEX2(µE)", "MEX(µE)", "AMX(g's)"]
+valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
+valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
 for i in range(len(textos_segundo_frame)):
     ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
@@ -640,34 +640,42 @@ L_CSX.grid(row=7, column=1,padx=10, pady=5, sticky='nwe')
 L_DFN = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[7])
 L_DFN.grid(row=8, column=1,padx=10, pady=5, sticky='nwe')
 
-L_MEX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[8])
-L_MEX.grid(row=9, column=1,padx=10, pady=5, sticky='nwe')  
+L_MEX1 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[8])
+L_MEX1.grid(row=9, column=1,padx=10, pady=5, sticky='nwe')  
 
-L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[9])
-L_AMX.grid(row=10, column=1,padx=10, pady=5, sticky='nwe')  
+L_MEX2 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[9])
+L_MEX2.grid(row=10, column=1,padx=10, pady=5, sticky='nwe') 
+
+L_MEX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[10])
+L_MEX.grid(row=11, column=1,padx=10, pady=5, sticky='nwe')
+
+L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[11])
+L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nwe')  
 
 
 
-def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX):
+def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX):
     global valores_segundo_frame_arriba, valores_segundo_frame_abajo
     global Label_Num_Grafica
-    global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE, L_CSX, L_DFN, L_MEX, L_AMX
+    global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE, L_CSX, L_DFN, L_MEX1, L_MEX2, L_MEX, L_AMX
     Label_Num_Grafica.configure(text= str(texto_label_num_grafica), font=fontTEXTcoll)
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
     L_EMX.configure(text = str(V_EMX))
-    L_DMX.configure(text = str(float(V_DMX)*10)) # cambiado a milimetros
+    L_DMX.configure(text = str(float(V_DMX)*1000)) # cambiado a milimetros
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
     L_CSX.configure(text = str(V_CSX))
-    L_DFN.configure(text = str(float(V_DFN)*10))
+    L_DFN.configure(text = str(float(V_DFN)*1000))
+    L_MEX1.configure(text = str(V_MEX1))
+    L_MEX2.configure(text = str(V_MEX2))
     L_MEX.configure(text = str(V_MEX))
     L_AMX.configure(text = str(V_AMX))
 
     if posicion == 'arriba':
-        valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX]
+        valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
     else:
-        valores_segundo_frame_abajo = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX, V_AMX]
+        valores_segundo_frame_abajo = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
 
 #--------------------------------------------------
 # Frame Principal del medio
@@ -866,13 +874,13 @@ def colorear_botones_seleccion_grafica(num):
         container2_1_2.configure(fg_color="#1359BB")
         container2_2_2.configure(fg_color="#94e7ff")
         v_vec = valores_segundo_frame_arriba.copy()
-        modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
+        modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
     else:
         ultima_grafica_seleccionada = 'abajo'
         container2_2_2.configure(fg_color="#1359BB")
         container2_1_2.configure(fg_color="#94e7ff")
         v_vec = valores_segundo_frame_abajo.copy()
-        modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10])
+        modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
 
 
 # cambiar magnitudes
@@ -1059,7 +1067,10 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         S2 = S1
         F = F1
         F2 = F1
-    MEX = round(max(max(S1), max(S2)),2) 
+
+    MEX1 = round(max(S1),2)
+    MEX2 = round(max(S2),2)
+    MEX = round((MEX1+MEX2)/2, 2)
     if len(A3) != longitud2:
         A3 = A4
     if len(A4) != longitud2:
@@ -1267,7 +1278,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     CE = str(round(ETR*0.60,2))
     CSX = str(round(Fmax*10/AR,2))
     
-    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX, AMX
+    return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2 ,MEX, AMX
         
 style.use('seaborn-v0_8-whitegrid')
 
@@ -1312,7 +1323,7 @@ estado = "aceleracion"
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU, WD
-    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
     dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", "J"], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', 'KN'], 'wd':['milisegundos', 'KN']}
@@ -1325,7 +1336,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         Button_num_grafica_abajo.configure(text=dic_ultima_grafica[posicion])
     
     
-    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE, CSX, DFN, MEX, AMX)
+    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE, CSX, DFN, MEX1, MEX2, MEX, AMX)
 
     if mantener_relacion_aspecto == 'SI':
         ax1.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
@@ -2028,8 +2039,8 @@ def mostrar_alertas():
 
 def limpiar_review():
     global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
-    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "","")
-    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "","")
+    modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "", "", "", "")
+    modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "", "", "", "")
     LIM_IZQ.configure(text="")
     LIM_DER.configure(text="")
     LIM_IZQ_Entry.delete(0)
