@@ -2404,17 +2404,20 @@ def create_toplevel_export():
 
     container6_2 = ctk.CTkFrame(container6)
     container6_2.grid(row=2, column=0, padx=(30), pady=(15,30), sticky= 'nsew')
-    container6_2.grid_columnconfigure(0, weight=1)
+    container6_2.grid_rowconfigure(0, weight=1)
 
-    for i in range(4):
+    for i in range(5):
         container6_2.grid_columnconfigure(i, weight=1)
 
     ctk.CTkButton(container6_2, text="Insertar fila", command=lambda:Insertar_Fila(container6_1_1)).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=10)
     ctk.CTkButton(container6_2, text="Eliminar fila", command=lambda:Eliminar_Fila()).grid(row=0, column=1, sticky='nsew', padx=(10,0), pady=10)
     ctk.CTkButton(container6_2, text="Completar", command=lambda:Completar_Filas()).grid(row=0, column=2, sticky='nsew', padx=(10,0), pady=10)
     #ctk.CTkButton(container6_2, text="Seleccionar \Ruta", command=lambda:Seleccionar_ruta_guardado_pdf()).grid(row=0, column=3, sticky='nsew')
-    boton_exportar_pdf_excel = ctk.CTkButton(container6_2, text="Exportar \nPDF y Excel", command=lambda: [mostrar_alertas_exportar()])
-    boton_exportar_pdf_excel.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
+    boton_exportar_excel = ctk.CTkButton(container6_2, text="Exportar PDF", command=lambda: [mostrar_alertas_exportar("pdf")])
+    boton_exportar_excel.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
+
+    boton_exportar_pdf = ctk.CTkButton(container6_2, text="Exportar Excel", command=lambda: [mostrar_alertas_exportar("excel")])
+    boton_exportar_pdf.grid(row=0, column=4, sticky='nsew', padx=(10), pady=10)
 
     filas = []
     contador_fila = 1
@@ -2428,7 +2431,7 @@ def create_toplevel_export():
     for i in range(4):
         Insertar_Fila(container6_1_1)
 
-    def mostrar_alertas_exportar():
+    def mostrar_alertas_exportar(tipo_archivo):
         global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf, boton_exportar_pdf_excel
         contador = 0
         longitudes = matriz_data_archivos[0][12:].split(",")
@@ -2447,9 +2450,8 @@ def create_toplevel_export():
         elif ruta_guardado_pdf == "":
             MessageBox.showerror("Error", "Seleccione una ruta de guardado")
         else:
-            boton_exportar_pdf_excel.configure(state='disable')
-            Calcular_Promedios()
-            boton_exportar_pdf_excel.configure(state='enable')
+            Calcular_Promedios(tipo_archivo)
+            
 
 
     def Completar_Filas():
@@ -2681,7 +2683,7 @@ Velocidades = []
 Energias_teoricas = []
 Impedancias = []
 
-def Calcular_Promedios():
+def Calcular_Promedios(tipo_archivo):
     global Energias, Fuerzas, Velocidades, Energias_teoricas, Impedancias, orden_sensores, frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original, matriz_data_archivos, Num_golpes, Num_golpes_modificado, segundo_inicial, segundo_final, fila_resumen
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
 
@@ -2806,9 +2808,10 @@ def Calcular_Promedios():
     canvas.draw()
     img = Image.fromarray(np.asarray(canvas.buffer_rgba()))
     
-    crear_pdf(datas, img)
-    crear_excel(Segundos_data, Aceleraciones_data, Deformaciones_data, Fuerzas_data, Velocidades_data, Energias_data, Desplazamientos_data)
-
+    if tipo_archivo == "excel":
+        crear_excel(Segundos_data, Aceleraciones_data, Deformaciones_data, Fuerzas_data, Velocidades_data, Energias_data, Desplazamientos_data)
+    elif tipo_archivo == "pdf": 
+        crear_pdf(datas, img)
     MessageBox.showinfo(title="Exportado", message="Se ha exportado con éxito")
 
 def crear_excel(Segundos, A, S, F, V, E, D):
