@@ -652,7 +652,23 @@ L_MEX.grid(row=11, column=1,padx=10, pady=5, sticky='nwe')
 L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[11])
 L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nwe')  
 
+frame_sistema_metrico = ctk.CTkFrame(container1_2)
+frame_sistema_metrico.grid(row=13, column=0, columnspan=2, padx=10, pady=10, sticky='nwe')
 
+valor_actual_sistema_metrico = "SI"
+
+def Switch_sistema_metrico_callback(nuevo_valor):
+    global valor_actual_sistema_metrico
+    valor_actual_sistema_metrico = nuevo_valor
+    Creacion_Grafica("arriba", dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
+    Creacion_Grafica("abajo", dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
+
+Switch_sistema_metrico_var = ctk.StringVar(value="SI")
+Switch_sistema_metrico = ctk.CTkSegmentedButton(frame_sistema_metrico, values=["SI", "EN"], variable=Switch_sistema_metrico_var, command=Switch_sistema_metrico_callback)
+
+Switch_sistema_metrico.grid_rowconfigure(0, weight=1)
+Switch_sistema_metrico.grid_columnconfigure(0, weight=1)
+Switch_sistema_metrico.grid(row=0, column=0, sticky='nwe', padx=5, pady=5)
 
 def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX):
     global valores_segundo_frame_arriba, valores_segundo_frame_abajo
@@ -1013,7 +1029,7 @@ for posicion in ['arriba', 'abajo']:
 def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
-    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Label_Num_Grafica
+    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Label_Num_Grafica, valor_actual_sistema_metrico
     
     F1 = []
     F2 = []
@@ -1034,6 +1050,17 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
 
     print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
+    
+    if valor_actual_sistema_metrico == "EN":
+        for i in range(len(S1)):
+            S1[i] = S1[i]*2.54
+        for i in range(len(S2)):
+            S2[i] = S2[i]*2.54
+        for i in range(len(A3)):
+            A3[i] = A3[i]*3.281
+        for i in range(len(A4)):
+            A4[i] = A4[i]*3.281
+
     Z = 0
     EM = float(EM_valor_original)
     AR = float(pile_area)
@@ -1419,6 +1446,8 @@ def cambiar_grafica(direccion):
         dic_ultima_grafica[ultima_grafica_seleccionada] = len(matriz_data_archivos)-1
     elif dic_ultima_grafica[ultima_grafica_seleccionada] < 1:
         dic_ultima_grafica[ultima_grafica_seleccionada] = 1
+    else:
+        Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
     p_primera_marca = 0.0
     p_segunda_marca = 0.0
     print("en cambiar gráfica el num de gráfica es: ", dic_ultima_grafica[ultima_grafica_seleccionada])
@@ -1427,7 +1456,7 @@ def cambiar_grafica(direccion):
             Creacion_Grafica('abajo', dic_ultima_grafica_magnitud['abajo'], dic_ultima_grafica['abajo'], "original", "SI", "NO")
         else:
             Creacion_Grafica('arriba', dic_ultima_grafica_magnitud['arriba'], dic_ultima_grafica['arriba'], "original", "SI", "NO")
-    Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
+    
     
 
 def desplazar_grafica(direccion):
@@ -2452,8 +2481,6 @@ def create_toplevel_export():
         else:
             Calcular_Promedios(tipo_archivo)
             
-
-
     def Completar_Filas():
         global filas, Num_golpes, Num_golpes_modificado
         Num_golpes = []
