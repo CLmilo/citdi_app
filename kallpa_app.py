@@ -177,13 +177,13 @@ def cuentas_a_aceleracion2(cuentas, freq, before_time=10):
 
     tr = Trace(data=D_linea_cero)
     tr.stats.sampling_rate = freq*1000
-    tr.detrend("demean").taper(0.1)
+    tr.detrend("demean")#.taper(0.1)
     return tr.data
 
 def cuentas_a_deformacion(cuentas, freq):
     tr = Trace(data=np.array(cuentas))
     tr.stats.sampling_rate = freq*1000
-    tr.detrend("polynomial",order=2).detrend("demean").taper(0.1)
+    tr.detrend(type = "polynomial", order = 2).detrend("demean")#.taper(0.1)
     
     return tr.data
 
@@ -204,15 +204,18 @@ def cuentas_a_deformacion2(cuentas, freq, before_time=10):
     #trace_ai.detrend(type = "polynomial", order = 2)
     #trace_di.detrend(type = "polynomial", order = 2)
     
-    trace_ai.detrend(type = "linear")
-    trace_di.detrend(type = "linear")
+    trace_ai.detrend(type = "constant")
+    trace_di.detrend(type = "constant")
+
+    #trace_ai.detrend(type = "simple")
+    #trace_di.detrend(type = "simple")
 
     # Concatenar
     D_linea_cero = np.concatenate((trace_ai.data, trace_di.data))
 
     tr = Trace(data=D_linea_cero)
     tr.stats.sampling_rate = freq*1000
-    tr.detrend("demean").taper(0.1)
+    #tr.detrend("demean")#.taper(0.1)
     return tr.data
 
 def filtro_deformimetro(deformacion, freq, lugar):
@@ -220,13 +223,13 @@ def filtro_deformimetro(deformacion, freq, lugar):
     tr.stats.sampling_rate = freq*1000
     tr.filter(type= "lowpass", freq=5000)
     if lugar==3:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*1.29215662)
     elif lugar==4:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*1.3276)
     elif lugar==5:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*1.2902107)
     elif lugar==6:
-        z = np.ndarray.tolist(tr.data*3.048)
+        z = np.ndarray.tolist(tr.data*1.41439663)
     return z
 
 def filtrado2(valores):
@@ -422,7 +425,7 @@ def Obtencion_data_serial(num):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
                 #for datos in dic_orden_sensores2[orden[i]]:  
-                #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
+                #for datos in cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia):  
                 for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
 
@@ -907,7 +910,9 @@ def velocity(acel, freq):
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
+
     if extension == 'ctn':
+        """
         print("estoy entrando a ctn")
         idx_impact = int(0.01*freq*1000)
         # Velocity before impact
@@ -927,6 +932,24 @@ def velocity(acel, freq):
         tr_v_bl = Trace(data=V_bl)
         tr_v_bl.stats.sampling_rate = freq*1000
         return tr_v_bl
+        """
+        velocidad = tr_v[7:]
+    
+        idx_impact = int(0.01*freq*1000)
+        # Velocity before impact
+        V_bi = velocidad[:idx_impact-7]
+        # Velocity after impatc
+        V_ai = velocidad[idx_impact-7:]
+        V_despues = V_ai - np.linspace(0,V_ai[-1],len(V_ai))
+        
+        # Concatenating again
+        velocidad_corregida = np.concatenate((V_bi, V_despues, V_despues[-8:-1]))
+        
+        # Making a trace
+        tr_v_bl = Trace(data=velocidad_corregida)
+        tr_v_bl.stats.sampling_rate = freq*1000
+        return tr_v_bl
+        
     else:
         idx_impact = int(0.01*freq*1000)
         # Velocity before impact
@@ -2395,14 +2418,14 @@ def obtener_datos_grafica(j):
     for i in range(4):
         lugar = int(orden[i])
         if ((lugar== 1)) or (lugar == 2):
-            #for datos in dic_orden_sensores2[orden[i]]:
+            for datos in dic_orden_sensores2[orden[i]]:
             #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-            for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+            #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (lugar!=0):
-            #for datos in dic_orden_sensores2[orden[i]]:  
+            for datos in dic_orden_sensores2[orden[i]]:  
             #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
-            for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
+            #for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
