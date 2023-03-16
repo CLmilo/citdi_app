@@ -2,12 +2,23 @@ from matplotlib.figure import Figure
 import numpy as np
 from tkinter import Tk, Frame,Button,Label, ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import customtkinter as ctk
 
 ventana = Tk()
 ventana.geometry('642x535')
-ventana.wm_title('Grafica Matplotlib Animacion')
-ventana.minsize(width=642,height=535)
+ventana.state("zoomed")
 
+Menup = ctk.CTkFrame(ventana)
+Collect_Wire = ctk.CTkFrame(ventana)
+
+def raise_frame(frame):
+    frame.tkraise()
+
+
+for frame in (Menup, Collect_Wire):
+    frame.grid_rowconfigure(0,weight=1)
+    frame.grid_columnconfigure(0,weight=1)
+    frame.grid(row=0, column=0, sticky='nsew')
 
 x = np.arange(-3, 3, 0.01)
 j = 1
@@ -19,8 +30,7 @@ ax = fig.add_subplot(111)
 #plot a line along points x,y
 line, = ax.plot(x, y)
 
-frame = Frame(ventana,  bg='gray22',bd=3)
-frame.pack(expand=1, fill='both')
+Menup = Frame(ventana,  bg='gray22',bd=3)
 
 canvas = FigureCanvasTkAgg(fig, master = frame)
 canvas.draw()
@@ -29,7 +39,7 @@ canvas.get_tk_widget().pack(padx=5, pady=5 , expand=1, fill='both')
 
 def salir():
     frame.destroy()
-    ventana.destroy()
+    Menup.destroy()
 
 def cambiar():
     global x, y
@@ -47,5 +57,8 @@ def cambiar():
 
 Button(frame, text='Salir', command=salir).pack()
 Button(frame, text="cambiar", command=lambda:cambiar()).pack()
+
+
+raise_frame(Menup)
 
 ventana.mainloop()

@@ -435,11 +435,9 @@ def raise_frame(frame):
     frame.tkraise()
 
 #root = Tk()
-root = ctk.CTk()        
-
-#root.state('zoomed')
-root.attributes('-fullscreen',True)
-root.resizable(0,0)
+root = Tk()        
+root.state("zoomed")
+#root.resizable(0,0)
 root.grid_rowconfigure(0,  weight=1)
 root.grid_columnconfigure(0, weight=1)
 
@@ -449,10 +447,12 @@ Menup = ctk.CTkFrame(root)
 Collect_Wire = ctk.CTkFrame(root)
 Opciones = ctk.CTkFrame(root)
 
+
 for frame in (Menup, Review, Collect_Wire, Opciones):
     frame.grid_rowconfigure(0,weight=1)
     frame.grid_columnconfigure(0,weight=1)
     frame.grid(row=0, column=0, sticky='nsew')
+    
 
 # FRAME INICIAL
 container4a = ctk.CTkFrame(master= Menup, corner_radius = 20)
@@ -558,8 +558,7 @@ container.grid(row=0, column=0, sticky='nsew')
 
 container.grid_rowconfigure(0,weight=1)
 container.grid_columnconfigure(0, weight=1)
-container.grid_columnconfigure(1, weight=1)
-container.grid_columnconfigure(2, weight=1)
+container.grid_columnconfigure(1, weight=10)
 
 
 #---------------------------------------------------------------
@@ -584,8 +583,9 @@ container1_1.grid_columnconfigure(1, weight=1)
 
 container1_2 = ctk.CTkFrame(container1)
 container1_2.grid(row=2, column=0, padx=20, pady=10, sticky='new')
-container1_2.grid_columnconfigure(0, weight=1)
-container1_2.grid_columnconfigure(1, weight=1)
+container1_2.grid_columnconfigure(0, weight=4)
+container1_2.grid_columnconfigure(1, weight=4)
+container1_2.grid_columnconfigure(2, weight=1)
 
 # Textos y Entrys Primer Frame
 textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
@@ -608,13 +608,16 @@ ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
 Label_Num_Grafica = ctk.CTkLabel(container1_2, text="")
 Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=5, sticky='new') 
 
-textos_segundo_frame = ["FMX(kN)", "VMX(m/s)", "EFV(J)", "DMX(mm)", "ETR", "CE", "CSX(MPa)", "DFN(mm)", "MEX1(µE)", "MEX2(µE)", "MEX(µE)", "AMX(g's)"]
+boton_ayuda_unidades = ctk.CTkButton(container1_2, text="?", command=lambda:print(1)).grid(row=0, column=2, padx=5, pady=5)
+
+textos_segundo_frame = ["FMX", "VMX", "EFV", "DMX", "ETR", "CE", "CSX", "DFN", "MEX1", "MEX2", "MEX", "AMX"]
+unidades_segundo_frame = ["kN", "m/s", "J", "mm", "%", "", "MPa", "mm", "mm", "mm", "mm", "m/s2"]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
 for i in range(len(textos_segundo_frame)):
     ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
-
+    ctk.CTkLabel(container1_2, text=unidades_segundo_frame[i]).grid(row=i+1, column=2,padx=(5,5), pady=5, sticky='nwe')
 
 L_FMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[0])
 L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nwe')
@@ -701,7 +704,7 @@ container2.grid_columnconfigure(1, weight=1)
 container2.grid_rowconfigure(0, weight=1)
 container2.grid_rowconfigure(1, weight=1)
 
-container2.grid(row=0,column=1, padx=(30,10), pady=(30))
+container2.grid(row=0,column=1, padx=(30,10), pady=(30), sticky='nswe')
 
 
 # rectangulos principales
@@ -729,19 +732,7 @@ container2_1_3 = ctk.CTkFrame(container2_1)
 container2_1_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
 
 container2_1_3.grid_rowconfigure(0, weight=1)
-
-container2_1_3.grid_columnconfigure(0, weight=250)
-container2_1_3.grid_columnconfigure(1, weight=1)
-
-container2_1_3_1 = ctk.CTkFrame(container2_1_3)
-container2_1_3_1.grid(row=0, column=0, sticky='w')
-
-container2_1_3_3 = ctk.CTkFrame(container2_1_3)
-container2_1_3_3.grid(row=0, column=1, sticky='e')
-container2_1_3_3.grid_columnconfigure(0, weight=1)
-container2_1_3_3.grid_columnconfigure(1, weight=1)
-container2_1_3_3.grid_columnconfigure(2, weight=1)
-container2_1_3_3.grid_columnconfigure(3, weight=1)
+container2_1_3.grid_columnconfigure(0, weight=1)
 
 # frame de abajo
 container2_2 = ctk.CTkFrame(container2)
@@ -768,16 +759,6 @@ container2_2_3.grid(row=2, column=0, sticky='nsew', padx=10, pady=(0,5))
 container2_2_3.grid_rowconfigure(0, weight=1)
 container2_2_3.grid_columnconfigure(0, weight=250)
 container2_2_3.grid_columnconfigure(1, weight=1)
-
-container2_2_3_1 = ctk.CTkFrame(container2_2_3)
-container2_2_3_1.grid(row=0, column=0, sticky='sw')
-
-container2_2_3_3 = ctk.CTkFrame(container2_2_3)
-container2_2_3_3.grid(row=0, column=1, sticky='e')
-container2_2_3_3.grid_columnconfigure(0, weight=1)
-container2_2_3_3.grid_columnconfigure(1, weight=1)
-container2_2_3_3.grid_columnconfigure(2, weight=1)
-container2_2_3_3.grid_columnconfigure(3, weight=1)
 
 # botones de los frames
 
@@ -909,34 +890,11 @@ def cambiar_magnitud_grafica(posicion,magnitud):
     else:
         Creacion_Grafica(posicion, dic_magnitud_botones[magnitud], dic_ultima_grafica[posicion], "original", "NO", "NO")
 
-dic_posicion = {"arriba":[container2_1_2, container2_1_3_1, container2_1_3_3], "abajo":[container2_2_2, container2_2_3_1, container2_2_3_3]}
-
-def clear_container(posicion):
-    for container in dic_posicion[posicion]:
-        list = container.pack_slaves()
-        for l in list:
-            l.destroy()
+dic_posicion = {"arriba":[container2_1_2, container2_1_3], "abajo":[container2_2_2, container2_2_3]}
 
 desplazado_arriba = 0
 desplazado_abajo = 0
 
-p_primera_marca = 0.0
-p_segunda_marca = 0.0
-
-
-
-def moverlimite(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, ind_limite, direccion_limite):
-    global p_primera_marca, p_segunda_marca, frecuencia_muestreo
-    dic_suma_limite = {'izquierda':-1/(int(frecuencia_muestreo[-1])), 'derecha':1/(int(frecuencia_muestreo[-1]))}
-
-    print("p_primera_marca:", p_primera_marca, "p_segunda_marca:", p_segunda_marca)
-    if ind_limite == '1':
-        p_primera_marca += dic_suma_limite[direccion_limite]
-    if ind_limite == '2':
-        p_segunda_marca += dic_suma_limite[direccion_limite]
-    print("p_primera_marca:", p_primera_marca, "p_segunda_marca:", p_segunda_marca)
-    print("estoy moviendo los límites creando la siguiente gráfica: ", posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, p_primera_marca, p_segunda_marca)
-    Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, p_primera_marca, p_segunda_marca)
     
 class Toolbar(NavigationToolbar2TkAgg):
     def set_message(self, s):
@@ -1015,17 +973,6 @@ def energy(F, V, freq):
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
 
-for posicion in ['arriba', 'abajo']:
-    B1_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<", width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'izquierda'))
-    B1_izquierda.grid(row=0, column=0, padx=(5,5))
-    B1_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '1', 'derecha'))
-    B1_derecha.grid(row=0, column=1, padx=(0,5))
-    B2_izquierda = ctk.CTkButton(dic_posicion[posicion][2], text="<",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'izquierda'))
-    B2_izquierda.grid(row=0, column=2, padx=(0,5))
-    B2_derecha = ctk.CTkButton(dic_posicion[posicion][2], text=">",  width=30, height=30, command=lambda:moverlimite(posicion, magnitud, dic_ultima_grafica[posicion], 'mantener', condicion, 'MODIFICAR', '2', 'derecha'))
-    B2_derecha.grid(row=0, column=3, padx=(0,5))
-
-
 def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
@@ -1045,7 +992,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     WD = []
     V_Transformado = []
     V_Transformado_valor_real = []
-    global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR, LIM_IZQ, LIM_DER
+    global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR
     global desplazado_arriba, desplazado_abajo
 
     print("el gráfico que se hace es ", num)
@@ -1162,70 +1109,16 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     Dmax = round(max(D), 2)
     DFN = round(D[-1],2)
     
-    ajuste = 0
    
     Z = ((AR*(1000000))*EM*(0.0001))/(5103.44*1000)
 
     imax = F.index(Fmax_original)
-    ajuste = list(V).index(Vmax_original)-imax
-
-    print("el ajuste es ",ajuste)
-    #primera_marca = segundos[imax]
-    primera_marca = segundo_inicial
-    segunda_marca = segundo_final
-
-    if mantener_limites =='NO':
-        p_primera_marca = 0.0
-        valor_primera_marca = primera_marca
-        p_segunda_marca = 0.0
-        valor_segunda_marca = segunda_marca
-    elif mantener_limites == 'MODIFICAR':
-        valor_primera_marca = primera_marca + a_primera_marca
-        if valor_primera_marca < primera_marca:
-            valor_primera_marca = primera_marca
-            p_primera_marca = 0.0
-        elif valor_primera_marca > segunda_marca:
-            valor_primera_marca = segunda_marca
-            
-        valor_segunda_marca = segunda_marca + a_segunda_marca
-        if valor_segunda_marca < primera_marca:
-            valor_segunda_marca = primera_marca
-        elif valor_segunda_marca > segunda_marca:
-            valor_segunda_marca = segunda_marca
-            p_segunda_marca = 0.0
-
-    elif mantener_limites == 'MODIFICAR_EXACTO':
-        valor_primera_marca = a_primera_marca
-        if valor_primera_marca < primera_marca:
-            valor_primera_marca = primera_marca
-            a_primera_marca = primera_marca
-        elif valor_primera_marca > segunda_marca:
-            valor_primera_marca = segunda_marca
-            a_segunda_marca = segunda_marca
-        
-        valor_segunda_marca = a_segunda_marca
-        if valor_segunda_marca < primera_marca:
-            valor_segunda_marca = primera_marca
-            a_primera_marca = primera_marca
-        elif valor_segunda_marca > segunda_marca:
-            valor_segunda_marca = segunda_marca
-            a_segunda_marca = segunda_marca
-
-        p_primera_marca = a_primera_marca - primera_marca
-        p_segunda_marca = a_segunda_marca - segunda_marca
-        
-    else:
-        valor_primera_marca = primera_marca + p_primera_marca
-        valor_segunda_marca = segunda_marca + p_segunda_marca
-    
-    LIM_IZQ.configure(text = str(round(valor_primera_marca,2))+" ms")
-    LIM_DER.configure(text = str(round(valor_segunda_marca,2))+" ms")
     
     for i in range(len(V)):
         valor = V[i]*Z
         V_Transformado.append(valor)
         V_Transformado_valor_real.append(V[i])
-    dic_desplazamiento = {'izquierda': -1, 'derecha': 1, 'centrar': ajuste*-1, 'mantener': 0}
+    dic_desplazamiento = {'izquierda': -1, 'derecha': 1, 'mantener': 0}
     if direccion != "original" or direccion == 'mantener':
         if posicion == "arriba":
             desplazado_arriba += dic_desplazamiento[direccion]
@@ -1267,21 +1160,14 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         condicion = 'NO'
     else:
         condicion = 'SI'
-    if magnitud == 'fuerzaxvelocidad':
-        ax1.axvline(valor_primera_marca, color='r', ls="dotted")
-        ax1.axvline(valor_segunda_marca, color='r', ls="dotted")
-
-
-    rango_inferior = segundos.index(round(valor_primera_marca,2))
-    rango_superior = segundos.index(round(valor_segunda_marca,2))
     try:
-        E = energy(F[rango_inferior:rango_superior],V[rango_inferior:rango_superior], int(frecuencia_muestreo[-1])).data
+        E = energy(F,V, int(frecuencia_muestreo[-1])).data
     except Exception as e:
         print(f"Error al calcular la Energía E {E}")
     j = 0
     segundos_Transformado = []
-    for i in range(segundos.index(round(valor_primera_marca,2)),segundos.index(round(valor_segunda_marca,2))):
-        n = round(valor_primera_marca+(j/(int(frecuencia_muestreo[-1]))),2)
+    for i in range(len(segundos)):
+        n = round(j/(int(frecuencia_muestreo[-1])),2)
         j+=1
         segundos_Transformado.append(n)
     
@@ -1321,7 +1207,7 @@ canvas1.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
 toolbar = Toolbar(canvas1, dic_posicion['arriba'][1])
 toolbar.config(background="#2A2A2A")
 toolbar.update()
-canvas1._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
+canvas1._tkcanvas.pack()
 fig1.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
 
 t1, = ax1.plot(np.arange(1, 8001), np.zeros(8000))
@@ -1339,7 +1225,7 @@ canvas2.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
 toolbar = Toolbar(canvas2, dic_posicion['abajo'][1])
 toolbar.config(background="#2A2A2A")
 toolbar.update()
-canvas2._tkcanvas.pack(side=BOTTOM, expand=1, fill=BOTH)
+canvas2._tkcanvas.pack()
 fig2.subplots_adjust(left=0.1,bottom=0.15,right=0.98,top=0.96)
 
 t3, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
@@ -1440,16 +1326,15 @@ def cambiar_grafica(direccion):
     global ultima_grafica_seleccionada
     global ultima_magnitud_arriba
     global ultima_magnitud_abajo
-    global p_primera_marca, p_segunda_marca
+    print(dic_direccion[direccion])
+    print(dic_ultima_grafica[ultima_grafica_seleccionada])
     dic_ultima_grafica[ultima_grafica_seleccionada] += dic_direccion[direccion]
+    print(dic_ultima_grafica[ultima_grafica_seleccionada])
     if dic_ultima_grafica[ultima_grafica_seleccionada] >= len(matriz_data_archivos):
         dic_ultima_grafica[ultima_grafica_seleccionada] = len(matriz_data_archivos)-1
-    elif dic_ultima_grafica[ultima_grafica_seleccionada] < 1:
+    elif dic_ultima_grafica[ultima_grafica_seleccionada] <= 1:
         dic_ultima_grafica[ultima_grafica_seleccionada] = 1
-    else:
-        Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
-    p_primera_marca = 0.0
-    p_segunda_marca = 0.0
+    Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
     print("en cambiar gráfica el num de gráfica es: ", dic_ultima_grafica[ultima_grafica_seleccionada])
     if direccion == 'nulo':
         if ultima_grafica_seleccionada == 'arriba':
@@ -1457,99 +1342,32 @@ def cambiar_grafica(direccion):
         else:
             Creacion_Grafica('arriba', dic_ultima_grafica_magnitud['arriba'], dic_ultima_grafica['arriba'], "original", "SI", "NO")
     
-    
+def cambiar_grafica_exacto(numero):
+    global matriz_data_archivos, ultima_grafica_seleccionada, ultima_magnitud_arriba, ultima_magnitud_abajo
+    if numero == "ultimo":
+        dic_ultima_grafica[ultima_grafica_seleccionada] = len(matriz_data_archivos)-1
+        Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")    
+    elif numero == "primero":
+        dic_ultima_grafica[ultima_grafica_seleccionada] = 1
+        Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")  
 
-def desplazar_grafica(direccion):
-    global contador_grafica_arriba, contador_grafica_abajo, ultima_grafica_seleccionada, ultima_magnitud_arriba, ultima_magnitud_abajo, desplazado_izquierda, desplazado_derecha
-    
-    Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], direccion, "SI", "SI")
-
-botones_barra_lateral = ['DEL','DD','DI','AJ','>','<','>>','<<']
+botones_barra_lateral = ['DEL','>','<','>>','<<', 'INICIO', 'FINAL', 'EXPORTAR']
 
 for i in range(len(botones_barra_lateral)):
     container2_3.grid_rowconfigure(i, weight=1)
 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[0], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: eliminar_grafica()).grid(row=0,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("derecha")).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: desplazar_grafica("centrar")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha")).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+
 
 #----------------------------------------------------
 # Frame de la derecha 
-container3 = ctk.CTkFrame(container)
-container3.grid(row=0,column=2,sticky='nsew')
-container3.grid_columnconfigure(0, weight=1)
-
-# Frames Principales
-# Frame de arriba
-
-container3_1 = ctk.CTkFrame(container3)
-container3_1.grid(row=0, column=0, padx=20, pady=(20,5), sticky='new')
-container3_1.grid_columnconfigure(0, weight=2)
-container3_1.grid_columnconfigure(1, weight=1)
-T_1 = ctk.CTkLabel(container3_1, text="Límites de la gráfica").grid(row=0,column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
-
-container3_2 = ctk.CTkFrame(container3)
-container3_2.grid(row=1, column=0, padx=20, pady=(20,10), sticky='new')
-
-container3_2.grid_columnconfigure(0, weight=2)
-container3_2.grid_columnconfigure(1, weight=1)
-
-textos_tercer_frame = ["límite izquierda", "límite derecha"]
-
-ctk.CTkLabel(container3_2, text=textos_tercer_frame[0]).grid(row=0,column=0, padx=10, pady=10, sticky='nw') 
-LIM_IZQ = ctk.CTkLabel(container3_2, text='')
-LIM_IZQ.grid(row=0, column=1,padx=10, pady=10, sticky='nwe')
-ctk.CTkLabel(container3_2, text=textos_tercer_frame[1]).grid(row=1,column=0, padx=10, pady=10, sticky='nw') 
-LIM_DER = ctk.CTkLabel(container3_2, text='')
-LIM_DER.grid(row=1, column=1,padx=10, pady=10, sticky='nwe')
-
-
-
-# Frame del medio
-
-container3_3 = ctk.CTkFrame(container3)
-container3_3.grid(row=2, column=0, padx=20, pady=10, sticky='new')
-container3_3.grid_columnconfigure(0, weight=2)
-container3_3.grid_columnconfigure(1, weight=1)
-
-container3_3.rowconfigure(0, weight=1)
-container3_3.rowconfigure(1, weight=1)
-container3_3.rowconfigure(2, weight=1)
-container3_3.rowconfigure(3, weight=1)
-
-T_2 = ctk.CTkLabel(container3_3, text="Límites input").grid(row=0,column=0, padx=10, pady=10, sticky='nsew')
-
-ctk.CTkLabel(container3_3, text=textos_tercer_frame[0]).grid(row=1,column=0, padx=(10,0), pady=10, sticky='nw') 
-LIM_IZQ_Entry = ctk.CTkEntry(container3_3)
-LIM_IZQ_Entry.grid(row=1, column=1,padx=(0,10), pady=10, sticky='nwe')
-ctk.CTkLabel(container3_3, text=textos_tercer_frame[1]).grid(row=2,column=0, padx=(10,0), pady=10, sticky='nw') 
-LIM_DER_Entry = ctk.CTkEntry(container3_3)
-LIM_DER_Entry.grid(row=2, column=1,padx=(0,10), pady=10, sticky='nwe')
-
-ctk.CTkButton(container3_3, text='Actualizar', command=lambda:actualizar_limites()).grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky='nw')
-
-def actualizar_limites():
-    global contador_grafica_arriba
-    global contador_grafica_abajo
-    global ultima_grafica_seleccionada
-    global ultima_magnitud_arriba
-    global ultima_magnitud_abajo
-    global LIM_IZQ_Entry, LIM_DER_Entry
-    Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], 'original', "SI", 'MODIFICAR_EXACTO', float(LIM_IZQ_Entry.get()), float(LIM_DER_Entry.get()))
-
-# Frame de abajo
-
-container3_4 = ctk.CTkFrame(container3)
-container3_4.grid(row=3, column=0, padx=20, pady=10, sticky='new')
-container3_4.grid_columnconfigure(0, weight=2)
-container3_4.grid_rowconfigure(0, weight=1)
-
-ctk.CTkButton(container3_4, text='Exportar', command=lambda:[Seleccionar_ruta_guardado_pdf(), create_toplevel_export()]).grid(row=0, column=0, padx=10, pady=10, sticky='new')
 
 def preparaciones_exportar(label_cantidad_golpes, label_inicio, label_final):
     global matriz_data_archivos
@@ -2067,13 +1885,9 @@ def mostrar_alertas():
         crear_columna_muestreo()
 
 def limpiar_review():
-    global LIM_IZQ, LIM_DER, LIM_IZQ_Entry, LIM_DER_Entry, t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
+    global t1, t2, t3, t4, fig1, fig2, canvas1, canvas2
     modificar_datos_segundo_frame('arriba', "", "", "", "", "", "", "", "", "", "", "", "", "")
     modificar_datos_segundo_frame('abajo', "", "", "", "", "", "", "", "", "", "", "", "", "")
-    LIM_IZQ.configure(text="")
-    LIM_DER.configure(text="")
-    LIM_IZQ_Entry.delete(0)
-    LIM_DER_Entry.delete(0)
     # arriba
     fig1.clear()
     ax1 = fig1.add_subplot(111)
@@ -2381,7 +2195,11 @@ def Insertar_Fila(container6_1_1):
 
 def Seleccionar_ruta_guardado_pdf():
     global ruta_guardado_pdf
-    ruta_guardado_pdf = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
+    try:
+        ruta_guardado_pdf = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
+        create_toplevel_export()
+    except:
+        pass
 
 boton_exportar_pdf_excel = ""
 
@@ -2672,7 +2490,7 @@ def obtener_datos_grafica(j):
     else:
         D = (D1.data + D2.data)/2
 
-    Dmax = round(max(D), 2)
+    Dmax = round(max(D), 6)
     
     Z = Fmax_original/Vmax_original
     
