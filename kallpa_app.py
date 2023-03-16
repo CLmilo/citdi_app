@@ -681,13 +681,6 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
     L_EMX.configure(text = str(V_EMX))
-<<<<<<< HEAD
-    L_DMX.configure(text = str(float(V_DMX)*1000)) # cambiado a milimetros
-    L_ETR.configure(text = str(V_ETR))
-    L_CE.configure(text = str(V_CE))
-    L_CSX.configure(text = str(V_CSX))
-    L_DFN.configure(text = str((V_DFN)))
-=======
     L_DMX.configure(text = str(float(V_DMX)*1000)) # cambiado a milimetros
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
@@ -695,7 +688,6 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_DFN.configure(text = str(float(V_DFN)*1000))
     L_MEX1.configure(text = str(V_MEX1))
     L_MEX2.configure(text = str(V_MEX2))
->>>>>>> d8170828d6821f14d0425e38b27db9493401c74e
     L_MEX.configure(text = str(V_MEX))
     L_AMX.configure(text = str(V_AMX))
 
@@ -960,7 +952,9 @@ def velocity(acel, freq):
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
+
     if extension == 'ctn':
+        """
         print("estoy entrando a ctn")
         idx_impact = int(0.01*freq*1000)
         # Velocity before impact
@@ -980,6 +974,24 @@ def velocity(acel, freq):
         tr_v_bl = Trace(data=V_bl)
         tr_v_bl.stats.sampling_rate = freq*1000
         return tr_v_bl
+        """
+        velocidad = tr_v[7:]
+    
+        idx_impact = int(0.01*freq*1000)
+        # Velocity before impact
+        V_bi = velocidad[:idx_impact-7]
+        # Velocity after impatc
+        V_ai = velocidad[idx_impact-7:]
+        V_despues = V_ai - np.linspace(0,V_ai[-1],len(V_ai))
+        
+        # Concatenating again
+        velocidad_corregida = np.concatenate((V_bi, V_despues, V_despues[-8:-1]))
+        
+        # Making a trace
+        tr_v_bl = Trace(data=velocidad_corregida)
+        tr_v_bl.stats.sampling_rate = freq*1000
+        return tr_v_bl
+        
     else:
         idx_impact = int(0.01*freq*1000)
         # Velocity before impact
@@ -2588,14 +2600,14 @@ def obtener_datos_grafica(j):
     for i in range(4):
         lugar = int(orden[i])
         if ((lugar== 1)) or (lugar == 2):
-            #for datos in dic_orden_sensores2[orden[i]]:
+            for datos in dic_orden_sensores2[orden[i]]:
             #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-            for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+            #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (lugar!=0):
-            #for datos in dic_orden_sensores2[orden[i]]:  
+            for datos in dic_orden_sensores2[orden[i]]:  
             #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
-            for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
+            #for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
