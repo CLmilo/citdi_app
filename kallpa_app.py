@@ -63,6 +63,7 @@ ET_valor_original = 981
 ruta_guardado = ""
 ruta_guardado_pdf = ""
 L_T_Grafico = ""
+tipo_review = ""
 
 F1 = []
 F2 = []
@@ -264,11 +265,12 @@ def filtrado_velocidad(valores):
 matriz_data_archivos = []
 
 def browseFiles():
+    global tipo_review
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
     ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
-    numero_grafica_actual = 1
+    tipo_review = "solo_review"
     try:
         with open(ruta_data_inicial, "r") as file:
             lineas = file.readlines()
@@ -488,9 +490,13 @@ Entry_Profundidad_inicial = ''
 Entry_Profundidad_final = ''
 
 def limpiar_entrys():
-    global Entry_Profundidad_inicial, Entry_Profundidad_final
-    Entry_Profundidad_inicial.configure(text='')
-    Entry_Profundidad_final.configure(text='')
+    global Entry_Profundidad_inicial, Entry_Profundidad_final, tipo_review
+    try:
+        Entry_Profundidad_inicial.configure.delete(0, END)
+        Entry_Profundidad_final.configure.delete(0, END)
+    except:
+        pass
+    tipo_review = "collectwire"
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
@@ -584,11 +590,11 @@ container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
 container1_1.grid_columnconfigure(0, weight=1)
 container1_1.grid_columnconfigure(1, weight=1)
 
-container1_2 = ctk.CTkFrame(container1)
-container1_2.grid(row=2, column=0, padx=20, pady=10, sticky='new')
-container1_2.grid_columnconfigure(0, weight=4)
-container1_2.grid_columnconfigure(1, weight=4)
-container1_2.grid_columnconfigure(2, weight=1)
+container1_2 = ctk.CTkFrame(container1, width=230, height=550)
+container1_2.grid(row=2, column=0, padx=20, pady=10, sticky='nsew')
+container1_2.grid_columnconfigure(0, weight=1)
+container1_2.grid_columnconfigure(1, weight=1)
+container1_2.grid_propagate("False")
 
 # Textos y Entrys Primer Frame
 textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
@@ -608,19 +614,63 @@ ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
 # Textos y Entrys Segundo Frame
 #textos_segundo_frame = ["BL #", "RSP(kN)", "RMX(kN)", "RSU(kN)", "FMX(kN)", "VMX(m/s)", "EMX(kN.m)", "DMX(mm)", "DFN(mm)", "CSX(MPa)", "TSX(MPa)", "BTA"]
 
-Label_Num_Grafica = ctk.CTkLabel(container1_2, text="")
-Label_Num_Grafica.grid(row=0,column=0, columnspan=2, padx=10, pady=5, sticky='new') 
+Button_Num_Grafica = ctk.CTkButton(container1_2, text="")
+Button_Num_Grafica.grid(row=0,column=0, padx=10, pady=5, sticky='new') 
 
-boton_ayuda_unidades = ctk.CTkButton(container1_2, text="?", command=lambda:print(1)).grid(row=0, column=2, padx=5, pady=5)
+def create_toplevel_ayuda_unidades():
+    ayuda_unidades_frame = ctk.CTkToplevel()
+    ayuda_unidades_frame.title("Ayuda Unidades")
+    ayuda_unidades_frame.resizable(False, False) 
+    ayuda_unidades_frame.grab_set()
+    ayuda_unidades_frame.focus()
+    # create label on CTkToplevel window
+    container9 = ctk.CTkFrame((ayuda_unidades_frame))
+    container9.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
+    container9.grid_rowconfigure(0, weight=1)
+    container9.grid_columnconfigure(0, weight=1)
+    container9.grid_columnconfigure(1, weight=5)
+    
+    container9_1 = ctk.CTkFrame(container9)
+    container9_1.grid(row=0, column=0, padx=10, pady=10)
+    for i in range(10):
+        container9_1.grid_rowconfigure(i, weight=1)
+    ctk.CTkLabel(container9_1, text='CSX').grid(row=0, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='DMX').grid(row=1, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='EFV').grid(row=2, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='ETR').grid(row=3, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='BPM').grid(row=4, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='VMX').grid(row=5, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='FMX').grid(row=6, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='DFN').grid(row=7, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='MEX').grid(row=8, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_1, text='AMX').grid(row=9, column=0, padx=5, pady=5)
+
+    container9_2 = ctk.CTkFrame(container9)
+    container9_2.grid(row=0, column=1, padx=(0,10), pady=10)
+    for i in range(10):
+        container9_2.grid_rowconfigure(i, weight=1)
+    ctk.CTkLabel(container9_2, text='Máx. Esfuerzo de compresión medido').grid(row=0, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Desplazamiento máx').grid(row=1, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Energía medida por método FV').grid(row=2, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Relación de energía transferida (o eficiencia)').grid(row=3, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Golpes por minuto').grid(row=4, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Velocidad máxima').grid(row=5, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Fuerza máxima').grid(row=6, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Dezplazamiento al final').grid(row=7, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Max. Deformación').grid(row=8, column=0, padx=5, pady=5)
+    ctk.CTkLabel(container9_2, text='Max. Aceleración').grid(row=9, column=0, padx=5, pady=5)
+
+
+boton_ayuda_unidades = ctk.CTkButton(container1_2, width=80, text="?", command=lambda:create_toplevel_ayuda_unidades(), font=fontTEXTcoll).grid(row=0, column=1, padx=5, pady=5)
 
 textos_segundo_frame = ["FMX", "VMX", "EFV", "DMX", "ETR", "CE", "CSX", "DFN", "MEX1", "MEX2", "MEX", "AMX"]
-unidades_segundo_frame = ["kN", "m/s", "J", "mm", "%", "", "MPa", "mm", "mm", "mm", "mm", "m/s2"]
+unidades_segundo_frame = [[" kN"," kip"], [" m/s", " ft/s"], [" J", " ft-lbs"], [" mm", " in"], [" %", " %"], ["", ""], [" MPa", " ksi"], [" mm", " in"], [" µe", " µe"], [" µe", " µe"], [" µe", " µe"], [" g's", " g's"]]
+unidades_primer_frame = [[" cm^2", " in^2"], [" MPa", " ksi"], [" J", " ft-lbs"]]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
 for i in range(len(textos_segundo_frame)):
     ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
-    ctk.CTkLabel(container1_2, text=unidades_segundo_frame[i]).grid(row=i+1, column=2,padx=(5,5), pady=5, sticky='nwe')
 
 L_FMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[0])
 L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nwe')
@@ -676,27 +726,33 @@ Switch_sistema_metrico.grid_rowconfigure(0, weight=1)
 Switch_sistema_metrico.grid_columnconfigure(0, weight=1)
 Switch_sistema_metrico.grid(row=0, column=0, sticky='nwe', padx=5, pady=5)
 
+dic_metrico = {"SI":0, "EN":1}
+
 def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX):
-    global valores_segundo_frame_arriba, valores_segundo_frame_abajo
-    global Label_Num_Grafica
+    global valores_segundo_frame_arriba, valores_segundo_frame_abajo, unidades_segundo_frame
+    global Button_Num_Grafica, valor_actual_sistema_metrico
     global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE, L_CSX, L_DFN, L_MEX1, L_MEX2, L_MEX, L_AMX
-    Label_Num_Grafica.configure(text= str(texto_label_num_grafica), font=fontTEXTcoll)
-    L_FMX.configure(text = str(V_FMX))
-    L_VMX.configure(text = str(V_VMX))
-    L_EMX.configure(text = str(V_EMX))
-    if V_DMX=="":
-        V_DMX="0"
-    L_DMX.configure(text = str(float(V_DMX)*1000)) # cambiado a milimetros
-    L_ETR.configure(text = str(V_ETR))
-    L_CE.configure(text = str(V_CE))
-    L_CSX.configure(text = str(V_CSX))
-    if V_DFN=="":
-        V_DFN="0"
-    L_DFN.configure(text = str(float(V_DFN)*1000))
-    L_MEX1.configure(text = str(V_MEX1))
-    L_MEX2.configure(text = str(V_MEX2))
-    L_MEX.configure(text = str(V_MEX))
-    L_AMX.configure(text = str(V_AMX))
+    global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label
+    Button_Num_Grafica.configure(text= str(texto_label_num_grafica), font=fontTEXTcoll)
+    
+    dic_transformacion_primer_frame = {"SI":[1,1,1], "EN":[0.15500031000062, 0.14503773800722, 0.7375621493]}
+
+    pile_area_label.configure(text=str(round(float(pile_area)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][0],2)) + unidades_primer_frame[0][dic_metrico[valor_actual_sistema_metrico]])
+    EM_label.configure(text=str(round(float(EM_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][1],2)) + unidades_primer_frame[1][dic_metrico[valor_actual_sistema_metrico]])
+    ET_label.configure(text=str(round(float(ET_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][2],2)) + unidades_primer_frame[2][dic_metrico[valor_actual_sistema_metrico]])
+
+    L_FMX.configure(text = str(V_FMX)+unidades_segundo_frame[0][dic_metrico[valor_actual_sistema_metrico]])
+    L_VMX.configure(text = str(V_VMX)+unidades_segundo_frame[1][dic_metrico[valor_actual_sistema_metrico]])
+    L_EMX.configure(text = str(V_EMX)+unidades_segundo_frame[2][dic_metrico[valor_actual_sistema_metrico]])
+    L_DMX.configure(text = str(V_DMX)+unidades_segundo_frame[3][dic_metrico[valor_actual_sistema_metrico]]) # cambiado a milimetros
+    L_ETR.configure(text = str(V_ETR)+unidades_segundo_frame[4][dic_metrico[valor_actual_sistema_metrico]])
+    L_CE.configure(text = str(V_CE)+unidades_segundo_frame[5][dic_metrico[valor_actual_sistema_metrico]])
+    L_CSX.configure(text = str(V_CSX)+unidades_segundo_frame[6][dic_metrico[valor_actual_sistema_metrico]])
+    L_DFN.configure(text = str(V_DFN)+unidades_segundo_frame[7][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX1.configure(text = str(V_MEX1)+unidades_segundo_frame[8][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX2.configure(text = str(V_MEX2)+unidades_segundo_frame[9][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX.configure(text = str(V_MEX)+unidades_segundo_frame[10][dic_metrico[valor_actual_sistema_metrico]])
+    L_AMX.configure(text = str(V_AMX)+unidades_segundo_frame[11][dic_metrico[valor_actual_sistema_metrico]])
 
     if posicion == 'arriba':
         valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
@@ -1003,7 +1059,7 @@ def energy(F, V, freq):
 def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
-    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Label_Num_Grafica, valor_actual_sistema_metrico
+    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica, valor_actual_sistema_metrico
     
     F1 = []
     F2 = []
@@ -1024,16 +1080,6 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
 
     print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
-    
-    if valor_actual_sistema_metrico == "EN":
-        for i in range(len(S1)):
-            S1[i] = S1[i]*2.54
-        for i in range(len(S2)):
-            S2[i] = S2[i]*2.54
-        for i in range(len(A3)):
-            A3[i] = A3[i]*3.281
-        for i in range(len(A4)):
-            A4[i] = A4[i]*3.281
 
     Z = 0
     EM = float(EM_valor_original)
@@ -1133,8 +1179,10 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     else:
         D = D1.data if len(V1.data) > len(V2.data) else D2.data
 
-    Dmax = round(max(D), 2)
-    DFN = round(D[-1],2)
+
+    Dmax = round(1000*max(D), 2)
+
+    DFN = round(1000*D[-1],2)
     
    
     Z = ((AR*(1000000))*EM*(0.0001))/(5103.44*1000)
@@ -1215,9 +1263,35 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     
     ET = float(ET_valor_original)
     ETR = round(100*(Emax/ET),2)
-    CE = str(round(ETR*0.60,2))
-    CSX = str(round(Fmax*10/AR,2))
+    CE = str(round(ETR/60,2)) # dividir
+    CSX = round(Fmax*10/AR,2)
     
+    if valor_actual_sistema_metrico == "EN":
+        #cambiando la deformacion
+        S1 = np.dot(S1, 0.0393700787401574)
+        S2 = np.dot(S2, 0.0393700787401574)
+        #cambiando la fuerza
+        F1 = np.dot(F1, 0.22480894387096)
+        F2 = np.dot(F2, 0.22480894387096)
+        F = np.dot(F, 0.22480894387096)
+        #cambiando la velocidad
+        V1 = np.dot(V1, 3.28083989501312)
+        V2 = np.dot(V2, 3.28083989501312)
+        V_Transformado = np.dot(V_Transformado, 3.28083989501312)
+        #camiando energía
+        E = np.dot(E, 0.7375621493)
+        #cambiando desplazamiento
+        D1 = np.dot(D1, 0.0393700787401574)
+        D2 = np.dot(D2, 0.0393700787401574)
+        #cambiando valores
+        ET = ET * 0.7375621493
+        Fmax = round(Fmax * 0.22480894387096,2)
+        Vmax = round(Vmax * 3.28083989501312,2)
+        Emax = round(Emax * 0.7375621493,2)
+        Dmax = round(Dmax * 0.0393700787401574,2)
+        CSX = round(CSX * 0.1450377377,2)
+        DFN = round(DFN * 0.0393700787401574, 2)
+        
     return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2 ,MEX, AMX
         
 style.use('seaborn-v0_8-whitegrid')
@@ -1260,13 +1334,14 @@ t4, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
 
 estado = "aceleracion"
 
-def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
+def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites):
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU, WD
     A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
-    dic_unidades = {'aceleracion':["milisegundos", "g`s"], 'deformacion':["milisegundos", "micro strain"], 'fuerza':["milisegundos", "kN"], 'velocidad':["milisegundos", "m/s"], 'avged':["milisegundos", "J"], 'desplazamiento':["milisegundos", "m"], 'fuerzaxvelocidad':["milisegundos", ""], 'wu':['milisegundos', 'KN'], 'wd':['milisegundos', 'KN']}
+    dic_unidades = {'aceleracion':[["milisegundos", "g's"], ["milisegundos", "g's"]], 'deformacion':[["milisegundos", "milimetros"], ["milisegundos", "pulgadas"]], 'fuerza':[["milisegundos", "kN"], ["milisegundos", "kips"]], 'velocidad':[["milisegundos", "m/s"], ["milisegundos", "ft/s"]], 'avged':[["milisegundos", "J"], ["milisegundos", "ft-lbs"]],
+                    'desplazamiento':[["milisegundos", "milimetros"],["milisegundos", "pulgadas"]], 'fuerzaxvelocidad':[["milisegundos", ""], ["milisegundos", ""]], 'wu':[['milisegundos', 'kN'], ['milisegundos', 'kip']], 'wd':[['milisegundos', 'kN'], ['milisegundos', 'kip']]}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
@@ -1276,7 +1351,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         Button_num_grafica_abajo.configure(text=dic_ultima_grafica[posicion])
     
     
-    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, str(ETR) + "%", CE, CSX, DFN, MEX1, MEX2, MEX, AMX)
+    modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, ETR, CE, CSX, DFN, MEX1, MEX2, MEX, AMX)
 
     if mantener_relacion_aspecto == 'SI':
         ax1.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
@@ -1287,8 +1362,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
         ax1 = fig1.add_subplot(111)
         t1, = ax1.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
         t2, = ax1.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
-        ax1.set_xlabel(dic_unidades[magnitud][0])
-        ax1.set_ylabel(dic_unidades[magnitud][1])
+        ax1.set_xlabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][0])
+        ax1.set_ylabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][1])
         try:
             ax1.legend(handles=[t1, t2])
         except:
@@ -1300,21 +1375,22 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
                 except:
                     pass
         canvas1.draw()
+        canvas1.draw()
     elif posicion == 'abajo':
         fig2.clear()
         ax2 = fig2.add_subplot(111)
         t3, = ax2.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
         t4, = ax2.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
-        ax2.set_xlabel(dic_unidades[magnitud][0])
-        ax2.set_ylabel(dic_unidades[magnitud][1])
+        ax2.set_xlabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][0])
+        ax2.set_ylabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][1])
         try:
-            ax2.legend(handles=[t1, t2])
+            ax2.legend(handles=[t3, t4])
         except:
             try:
-                ax2.legend(handles=[t1])
+                ax2.legend(handles=[t3])
             except:
                 try:
-                    ax2.legend(handles=[t2])
+                    ax2.legend(handles=[t4])
                 except:
                     pass
         canvas2.draw()
@@ -1325,7 +1401,7 @@ dic_direccion = {'derecha': 1, 'izquierda': -1, 'derecha+' :3, 'izquierda+': -3,
 dic_ultima_grafica = {"arriba": contador_grafica_arriba, "abajo": contador_grafica_abajo}
 
 def eliminar_grafica():
-    global ultima_grafica_seleccionada, matriz_data_archivos, Label_Num_Grafica, ruta_data_inicial, orden_sensores
+    global ultima_grafica_seleccionada, matriz_data_archivos, Button_Num_Grafica, ruta_data_inicial, orden_sensores
     matriz_relacion_num = [i for i in range(1,len(matriz_data_archivos))]
     matriz_data_archivos.pop(dic_ultima_grafica[ultima_grafica_seleccionada])
     matriz_relacion_num2 = matriz_relacion_num[:]
@@ -1380,7 +1456,7 @@ def cambiar_grafica_exacto(numero):
 
 botones_barra_lateral = ['DEL','>','<','>>','<<', 'INICIO', 'FINAL', 'EXPORTAR']
 
-for i in range(len(botones_barra_lateral)):
+for i in range(len(botones_barra_lateral)+1):
     container2_3.grid_rowconfigure(i, weight=1)
 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[0], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: eliminar_grafica()).grid(row=0,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
@@ -1932,6 +2008,7 @@ def limpiar_review():
     
 
 def eliminar_columna_muestreo():
+    global tipo_review
     global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label, Button_num_grafica_arriba, Button_num_grafica_abajo, segemented_button, segemented_button2
     global segmented_button_callback1, segmented_button_callback2
     dic_ultima_grafica["abajo"] = 1
@@ -1943,27 +2020,27 @@ def eliminar_columna_muestreo():
     segemented_button.set("ACELERACIÓN")
     segmented_button_callback1("ACELERACIÓN")
     
-
     try:
         if len(container1.grid_slaves()) > 3:
             for index,l in enumerate(container1.grid_slaves()):
                 if index == 0:
                     l.destroy()
-            eliminar_botones_play_stop()
     except:
         pass
-    try:
-        pile_area_label.configure(text=str(round(float(pile_area),2)))
-        EM_label.configure(text=str(round(float(EM_valor_original),2)))
-        ET_label.configure(text=str(round(float(ET_valor_original),2)))
-    except:
-        pass
+    print(container2_3.grid_slaves())
+    print(tipo_review)
+    if tipo_review == "collectwire":
+        for boton in container2_3.grid_slaves():
+            if boton.cget("text") == "EXPORTAR":
+                boton.destroy()
+    else:
+        validador_exportar = 0
+        for boton in container2_3.grid_slaves():
+            if boton.cget("text") == "EXPORTAR":
+                validador_exportar = 1
+        if validador_exportar == 0:
+            ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
-
-def eliminar_botones_play_stop():
-    for index,l in enumerate(container3.grid_slaves()):
-        if index == 0:        
-            l.destroy()
 
 numero_grafica_insertada = 0
 
@@ -1975,7 +2052,7 @@ bandera_grafica = False
 
 def crear_columna_muestreo():
     global frecuencia_muestreo, ruta_guardado
-    global pile_area_label, EM_label, ET_label
+    global pile_area_label, EM_label, ET_label, container2_3
     global numero_grafica_insertada, marca, L_T_Grafico, num_golpe, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
     global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad
     matriz_data_archivos = []
@@ -2013,15 +2090,9 @@ def crear_columna_muestreo():
     orden_sensores2 = []
     orden_sensores2.append(str(orden_sensores[-1].replace("\n", ""))+str(frecuencia_muestreo[-1])+"|"+str(Entry_Area.get())+"|"+str(Entry_modulo_elasticidad.get())+"|"+str(int(float(Entry_masa.get())* float(Entry_altura.get())*9.81)))
     
-
-    container3_5 = ctk.CTkFrame(container3)
-    container3_5.grid(row=4, column=0, sticky='nsew', padx=(20))
-    container3_5.grid_rowconfigure(0, weight=1)
-    container3_5.grid_columnconfigure(0, weight=1)
-    container3_5.grid_columnconfigure(1, weight=1)
     
-    Boton_play = ctk.CTkButton(container3_5, text="►", font=('Times', 20), command=lambda:[cambio_boton_play()])
-    Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
+    Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
+    Boton_play.grid(row=7, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
 
     def graficas_tiempo_real(num):
         global bandera_grafica, L_T_Grafico, num_golpe, matriz_data_archivos
@@ -2039,12 +2110,12 @@ def crear_columna_muestreo():
                     print("Intentando graficar2 ", num)
                     try:
                         dic_ultima_grafica['arriba'] = int(num)
-                        Creacion_Grafica("arriba","aceleracion", int(num), "original", "NO", "NO", 0, 0)
+                        Creacion_Grafica("arriba","aceleracion", int(num), "original", "NO", "NO")
                     except Exception as e:
                         print("error en grafica arriba", e)
                     try:
                         dic_ultima_grafica['abajo'] = int(num)
-                        Creacion_Grafica("abajo","deformacion", int(num), "original", "NO", "NO", 0, 0)
+                        Creacion_Grafica("abajo","deformacion", int(num), "original", "NO", "NO")
                     except:
                         print("error en grafica abajo")
                     try:
@@ -2141,18 +2212,19 @@ def crear_columna_muestreo():
                 archivo.write(string)
                 archivo.close()     
 
-            #Boton_play = Button(container3_5, text="►", font=('Times', 20), command=lambda:[cambio_boton_play()])
+            #Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
             #Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
             
         elif respuesta == False:
             pass
 
     def eliminar_botones():
-        for l in container3_5.grid_slaves():
-            l.destroy()
+        for i in container2_3.grid_slaves():
+            print(i)
+        
 
     def cambio_boton_play():
-        global señal_continua, tipo_señal, conexion
+        global señal_continua, tipo_señal, conexion, container2_3
         if tipo_señal == "F":
             print("vengo del pause")
             tipo_señal = "M" 
@@ -2162,9 +2234,7 @@ def crear_columna_muestreo():
             
         señal_continua = True
         eliminar_botones()
-        #Boton_pausa = Button(container3_5, text="〓", font=('Times', 20), command=lambda:[cambio_boton_pausa()])
-        Boton_stop = ctk.CTkButton(container3_5, text="STOP", font=('Times', 20), command=lambda:[cambio_boton_stop()])
-        #Boton_pausa.grid(row=0, column=0, sticky='nsew', padx=(30,10), pady=(150,10))
+        Boton_stop = ctk.CTkButton(container2_3, text="STOP", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_stop()])
         Boton_stop.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
         
         inicio_secuencia_grabado()
@@ -2179,9 +2249,8 @@ def crear_columna_muestreo():
         #time.sleep(0.2)
         conexion.close()
 
-        Boton_play = Button(container3_5, text="►", font=('Times', 20), command=lambda:[cambio_boton_play()])
+        Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
         Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
-    
     def cambio_boton_stop():
         mandar_alerta_boton_stop()
 
