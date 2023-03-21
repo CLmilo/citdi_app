@@ -684,10 +684,14 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     L_FMX.configure(text = str(V_FMX))
     L_VMX.configure(text = str(V_VMX))
     L_EMX.configure(text = str(V_EMX))
+    if V_DMX=="":
+        V_DMX="0"
     L_DMX.configure(text = str(float(V_DMX)*1000)) # cambiado a milimetros
     L_ETR.configure(text = str(V_ETR))
     L_CE.configure(text = str(V_CE))
     L_CSX.configure(text = str(V_CSX))
+    if V_DFN=="":
+        V_DFN="0"
     L_DFN.configure(text = str(float(V_DFN)*1000))
     L_MEX1.configure(text = str(V_MEX1))
     L_MEX2.configure(text = str(V_MEX2))
