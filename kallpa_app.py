@@ -64,6 +64,7 @@ ruta_guardado = ""
 ruta_guardado_pdf = ""
 L_T_Grafico = ""
 tipo_review = ""
+estado_continuidad = ""
 
 F1 = []
 F2 = []
@@ -1425,18 +1426,21 @@ def eliminar_grafica():
     cambiar_grafica("nulo")
 
 def cambiar_grafica(direccion):
-    global matriz_data_archivos
+    global matriz_data_archivos, estado_continuidad
     global ultima_grafica_seleccionada
-    global ultima_magnitud_arriba
-    global ultima_magnitud_abajo
+    global ultima_magnitud_arriba, ultima_magnitud_abajo
     print(dic_direccion[direccion])
     print(dic_ultima_grafica[ultima_grafica_seleccionada])
     dic_ultima_grafica[ultima_grafica_seleccionada] += dic_direccion[direccion]
     print(dic_ultima_grafica[ultima_grafica_seleccionada])
     if dic_ultima_grafica[ultima_grafica_seleccionada] >= len(matriz_data_archivos):
         dic_ultima_grafica[ultima_grafica_seleccionada] = len(matriz_data_archivos)-1
+        estado_continuidad = "tiempo_real"
     elif dic_ultima_grafica[ultima_grafica_seleccionada] <= 1:
         dic_ultima_grafica[ultima_grafica_seleccionada] = 1
+        estado_continuidad = "especifico"
+    else:
+        estado_continuidad = "especifico"
     Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
     print("en cambiar gráfica el num de gráfica es: ", dic_ultima_grafica[ultima_grafica_seleccionada])
     if direccion == 'nulo':
@@ -1946,7 +1950,7 @@ def escoger_ruta_guardado():
 
 def mostrar_alertas():
     global orden_sensores
-    global frecuencia_muestreo, ruta_guardado
+    global frecuencia_muestreo, ruta_guardado, estado_continuidad
     global socket_tcp
     try:
         orden = str(orden_sensores[-1]).replace(" ","").split("|")
@@ -1985,6 +1989,7 @@ def mostrar_alertas():
         #conexion.close()
         limpiar_review()
         raise_frame(Review)
+        estado_continuidad = "tiempo_real"
         crear_columna_muestreo()
 
 def limpiar_review():
@@ -2048,15 +2053,14 @@ numero_grafica_insertada = 0
 
 marca = False
 
-num_golpe = 1
 tipo_señal = ""
 bandera_grafica = False
 
 def crear_columna_muestreo():
     global frecuencia_muestreo, ruta_guardado
     global pile_area_label, EM_label, ET_label, container2_3
-    global numero_grafica_insertada, marca, L_T_Grafico, num_golpe, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
-    global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad
+    global numero_grafica_insertada, marca, L_T_Grafico, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
+    global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad, estado_continuidad
     matriz_data_archivos = []
 
 
@@ -2097,13 +2101,13 @@ def crear_columna_muestreo():
     Boton_play.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
     def graficas_tiempo_real(num):
-        global bandera_grafica, L_T_Grafico, num_golpe, matriz_data_archivos
+        global bandera_grafica, L_T_Grafico, matriz_data_archivos
         global marca
         
         print(marca, bandera_grafica)
         
         def graficar():
-            global bandera_grafica, marca, L_T_Grafico, num_golpe
+            global bandera_grafica, marca, L_T_Grafico
             while bandera_grafica and marca:
                 #time.sleep(0.2)
                 try:
@@ -2120,21 +2124,17 @@ def crear_columna_muestreo():
                         Creacion_Grafica("abajo","deformacion", int(num), "original", "NO", "NO")
                     except:
                         print("error en grafica abajo")
-                    try:
-                        num_golpe += 1
-                    except:
-                        print("ni idea")
                 except:
                     print("no hay Data")
         threading.Thread(target=graficar).start()
 
 
     def inicio_secuencia_grabado():
-        global bandera_grafica, marca,señal_continua, num_golpe, matriz_data_archivos
+        global bandera_grafica, marca,señal_continua, matriz_data_archivos, estado_continuidad
         global socket_tcp
 
         def lectura():
-            global bandera_grafica, marca, num_golpe, señal_continua
+            global bandera_grafica, marca, señal_continua
             global socket_tcp
 
             #conexion = serial.Serial(port=lista_opciones.get(), baudrate=1500000, timeout=0.1, write_timeout=1)
@@ -2165,14 +2165,10 @@ def crear_columna_muestreo():
 
                     if acumulado[-5:] == "FINAL":
                         acumulado = acumulado[:-5]
-                        print("25")  
                         bandera3 = 1
                         data = acumulado.split("\n")
-                        print("25")  
                         for linea in data:
                             vector.append(linea)
-                        print("25578")  
-
                         matriz_data_archivos.append(vector)
                         print("una data registrada")
                         num = len(matriz_data_archivos) -1
@@ -2182,13 +2178,14 @@ def crear_columna_muestreo():
                 
                 marca = True
                 print("intentado graficar")
-                graficas_tiempo_real(num)
+                if estado_continuidad == "tiempo_real":
+                    print("se están graficando las nuevas gráficas")
+                    graficas_tiempo_real(num)
+                else:
+                    print("ya no se grafican las nuevas gráficas")
 
-            #time.sleep(.2)
-
-            contador = 0
             bandera_grafica = False
-            #conexion.close()
+
         threading.Thread(target=lectura).start()
 
 
