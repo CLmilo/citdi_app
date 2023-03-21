@@ -421,9 +421,9 @@ def Obtencion_data_serial(num):
         for i in range(4):
             lugar = int(orden[i])
             if ((lugar== 1)) or (lugar == 2):
-                #for datos in dic_orden_sensores2[orden[i]]:
+                for datos in dic_orden_sensores2[orden[i]]:
                 #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-                for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+                #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
                 #for datos in dic_orden_sensores2[orden[i]]:  
@@ -2031,8 +2031,10 @@ def eliminar_columna_muestreo():
     print(tipo_review)
     if tipo_review == "collectwire":
         for boton in container2_3.grid_slaves():
+            print(boton.cget("text"))
             if boton.cget("text") == "EXPORTAR":
                 boton.destroy()
+                print("borrado")
     else:
         validador_exportar = 0
         for boton in container2_3.grid_slaves():
@@ -2092,7 +2094,7 @@ def crear_columna_muestreo():
     
     
     Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
-    Boton_play.grid(row=7, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
+    Boton_play.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
     def graficas_tiempo_real(num):
         global bandera_grafica, L_T_Grafico, num_golpe, matriz_data_archivos
@@ -2214,14 +2216,18 @@ def crear_columna_muestreo():
 
             #Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
             #Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
+            #.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
             
         elif respuesta == False:
             pass
 
     def eliminar_botones():
-        for i in container2_3.grid_slaves():
-            print(i)
-        
+        print("eliminar botones")
+        for boton in container2_3.grid_slaves():
+            print(boton.cget("text"))
+            if boton.cget("text") == "STOP" or boton.cget("text") == "►" or boton.cget("text") == "EXPORTAR":
+                boton.destroy()
+                print("eliminado")
 
     def cambio_boton_play():
         global señal_continua, tipo_señal, conexion, container2_3
@@ -2234,8 +2240,9 @@ def crear_columna_muestreo():
             
         señal_continua = True
         eliminar_botones()
+
         Boton_stop = ctk.CTkButton(container2_3, text="STOP", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_stop()])
-        Boton_stop.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(30,30))
+        Boton_stop.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
         
         inicio_secuencia_grabado()
 
@@ -2250,7 +2257,8 @@ def crear_columna_muestreo():
         conexion.close()
 
         Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
-        Boton_play.grid(row=0, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
+        Boton_play.grid(row=7, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
+
     def cambio_boton_stop():
         mandar_alerta_boton_stop()
 
