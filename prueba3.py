@@ -14,9 +14,15 @@ t = np.arange(0, 3, .01)
 ax = fig.add_subplot(111)
 line, = ax.plot(t, 2 * np.sin(2 * np.pi * t))
 
+def onclick(event):
+    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+          ('double' if event.dblclick else 'single', event.button,
+           event.x, event.y, event.xdata, event.ydata))
+
 canvas = FigureCanvasTkAgg(fig, master=root)  # CREAR AREA DE DIBUJO DE TKINTER.
 canvas.draw()
 canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+canvas.mpl_connect('button_press_event', onclick)
 
 #-----------------------AÑADIR BARRA DE HERRAMIENTAS--------------------------
 toolbar = NavigationToolbar2Tk(canvas, root)# barra de iconos

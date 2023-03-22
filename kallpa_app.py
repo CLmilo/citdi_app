@@ -329,19 +329,9 @@ def on_ylims_change_abajo(event_ax):
 
 # Posiciones
 
-posx = 0
-posy = 0
-
-def posicion_mouse(event):
-    global posx, posy
-    posx = event.x
-    posy = event.y
-    print ("clicked at", event.x, event.y)
-
 ultima_grafica_seleccionada = "arriba"
 ultima_magnitud_arriba = "aceleracion"
 ultima_magnitud_abajo = "deformacion"
-
 
 def Obtencion_data_serial(num):
     global extension
@@ -586,10 +576,11 @@ container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
 
 ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
 
-container1_1 = ctk.CTkFrame(container1)
+container1_1 = ctk.CTkFrame(container1, width=230, height=120)
 container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
 container1_1.grid_columnconfigure(0, weight=1)
 container1_1.grid_columnconfigure(1, weight=1)
+container1_1.grid_propagate("False")
 
 container1_2 = ctk.CTkFrame(container1, width=230, height=550)
 container1_2.grid(row=2, column=0, padx=20, pady=10, sticky='nsew')
@@ -717,8 +708,10 @@ valor_actual_sistema_metrico = "SI"
 def Switch_sistema_metrico_callback(nuevo_valor):
     global valor_actual_sistema_metrico
     valor_actual_sistema_metrico = nuevo_valor
-    Creacion_Grafica("arriba", dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
-    Creacion_Grafica("abajo", dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
+    Creacion_Grafica("arriba", dic_ultima_grafica_magnitud["arriba"], dic_ultima_grafica["arriba"], "original", "SI", "NO")
+    print("arriba cambiando a magnitud ", dic_ultima_grafica_magnitud["arriba"])
+    Creacion_Grafica("abajo", dic_ultima_grafica_magnitud["abajo"], dic_ultima_grafica["abajo"], "original", "SI", "NO")
+    print("abajo cambiando a magnitud ", dic_ultima_grafica_magnitud["abajo"])
 
 Switch_sistema_metrico_var = ctk.StringVar(value="SI")
 Switch_sistema_metrico = ctk.CTkSegmentedButton(frame_sistema_metrico, values=["SI", "EN"], variable=Switch_sistema_metrico_var, command=Switch_sistema_metrico_callback)
@@ -1294,7 +1287,13 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         DFN = round(DFN * 0.0393700787401574, 2)
         
     return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2 ,MEX, AMX
-        
+
+def onclick1(event):
+    Button_num_grafica_arriba.invoke()
+
+def onclick2(event):
+    Button_num_grafica_abajo.invoke()
+
 style.use('seaborn-v0_8-whitegrid')
 
 # grafica 1
@@ -1305,6 +1304,7 @@ ax1 = fig1.add_subplot(111)
 canvas1 = FigureCanvasTkAgg(fig1, dic_posicion['arriba'][0])
 canvas1.draw()
 canvas1.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
+canvas1.mpl_connect('button_press_event', onclick1)
 
 toolbar = Toolbar(canvas1, dic_posicion['arriba'][1])
 toolbar.config(background="#2A2A2A")
@@ -1323,6 +1323,7 @@ ax2 = fig2.add_subplot(111)
 canvas2 = FigureCanvasTkAgg(fig2, dic_posicion['abajo'][0])
 canvas2.draw()
 canvas2.get_tk_widget().pack(side=TOP, expand=1, fill=BOTH, padx=10, pady=10)
+canvas2.mpl_connect('button_press_event', onclick2)
 
 toolbar = Toolbar(canvas2, dic_posicion['abajo'][1])
 toolbar.config(background="#2A2A2A")
@@ -1341,8 +1342,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
-    dic_unidades = {'aceleracion':[["milisegundos", "g's"], ["milisegundos", "g's"]], 'deformacion':[["milisegundos", "milimetros"], ["milisegundos", "pulgadas"]], 'fuerza':[["milisegundos", "kN"], ["milisegundos", "kips"]], 'velocidad':[["milisegundos", "m/s"], ["milisegundos", "ft/s"]], 'avged':[["milisegundos", "J"], ["milisegundos", "ft-lbs"]],
-                    'desplazamiento':[["milisegundos", "milimetros"],["milisegundos", "pulgadas"]], 'fuerzaxvelocidad':[["milisegundos", ""], ["milisegundos", ""]], 'wu':[['milisegundos', 'kN'], ['milisegundos', 'kip']], 'wd':[['milisegundos', 'kN'], ['milisegundos', 'kip']]}
+    dic_unidades = {'aceleracion':[["ms", "g's"], ["ms", "g's"]], 'deformacion':[["ms", "mm"], ["ms", "in"]], 'fuerza':[["ms", "kN"], ["ms", "kips"]], 'velocidad':[["ms", "m/s"], ["ms", "ft/s"]], 'avged':[["ms", "J"], ["ms", "ft-lbs"]],
+                    'desplazamiento':[["ms", "mm"],["ms", "in"]], 'fuerzaxvelocidad':[["ms", ""], ["ms", ""]], 'wu':[['ms', 'kN'], ['ms', 'kip']], 'wd':[['ms', 'kN'], ['ms', 'kip']]}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
@@ -1403,27 +1404,31 @@ dic_ultima_grafica = {"arriba": contador_grafica_arriba, "abajo": contador_grafi
 
 def eliminar_grafica():
     global ultima_grafica_seleccionada, matriz_data_archivos, Button_Num_Grafica, ruta_data_inicial, orden_sensores
-    matriz_relacion_num = [i for i in range(1,len(matriz_data_archivos))]
-    matriz_data_archivos.pop(dic_ultima_grafica[ultima_grafica_seleccionada])
-    matriz_relacion_num2 = matriz_relacion_num[:]
-      
-    matriz_relacion_num2.pop(dic_ultima_grafica[ultima_grafica_seleccionada]-1)
-    matriz_relacion_num.pop(dic_ultima_grafica[ultima_grafica_seleccionada]-1)
-    for i in range(len(matriz_relacion_num)):
-        if i >= dic_ultima_grafica[ultima_grafica_seleccionada]-1:
-            matriz_relacion_num2[i]=matriz_relacion_num2[i]-1
+    respuesta = MessageBox.askyesno(message="Se eliminará una gráfica, ¿Desea continuar?", title="Alerta")
+    if respuesta == True:
+        matriz_relacion_num = [i for i in range(1,len(matriz_data_archivos))]
+        matriz_data_archivos.pop(dic_ultima_grafica[ultima_grafica_seleccionada])
+        matriz_relacion_num2 = matriz_relacion_num[:]
         
-    string = str(matriz_data_archivos[0]) + "\n"   
-    with open(ruta_data_inicial, "w") as file:
-        for index, num in enumerate(matriz_relacion_num):
-            print(num)
-            string += 'INICIO_ARCHIVO\nARCHIVO:'+str(index+1)+"\n"+str(orden_sensores[-1])+"\n"
-            for fila in matriz_data_archivos[index+1]:
-                string += fila+"\n"
-            string += 'FIN_ARCHIVO\n'
-        file.write(string)
+        matriz_relacion_num2.pop(dic_ultima_grafica[ultima_grafica_seleccionada]-1)
+        matriz_relacion_num.pop(dic_ultima_grafica[ultima_grafica_seleccionada]-1)
+        for i in range(len(matriz_relacion_num)):
+            if i >= dic_ultima_grafica[ultima_grafica_seleccionada]-1:
+                matriz_relacion_num2[i]=matriz_relacion_num2[i]-1
+            
+        string = str(matriz_data_archivos[0]) + "\n"   
+        with open(ruta_data_inicial, "w") as file:
+            for index, num in enumerate(matriz_relacion_num):
+                print(num)
+                string += 'INICIO_ARCHIVO\nARCHIVO:'+str(index+1)+"\n"+str(orden_sensores[-1])+"\n"
+                for fila in matriz_data_archivos[index+1]:
+                    string += fila+"\n"
+                string += 'FIN_ARCHIVO\n'
+            file.write(string)
 
-    cambiar_grafica("nulo")
+        cambiar_grafica("nulo")
+    else:
+        pass
 
 def cambiar_grafica(direccion):
     global matriz_data_archivos, estado_continuidad
@@ -1867,43 +1872,31 @@ container5_5_1_1 = ctk.CTkFrame(container5_5_1)
 container5_5_1_1.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10)
 container5_5_1_1.grid_rowconfigure(0, weight=1)
 container5_5_1_1.grid_rowconfigure(1, weight=1)
-container5_5_1_1.grid_columnconfigure(0, weight=5)
+container5_5_1_1.grid_columnconfigure(0, weight=1)
 container5_5_1_1.grid_columnconfigure(1, weight=1)
-container5_5_1_1.grid_columnconfigure(2, weight=5)
-container5_5_1_1.grid_columnconfigure(3, weight=1)
 
 def mod_frecuencia_muestreo(n):
     global frecuencia_muestreo
     frecuencia_muestreo.append(n)
 
 def colorear_botones(n):
-    for termino in dic_botones_frecuencia:
-        if termino == str(n):
-            dic_botones_frecuencia[termino].select()
+    dic_colorear_botones = {50:B_50, 100:B_100, 150:B_150, 200:B_200}
+    for boton in [B_50, B_100, B_150, B_200]:
+        if boton == dic_colorear_botones[n]:
+            boton.configure(fg_color = ["#58D68D", "#1D8348"], hover_color= ["#27AE60", "#196F3D"])
         else:
-            dic_botones_frecuencia[termino].deselect()
+            boton.configure(fg_color = ["#003785", "#0a0a0a"], hover_color= ["#001448", "#323a53"])
 
 B_50 = ctk.CTkButton(container5_5_1_1, text="50khz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=fontTEXTcoll)
 B_50.grid(row=0, column=0, padx=(20,10), pady=(20,10), sticky='nsew')
-B_50_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
-B_50_radio.grid(row=0, column=1, sticky = 'nswe')
 B_100 = ctk.CTkButton(container5_5_1_1, text="100khz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=fontTEXTcoll)
-B_100.grid(row=0, column=2, padx=(10,20), pady=(20,10), sticky='nsew')
-B_100_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
-B_100_radio.grid(row=0, column=3, sticky = 'nswe')
+B_100.grid(row=0, column=1, padx=(10,20), pady=(20,10), sticky='nsew')
 B_150 = ctk.CTkButton(container5_5_1_1, text="150khz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=fontTEXTcoll)
 B_150.grid(row=1, column=0, padx=(20,10), pady=(10,20), sticky='nsew')
-B_150_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
-B_150_radio.grid(row=1, column=1, sticky = 'nswe')
 B_200 = ctk.CTkButton(container5_5_1_1, text="200khz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=fontTEXTcoll)
-B_200.grid(row=1, column=2, padx=(10,20), pady=(10,20), sticky='nsew')
-B_200_radio = ctk.CTkRadioButton(container5_5_1_1, text ="", width= 20)
-B_200_radio.grid(row=1, column=3, sticky = 'nswe')
-
-dic_botones_frecuencia = {'50':B_50_radio, '100':B_100_radio, '150':B_150_radio, '200':B_200_radio}
+B_200.grid(row=1, column=1, padx=(10,20), pady=(10,20), sticky='nsew')
 
 B_50.invoke()
-
 
 container5_5_1_2 = ctk.CTkFrame(container5_5_1)
 container5_5_1_2.grid(row=2, column=0, columnspan=2, sticky='nsew', padx =10, pady=10)
@@ -2298,7 +2291,9 @@ def Seleccionar_ruta_guardado_pdf():
     global ruta_guardado_pdf
     try:
         ruta_guardado_pdf = filedialog.askdirectory(initialdir = "/", title = "Selecciona una carpeta")
-        create_toplevel_export()
+        print("la ruta de guardado es ", ruta_guardado_pdf)
+        if ruta_guardado_pdf != "":
+            create_toplevel_export()
     except:
         pass
 
