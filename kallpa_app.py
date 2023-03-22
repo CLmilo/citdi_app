@@ -2116,12 +2116,12 @@ def crear_columna_muestreo():
                     print("Intentando graficar2 ", num)
                     try:
                         dic_ultima_grafica['arriba'] = int(num)
-                        Creacion_Grafica("arriba","aceleracion", int(num), "original", "NO", "NO")
+                        Creacion_Grafica("arriba",dic_ultima_grafica_magnitud["arriba"], int(num), "original", "NO", "NO")
                     except Exception as e:
                         print("error en grafica arriba", e)
                     try:
                         dic_ultima_grafica['abajo'] = int(num)
-                        Creacion_Grafica("abajo","deformacion", int(num), "original", "NO", "NO")
+                        Creacion_Grafica("abajo",dic_ultima_grafica_magnitud["abajo"], int(num), "original", "NO", "NO")
                     except:
                         print("error en grafica abajo")
                 except:
