@@ -1,6 +1,6 @@
 *.ct*
 Pipfile
-prueba.py
+prueba*.py
 compil*
 archivos_rpn
 *.xlsx
