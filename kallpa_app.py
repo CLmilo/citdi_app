@@ -2445,6 +2445,7 @@ fila_resumen = []
 
 def obtener_datos_grafica(j):
     global Energias, Fuerzas, Velocidades, Energias_teoricas, Impedancias, orden_sensores, frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original, matriz_data_archivos, Num_golpes, Num_golpes_modificado, segundo_inicial, segundo_final, fila_resumen
+    global extension
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
     segundos = []
     S1 = []
@@ -2477,6 +2478,53 @@ def obtener_datos_grafica(j):
     print(matriz_data_archivos[j][1].split("|"))
     print(matriz_data_archivos[j][-2].split("|"))
 
+    if extension == "ctn":
+        data = matriz_data_archivos[j]
+        
+        for linea in data:
+            linea = linea.split("|")
+            segundos.append(float(linea[0])/10)
+            for j2 in range(4):
+                dic_orden_sensores2[orden[j2]].append(round(float(linea[j2+1]),2))
+        segundo_inicial = segundos[0]
+        segundo_final = segundos[-1]
+
+        for i in range(4):
+
+            if ((int(orden[i]) == 1)) or (int(orden[i]) == 2):
+                for datos in dic_orden_sensores2[orden[i]]:
+                    dic_orden_sensores[orden[i]].append(datos)
+            elif (int(orden[i])!=0):
+                for datos in dic_orden_sensores2[orden[i]]:               
+                    dic_orden_sensores[orden[i]].append(datos)
+        
+    else:
+        for index,linea in enumerate(matriz_data_archivos[j]):
+            linea = linea.split("|")
+            if index > 0 and index < len(matriz_data_archivos[j])-1:
+                segundos.append(float(linea[0])/1000)
+                for i in range(4):
+                    dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
+            else:
+                pass
+        segundo_inicial = segundos[0]
+        segundo_final = segundos[-1]
+
+        frecuencia = int(frecuencia_muestreo[-1])
+        for i in range(4):
+            lugar = int(orden[i])
+            if ((lugar== 1)) or (lugar == 2):
+                for datos in dic_orden_sensores2[orden[i]]:
+                #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
+                #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+                    dic_orden_sensores[orden[i]].append(datos)
+            elif (lugar!=0):
+                #for datos in dic_orden_sensores2[orden[i]]:  
+                #for datos in cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia):  
+                for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
+                    dic_orden_sensores[orden[i]].append(datos)
+    """
+
     for index,linea in enumerate(matriz_data_archivos[j]):
         linea = linea.split("|")
         if index > 0 and index < len(matriz_data_archivos[j])-1:
@@ -2488,6 +2536,7 @@ def obtener_datos_grafica(j):
             pass
           
     frecuencia = int(frecuencia_muestreo[-1])
+
     for i in range(4):
         lugar = int(orden[i])
         if ((lugar== 1)) or (lugar == 2):
@@ -2495,12 +2544,16 @@ def obtener_datos_grafica(j):
             #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
             #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
+        
         elif (lugar!=0):
             for datos in dic_orden_sensores2[orden[i]]:  
             #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
             #for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
-    
+    """
+
+
+
     EM = float(EM_valor_original)
     AR = float(pile_area)
     factor = EM*AR
