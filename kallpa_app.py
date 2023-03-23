@@ -303,30 +303,6 @@ def browseFiles():
     contador_grafica_arriba = 1
     contador_grafica_abajo = 1
 
-
-x_zoom_grafica_arriba_1 = 0
-x_zoom_grafica_arriba_2 = 0
-y_zoom_grafica_arriba_1 = 0
-y_zoom_grafica_arriba_2 = 0
-x_zoom_grafica_abajo_1 = 0
-x_zoom_grafica_abajo_2 = 0
-y_zoom_grafica_abajo_1 = 0
-y_zoom_grafica_abajo_2 = 0
-
-dic_posicion_zoom = {'arriba':[x_zoom_grafica_arriba_1, x_zoom_grafica_arriba_2, y_zoom_grafica_arriba_1, y_zoom_grafica_arriba_2], 'abajo':[x_zoom_grafica_abajo_1, x_zoom_grafica_abajo_2, y_zoom_grafica_abajo_1, y_zoom_grafica_abajo_2]}
-
-def on_xlims_change_arriba(event_ax):
-    dic_posicion_zoom['arriba'][0], dic_posicion_zoom['arriba'][1] = event_ax.get_xlim()
-
-def on_ylims_change_arriba(event_ax):
-    dic_posicion_zoom['arriba'][2], dic_posicion_zoom['arriba'][3] = event_ax.get_ylim()
-
-def on_xlims_change_abajo(event_ax):
-    dic_posicion_zoom['abajo'][0], dic_posicion_zoom['abajo'][1] = event_ax.get_xlim()
-
-def on_ylims_change_abajo(event_ax):
-    dic_posicion_zoom['abajo'][2], dic_posicion_zoom['abajo'][3] = event_ax.get_ylim()
-
 # Posiciones
 
 ultima_grafica_seleccionada = "arriba"
@@ -349,14 +325,11 @@ def Obtencion_data_serial(num):
     SIN4 = []
     NULL = []
 
-    print("Estamos en obtencion data serial")
-    print("El orden de los sensores es2: ", orden_sensores)
 
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
 
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
-    print("la fila orden es", orden_sensores[-1])
 
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
@@ -780,7 +753,6 @@ container2_1_1.grid(row=0, column=0, sticky='new')
 #    container2_1_1.grid_columnconfigure(i, weight=8)
 container2_1_1.grid_columnconfigure(0, weight=1)
 container2_1_1.grid_columnconfigure(1, weight=20)
-container2_1_1.grid_columnconfigure(2, weight=1)
 container2_1_1.grid_rowconfigure(0, weight=1)
 
 container2_1_2 = ctk.CTkFrame(container2_1, fg_color="#1359BB")
@@ -831,86 +803,177 @@ texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DE
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
+dic_ultima_grafica_magnitud_invertida = {"arriba": ultima_magnitud_abajo, "abajo": ultima_magnitud_arriba}
+
+def actualizacion_magnitud_sincronizada(magnitud):
+    print("la magnitud insertada es", magnitud)
+    global fig1, fig2, ax1, ax2, ultima_grafica_seleccionada, canvas1, canvas2
+    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, WU, WD
+    global numero_anterior
+
+    if dic_ultima_grafica[ultima_grafica_seleccionada] != numero_anterior:
+        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
+    else:
+        pass
+    numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
+
+    dic_magnitud_sincronizacion = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
+    print("algunos valores son ", ultima_grafica_seleccionada, )
+    
+    dic_sincronizacion = {"arriba": [fig2, ax2, ax1, canvas2], "abajo": [fig1, ax1, ax2, canvas1]}
+    dic_sincronizacion[ultima_grafica_seleccionada][0].clear()
+    dic_sincronizacion[ultima_grafica_seleccionada][1] = dic_sincronizacion[ultima_grafica_seleccionada][0].add_subplot(111)
+    t, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[magnitud][0])
+    t2, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[magnitud][1])
+    dic_sincronizacion[ultima_grafica_seleccionada][1].set_xlim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_xlim())
+    if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
+        dic_sincronizacion[ultima_grafica_seleccionada][1].set_ylim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_ylim())
+    dic_sincronizacion[ultima_grafica_seleccionada][3].draw()
+
+    dic_ultima_grafica_magnitud_invertida[ultima_grafica_seleccionada] = magnitud
+
+
 def segmented_button_callback1(value):
-    global texto_botones_frame
-    colorear_botones_seleccion_grafica(1)
-    match value:
-        case "ACELERACIÓN":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "VELOCIDAD":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "DEFORMACIÓN":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "FUERZA":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "DESPLAZAMIENTO":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "F vs V":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "Avg ED":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "WU":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-        case "WD":
-            cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
-            actualizar_magnitud("arriba", texto_botones_frame.index(value))
-    print("En la grafica de arriba es ",value)
-            
+    global texto_botones_frame, estado_sincro
+    print("el valor seleccionado arriba es: ",value)
+
+    if estado_sincro == "desincronizado" or ultima_grafica_seleccionada == "arriba":
+        colorear_botones_seleccion_grafica(1)
+        match value:
+            case "ACELERACIÓN":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "VELOCIDAD":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "DEFORMACIÓN":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "FUERZA":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "DESPLAZAMIENTO":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "F vs V":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "Avg ED":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "WU":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+            case "WD":
+                cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
+                actualizar_magnitud("arriba", texto_botones_frame.index(value))
+    else:
+        match value:
+            case "ACELERACIÓN":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "VELOCIDAD":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "DEFORMACIÓN":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "FUERZA":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "DESPLAZAMIENTO":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "F vs V":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "Avg ED":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "WU":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "WD":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+       
 def segmented_button_callback2(value):
-    global texto_botones_frame
-    print("el valor seleccionado es: ",value)
-    colorear_botones_seleccion_grafica(2)
-    match value:
-        case "ACELERACIÓN":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "VELOCIDAD":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "DEFORMACIÓN":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "FUERZA":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "DESPLAZAMIENTO":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "F vs V":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "Avg ED":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "WU":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))
-        case "WD":
-            cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
-            actualizar_magnitud("abajo", texto_botones_frame.index(value))    
-    print("En la grafica de abajo es ",value)
+    global texto_botones_frame, estado_sincro
+    print("el valor seleccionado abajo es: ",value)
+    
+    if estado_sincro == "desincronizado" or ultima_grafica_seleccionada == "abajo":
+        colorear_botones_seleccion_grafica(2)
+        match value:
+            case "ACELERACIÓN":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "VELOCIDAD":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "DEFORMACIÓN":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "FUERZA":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "DESPLAZAMIENTO":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "F vs V":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "Avg ED":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "WU":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))
+            case "WD":
+                cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
+                actualizar_magnitud("abajo", texto_botones_frame.index(value))    
+    else:
+        match value:
+            case "ACELERACIÓN":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "VELOCIDAD":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "DEFORMACIÓN":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "FUERZA":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "DESPLAZAMIENTO":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "F vs V":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "Avg ED":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "WU":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
+            case "WD":
+                actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
 
-Button_num_grafica_arriba = ctk.CTkButton(container2_1_1, text="1", command=lambda:colorear_botones_seleccion_grafica(1))
-Button_num_grafica_arriba.grid(row=0, column=0, sticky='nsw', pady=5)
+container_num_2_1_1 = ctk.CTkFrame(container2_1_1)
+container_num_2_1_1.grid(row=0, column=0, sticky='nsw', pady=5)
+container_num_2_1_1.grid_columnconfigure(0, weight=1)
+container_num_2_1_1.grid_columnconfigure(1, weight=1)
+container_num_2_1_1.grid_rowconfigure(0, weight=1)
 
-Button_num_grafica_abajo = ctk.CTkButton(container2_2_1, text="1", command=lambda:colorear_botones_seleccion_grafica(2))
-Button_num_grafica_abajo.grid(row=0, column=0, sticky='nsw', pady=5)
+Button_num_grafica_arriba = ctk.CTkButton(container_num_2_1_1, text="1", width=30, command=lambda:[colorear_botones_seleccion_grafica(1), cambiar_grafica_exacto(Entry_num_grafica_exacto_arriba.get(), "arriba")])
+Button_num_grafica_arriba.grid(row=0, column=0, sticky='nsw', pady=2, padx=2)
+
+Entry_num_grafica_exacto_arriba = ctk.CTkEntry(container_num_2_1_1, width=50)
+Entry_num_grafica_exacto_arriba.grid(row=0, column=1, sticky='nsw', pady=2, padx=(0,2))
+
+container_num_2_2_1 = ctk.CTkFrame(container2_2_1)
+container_num_2_2_1.grid(row=0, column=0, sticky='nsw', pady=5)
+container_num_2_2_1.grid_columnconfigure(0, weight=1)
+container_num_2_2_1.grid_columnconfigure(1, weight=1)
+container_num_2_2_1.grid_rowconfigure(0, weight=1)
+
+Button_num_grafica_abajo = ctk.CTkButton(container_num_2_2_1, text="1", width=30, command=lambda:[colorear_botones_seleccion_grafica(2), cambiar_grafica_exacto(Entry_num_grafica_exacto_abajo.get(), "abajo")])
+Button_num_grafica_abajo.grid(row=0, column=0, sticky='nsw', pady=2, padx=2)
+
+Entry_num_grafica_exacto_abajo = ctk.CTkEntry(container_num_2_2_1, width=50)
+Entry_num_grafica_exacto_abajo.grid(row=0, column=1, sticky='nsw', pady=2, padx=(0,2))
 
 segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
 segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
-segemented_button.grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
+segemented_button.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
 segemented_button_var2 = ctk.StringVar(value="DEFORMACIÓN")
 segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
-segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(5,0))
+segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
 # Barra lateral de la columna de la derecha
 
@@ -919,22 +982,22 @@ container2_3.grid(row=0, rowspan=2, column=1, sticky='nsew')
 container2_3.grid_rowconfigure(0, weight=1)
 container2_3.grid_columnconfigure(0, weight=1)
 
-
 def colorear_botones_seleccion_grafica(num):
     global ultima_grafica_seleccionada, valores_segundo_frame_arriba, valores_segundo_frame_abajo, container2_1_2, container2_2_2
-    
-    if num == 1:
-        ultima_grafica_seleccionada = 'arriba'
-        container2_1_2.configure(fg_color="#1359BB")
-        container2_2_2.configure(fg_color="#94e7ff")
-        v_vec = valores_segundo_frame_arriba.copy()
-        modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
-    else:
-        ultima_grafica_seleccionada = 'abajo'
-        container2_2_2.configure(fg_color="#1359BB")
-        container2_1_2.configure(fg_color="#94e7ff")
-        v_vec = valores_segundo_frame_abajo.copy()
-        modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
+    global estado_sincro
+    if estado_sincro == "desincronizado":
+        if num == 1:
+            ultima_grafica_seleccionada = 'arriba'
+            container2_1_2.configure(fg_color="#1359BB")
+            container2_2_2.configure(fg_color="#94e7ff")
+            v_vec = valores_segundo_frame_arriba.copy()
+            modificar_datos_segundo_frame('arriba', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
+        else:
+            ultima_grafica_seleccionada = 'abajo'
+            container2_2_2.configure(fg_color="#1359BB")
+            container2_1_2.configure(fg_color="#94e7ff")
+            v_vec = valores_segundo_frame_abajo.copy()
+            modificar_datos_segundo_frame('abajo', v_vec[0], v_vec[1], v_vec[2], v_vec[3], v_vec[4], v_vec[5], v_vec[6], v_vec[7], v_vec[8], v_vec[9], v_vec[10], v_vec[11], v_vec[12])
 
 
 # cambiar magnitudes
@@ -949,44 +1012,19 @@ def cambiar_magnitud_grafica(posicion,magnitud):
 
 dic_posicion = {"arriba":[container2_1_2, container2_1_3], "abajo":[container2_2_2, container2_2_3]}
 
-desplazado_arriba = 0
-desplazado_abajo = 0
-
-    
 class Toolbar(NavigationToolbar2TkAgg):
     def set_message(self, s):
         pass
 
 def velocity(acel, freq):
     global extension
-    print("estoy entrando a velocity", extension)
     tr_a = Trace(data=np.array(acel)*9.81)
     tr_a.stats.sampling_rate = freq*1000
     tr_v = tr_a.copy()
     tr_v.integrate(method = "cumtrapz")
 
     if extension == 'ctn':
-        """
-        print("estoy entrando a ctn")
-        idx_impact = int(0.01*freq*1000)
-        # Velocity before impact
-        V_bi = tr_v.data[:idx_impact]
-        # Velocity after impatc
-        V_ai = tr_v.data[idx_impact:]
-
-        tr_V_ai0 = Trace(data=V_ai)
-        tr_V_ai = tr_V_ai0.copy()
-        tr_V_ai.stats.sampling_rate = freq*1000
-        tr_V_ai.detrend("simple")
-
-        # Concatenating again
-        V_bl = np.concatenate((V_bi, tr_V_ai.data))
-
-        # Making a trace
-        tr_v_bl = Trace(data=V_bl)
-        tr_v_bl.stats.sampling_rate = freq*1000
-        return tr_v_bl
-        """
+    
         velocidad = tr_v[7:]
     
         idx_impact = int(0.01*freq*1000)
@@ -1050,7 +1088,7 @@ def energy(F, V, freq):
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
 
-def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0):
+def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
     global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica, valor_actual_sistema_metrico
@@ -1070,7 +1108,6 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     V_Transformado = []
     V_Transformado_valor_real = []
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR
-    global desplazado_arriba, desplazado_abajo
 
     print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
@@ -1099,7 +1136,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
             F2.append(m2)
         F.append(promedio)
     
-    print("longitudes de Str", len(S1), len(S2))
+    
     if len(S1) != longitud:
         S1 = S2
         F = F2
@@ -1117,7 +1154,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     if len(A4) != longitud2:
         A4 = A3
     AMX = round(max(max(A3), max(A4)),2) 
-    print("longitudes de Str2", len(S1), len(S2))    
+    
     if S1 == []:
         F = F2
     elif S2 == []:
@@ -1125,7 +1162,6 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     Fmax = round(max(F), 2)
     Fmax_original = max(F)
     
-    print("longitudes de fuerza", len(F1), len(F2), len(F))
     longitud = max(len(A3), len(A4))
 
     # Calculando velocidad 1
@@ -1151,8 +1187,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     Vmax_original = max(V)
 
     longitud = max(len(S1), len(S2))
-    print("la longitud maxima es:", longitud)
-    print("longitudes velocidad: ", len(V1), len(V2), len(V))
+
 
     try:
         D1 = integrate(V1)
@@ -1187,43 +1222,8 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
         valor = V[i]*Z
         V_Transformado.append(valor)
         V_Transformado_valor_real.append(V[i])
+
     dic_desplazamiento = {'izquierda': -1, 'derecha': 1, 'mantener': 0}
-    if direccion != "original" or direccion == 'mantener':
-        if posicion == "arriba":
-            desplazado_arriba += dic_desplazamiento[direccion]
-            if desplazado_arriba > 0:
-                for i in range(desplazado_arriba):
-                    V_Transformado.pop(-1)
-                    V_Transformado_valor_real.pop(-1)
-                    V_Transformado.insert(0,0)
-                    V_Transformado_valor_real.insert(0,0)
-            elif desplazado_arriba < 0:
-                for i in range(abs(desplazado_arriba)):
-                    V_Transformado.pop(0)
-                    V_Transformado_valor_real.pop(0)
-                    V_Transformado.append(0)
-                    V_Transformado_valor_real.append(0)
-            else:
-                pass      
-        elif posicion == "abajo":
-            desplazado_abajo += dic_desplazamiento[direccion]
-            if desplazado_abajo > 0:
-                for i in range(desplazado_abajo):
-                    V_Transformado.pop(-1)
-                    V_Transformado_valor_real.pop(-1)
-                    V_Transformado.insert(0,0)
-                    V_Transformado_valor_real.insert(0,0)
-            elif desplazado_abajo < 0:
-                for i in range(abs(desplazado_abajo)):
-                    V_Transformado.pop(0)
-                    V_Transformado_valor_real.pop(0)
-                    V_Transformado.append(0)
-                    V_Transformado_valor_real.append(0)
-    else:
-        if posicion == "arriba":
-            desplazado_arriba = 0
-        elif posicion == "abajo":
-            desplazado_abajo = 0
     
     if magnitud == 'avged':
         condicion = 'NO'
@@ -1339,7 +1339,7 @@ estado = "aceleracion"
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites):
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU, WD
-    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites, a_primera_marca=0, a_segunda_marca=0)
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
     dic_unidades = {'aceleracion':[["ms", "g's"], ["ms", "g's"]], 'deformacion':[["ms", "mm"], ["ms", "in"]], 'fuerza':[["ms", "kN"], ["ms", "kips"]], 'velocidad':[["ms", "m/s"], ["ms", "ft/s"]], 'avged':[["ms", "J"], ["ms", "ft-lbs"]],
@@ -1354,10 +1354,6 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     
     
     modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, ETR, CE, CSX, DFN, MEX1, MEX2, MEX, AMX)
-
-    if mantener_relacion_aspecto == 'SI':
-        ax1.set_xlim(dic_posicion_zoom[posicion][0], dic_posicion_zoom[posicion][1])
-        ax1.set_ylim(dic_posicion_zoom[posicion][2], dic_posicion_zoom[posicion][3])
 
     if posicion == 'arriba':
         fig1.clear()
@@ -1401,6 +1397,56 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
 
 dic_direccion = {'derecha': 1, 'izquierda': -1, 'derecha+' :3, 'izquierda+': -3, 'nulo':0}
 dic_ultima_grafica = {"arriba": contador_grafica_arriba, "abajo": contador_grafica_abajo}
+
+numero_anterior= 0
+cid = ""
+estado_sincro = "desincronizado"
+
+
+def creador_sincronizacion():
+    global boton_sincro
+    global canvas1, canvas2, ultima_grafica_seleccionada, cid, estado_sincro
+    dic_canvas_sinc = {"arriba":canvas1, "abajo":canvas2}
+    if estado_sincro == "desincronizado":
+        #colorear boton 
+        boton_sincro.configure(fg_color = ["#58D68D", "#1D8348"], hover_color= ["#27AE60", "#196F3D"])
+        cid = dic_canvas_sinc[ultima_grafica_seleccionada].mpl_connect('motion_notify_event', sincronizar_grafica)
+        if ultima_grafica_seleccionada == "arriba":
+            estado_sincro = "sincronizado_arriba"
+        else:
+            estado_sincro = "sincronizado_abajo"
+    else:
+        boton_sincro.configure(fg_color = ["#003785", "#0a0a0a"], hover_color= ["#001448", "#323a53"])
+        if estado_sincro == "sincronizado_arriba":
+            dic_canvas_sinc["arriba"].mpl_disconnect(cid)
+        else:
+            dic_canvas_sinc["abajo"].mpl_disconnect(cid)
+        estado_sincro = "desincronizado"
+
+dic_ultima_grafica_magnitud_invertida = {"arriba": ultima_magnitud_abajo, "abajo": ultima_magnitud_arriba}
+
+def sincronizar_grafica(event):
+    global fig1, fig2, ax1, ax2, ultima_grafica_seleccionada, canvas1, canvas2
+    global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, WU, WD
+    global numero_anterior
+
+    if dic_ultima_grafica[ultima_grafica_seleccionada] != numero_anterior:
+        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
+    else:
+        pass
+    numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
+
+    dic_magnitud_sincronizacion = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
+
+    dic_sincronizacion = {"arriba": [fig2, ax2, ax1, canvas2], "abajo": [fig1, ax1, ax2, canvas1]}
+    dic_sincronizacion[ultima_grafica_seleccionada][0].clear()
+    dic_sincronizacion[ultima_grafica_seleccionada][1] = dic_sincronizacion[ultima_grafica_seleccionada][0].add_subplot(111)
+    t, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[dic_ultima_grafica_magnitud_invertida[ultima_grafica_seleccionada]][0])
+    t2, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[dic_ultima_grafica_magnitud_invertida[ultima_grafica_seleccionada]][1])
+    dic_sincronizacion[ultima_grafica_seleccionada][1].set_xlim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_xlim())
+    if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
+        dic_sincronizacion[ultima_grafica_seleccionada][1].set_ylim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_ylim())
+    dic_sincronizacion[ultima_grafica_seleccionada][3].draw()
 
 def eliminar_grafica():
     global ultima_grafica_seleccionada, matriz_data_archivos, Button_Num_Grafica, ruta_data_inicial, orden_sensores
@@ -1454,16 +1500,28 @@ def cambiar_grafica(direccion):
         else:
             Creacion_Grafica('arriba', dic_ultima_grafica_magnitud['arriba'], dic_ultima_grafica['arriba'], "original", "SI", "NO")
     
-def cambiar_grafica_exacto(numero):
+def cambiar_grafica_exacto(numero, pos="ninguna"):
     global matriz_data_archivos, ultima_grafica_seleccionada, ultima_magnitud_arriba, ultima_magnitud_abajo
+    global Entry_num_grafica_exacto_abajo, Entry_num_grafica_exacto_arriba
+
+    dic_entry_num_grafica = {"arriba":Entry_num_grafica_exacto_arriba, "abajo":Entry_num_grafica_exacto_abajo}
+
     if numero == "ultimo":
         dic_ultima_grafica[ultima_grafica_seleccionada] = len(matriz_data_archivos)-1
         Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")    
     elif numero == "primero":
         dic_ultima_grafica[ultima_grafica_seleccionada] = 1
         Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")  
+    else:
+        try:
+            if int(numero) > 0 and int(numero) < len(matriz_data_archivos) and pos != "ninguna":
+                dic_ultima_grafica[ultima_grafica_seleccionada] = int(numero)
+                Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
+                dic_entry_num_grafica[pos].delete(0, END)
+        except:
+            pass
 
-botones_barra_lateral = ['DEL','>','<','>>','<<', 'INICIO', 'FINAL', 'EXPORTAR']
+botones_barra_lateral = ['DEL','>','<','>>','<<', 'SYNC', 'INICIO', 'FINAL', 'EXPORTAR']
 
 for i in range(len(botones_barra_lateral)+1):
     container2_3.grid_rowconfigure(i, weight=1)
@@ -1473,9 +1531,11 @@ ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size
 ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+boton_sincro = ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [creador_sincronizacion()])
+boton_sincro.grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 
 #----------------------------------------------------
@@ -2025,14 +2085,11 @@ def eliminar_columna_muestreo():
                     l.destroy()
     except:
         pass
-    print(container2_3.grid_slaves())
     print(tipo_review)
     if tipo_review == "collectwire":
         for boton in container2_3.grid_slaves():
-            print(boton.cget("text"))
             if boton.cget("text") == "EXPORTAR":
                 boton.destroy()
-                print("borrado")
     else:
         validador_exportar = 0
         for boton in container2_3.grid_slaves():
