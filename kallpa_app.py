@@ -403,14 +403,10 @@ def Obtencion_data_serial(num):
 def raise_frame(frame):
     frame.tkraise()
 
-#root = Tk()
 root = Tk()        
 root.state("zoomed")
-#root.resizable(0,0)
-root.grid_rowconfigure(0,  weight=1)
+root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
-
-#Menup = Frame(root)
 Review = ctk.CTkFrame(root)
 Menup = ctk.CTkFrame(root)
 Collect_Wire = ctk.CTkFrame(root)
@@ -422,7 +418,6 @@ for frame in (Menup, Review, Collect_Wire, Opciones):
     frame.grid_columnconfigure(0,weight=1)
     frame.grid(row=0, column=0, sticky='nsew')
     
-
 # FRAME INICIAL
 container4a = ctk.CTkFrame(master= Menup, corner_radius = 20)
 
@@ -638,40 +633,40 @@ for i in range(len(textos_segundo_frame)):
     ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
 
 L_FMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[0])
-L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nwe')
+L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nw')
 
 L_VMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[1])
-L_VMX.grid(row=2, column=1,padx=10, pady=5, sticky='nwe')
+L_VMX.grid(row=2, column=1,padx=10, pady=5, sticky='nw')
 
 L_EMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[2])
-L_EMX.grid(row=3, column=1,padx=10, pady=5, sticky='nwe')
+L_EMX.grid(row=3, column=1,padx=10, pady=5, sticky='nw')
 
 L_DMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[3])
-L_DMX.grid(row=4, column=1,padx=10, pady=5, sticky='nwe')  
+L_DMX.grid(row=4, column=1,padx=10, pady=5, sticky='nw')  
  
 L_ETR = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[4])
-L_ETR.grid(row=5, column=1,padx=10, pady=5, sticky='nwe')
+L_ETR.grid(row=5, column=1,padx=10, pady=5, sticky='nw')
 
 L_CE = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[5])
-L_CE.grid(row=6, column=1,padx=10, pady=5, sticky='nwe')  
+L_CE.grid(row=6, column=1,padx=10, pady=5, sticky='nw')  
 
 L_CSX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[6])
-L_CSX.grid(row=7, column=1,padx=10, pady=5, sticky='nwe')
+L_CSX.grid(row=7, column=1,padx=10, pady=5, sticky='nw')
 
 L_DFN = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[7])
-L_DFN.grid(row=8, column=1,padx=10, pady=5, sticky='nwe')
+L_DFN.grid(row=8, column=1,padx=10, pady=5, sticky='nw')
 
 L_MEX1 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[8])
-L_MEX1.grid(row=9, column=1,padx=10, pady=5, sticky='nwe')  
+L_MEX1.grid(row=9, column=1,padx=10, pady=5, sticky='nw')  
 
 L_MEX2 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[9])
-L_MEX2.grid(row=10, column=1,padx=10, pady=5, sticky='nwe') 
+L_MEX2.grid(row=10, column=1,padx=10, pady=5, sticky='nw') 
 
 L_MEX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[10])
-L_MEX.grid(row=11, column=1,padx=10, pady=5, sticky='nwe')
+L_MEX.grid(row=11, column=1,padx=10, pady=5, sticky='nw')
 
 L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[11])
-L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nwe')  
+L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nw')  
 
 frame_sistema_metrico = ctk.CTkFrame(container1_2)
 frame_sistema_metrico.grid(row=13, column=0, columnspan=2, padx=10, pady=10, sticky='nwe')
@@ -704,22 +699,39 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     
     dic_transformacion_primer_frame = {"SI":[1,1,1], "EN":[0.15500031000062, 0.14503773800722, 0.7375621493]}
 
-    pile_area_label.configure(text=str(round(float(pile_area)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][0],2)) + unidades_primer_frame[0][dic_metrico[valor_actual_sistema_metrico]])
-    EM_label.configure(text=str(round(float(EM_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][1],2)) + unidades_primer_frame[1][dic_metrico[valor_actual_sistema_metrico]])
-    ET_label.configure(text=str(round(float(ET_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][2],2)) + unidades_primer_frame[2][dic_metrico[valor_actual_sistema_metrico]])
+    pile_area_value = round(float(pile_area)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][0],2)
+    EM_label_value = round(float(EM_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][1],2)
+    ET_label_value = round(float(ET_valor_original)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][2],2)
 
-    L_FMX.configure(text = str(V_FMX)+unidades_segundo_frame[0][dic_metrico[valor_actual_sistema_metrico]])
-    L_VMX.configure(text = str(V_VMX)+unidades_segundo_frame[1][dic_metrico[valor_actual_sistema_metrico]])
-    L_EMX.configure(text = str(V_EMX)+unidades_segundo_frame[2][dic_metrico[valor_actual_sistema_metrico]])
-    L_DMX.configure(text = str(V_DMX)+unidades_segundo_frame[3][dic_metrico[valor_actual_sistema_metrico]]) # cambiado a milimetros
-    L_ETR.configure(text = str(V_ETR)+unidades_segundo_frame[4][dic_metrico[valor_actual_sistema_metrico]])
-    L_CE.configure(text = str(V_CE)+unidades_segundo_frame[5][dic_metrico[valor_actual_sistema_metrico]])
-    L_CSX.configure(text = str(V_CSX)+unidades_segundo_frame[6][dic_metrico[valor_actual_sistema_metrico]])
-    L_DFN.configure(text = str(V_DFN)+unidades_segundo_frame[7][dic_metrico[valor_actual_sistema_metrico]])
-    L_MEX1.configure(text = str(V_MEX1)+unidades_segundo_frame[8][dic_metrico[valor_actual_sistema_metrico]])
-    L_MEX2.configure(text = str(V_MEX2)+unidades_segundo_frame[9][dic_metrico[valor_actual_sistema_metrico]])
-    L_MEX.configure(text = str(V_MEX)+unidades_segundo_frame[10][dic_metrico[valor_actual_sistema_metrico]])
-    L_AMX.configure(text = str(V_AMX)+unidades_segundo_frame[11][dic_metrico[valor_actual_sistema_metrico]])
+    valores = [pile_area_value, EM_label_value, ET_label_value, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
+    valores2 = valores.copy()
+    for index, i in enumerate(valores2):
+        if index > 1:
+            print(i)
+            parte_entera = int(i)
+            parte_decimal = round(abs(i) - abs(int(i)),2)
+            if len(str(parte_decimal)) < 4:
+                valores2[index] = str(i)+"0"
+            else:
+                valores2[index] = str(i)
+
+    pile_area_label.configure(text=str(valores2[0]) + unidades_primer_frame[0][dic_metrico[valor_actual_sistema_metrico]])
+    EM_label.configure(text=str(valores2[1]) + unidades_primer_frame[1][dic_metrico[valor_actual_sistema_metrico]])
+    ET_label.configure(text=str(valores2[2]) + unidades_primer_frame[2][dic_metrico[valor_actual_sistema_metrico]])
+
+
+    L_FMX.configure(text = str(valores2[3])+unidades_segundo_frame[0][dic_metrico[valor_actual_sistema_metrico]])
+    L_VMX.configure(text = str(valores2[4])+unidades_segundo_frame[1][dic_metrico[valor_actual_sistema_metrico]])
+    L_EMX.configure(text = str(valores2[5])+unidades_segundo_frame[2][dic_metrico[valor_actual_sistema_metrico]])
+    L_DMX.configure(text = str(valores2[6])+unidades_segundo_frame[3][dic_metrico[valor_actual_sistema_metrico]]) # cambiado a milimetros
+    L_ETR.configure(text = str(valores2[7])+unidades_segundo_frame[4][dic_metrico[valor_actual_sistema_metrico]])
+    L_CE.configure(text = str(valores2[8])+unidades_segundo_frame[5][dic_metrico[valor_actual_sistema_metrico]])
+    L_CSX.configure(text = str(valores2[9])+unidades_segundo_frame[6][dic_metrico[valor_actual_sistema_metrico]])
+    L_DFN.configure(text = str(valores2[10])+unidades_segundo_frame[7][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX1.configure(text = str(valores2[11])+unidades_segundo_frame[8][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX2.configure(text = str(valores2[12])+unidades_segundo_frame[9][dic_metrico[valor_actual_sistema_metrico]])
+    L_MEX.configure(text = str(valores2[13])+unidades_segundo_frame[10][dic_metrico[valor_actual_sistema_metrico]])
+    L_AMX.configure(text = str(valores2[14])+unidades_segundo_frame[11][dic_metrico[valor_actual_sistema_metrico]])
 
     if posicion == 'arriba':
         valores_segundo_frame_arriba = [texto_label_num_grafica, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
@@ -818,7 +830,7 @@ def actualizacion_magnitud_sincronizada(magnitud):
     numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
 
     dic_magnitud_sincronizacion = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
-    print("algunos valores son ", ultima_grafica_seleccionada, )
+    print("algunos valores son ", ultima_grafica_seleccionada, max(F))
     
     dic_sincronizacion = {"arriba": [fig2, ax2, ax1, canvas2], "abajo": [fig1, ax1, ax2, canvas1]}
     dic_sincronizacion[ultima_grafica_seleccionada][0].clear()
@@ -826,8 +838,8 @@ def actualizacion_magnitud_sincronizada(magnitud):
     t, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[magnitud][0])
     t2, = dic_sincronizacion[ultima_grafica_seleccionada][1].plot(segundos, dic_magnitud_sincronizacion[magnitud][1])
     dic_sincronizacion[ultima_grafica_seleccionada][1].set_xlim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_xlim())
-    if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
-        dic_sincronizacion[ultima_grafica_seleccionada][1].set_ylim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_ylim())
+    #if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
+    #    dic_sincronizacion[ultima_grafica_seleccionada][1].set_ylim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_ylim())
     dic_sincronizacion[ultima_grafica_seleccionada][3].draw()
 
     dic_ultima_grafica_magnitud_invertida[ultima_grafica_seleccionada] = magnitud
@@ -1257,7 +1269,7 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     
     ET = float(ET_valor_original)
     ETR = round(100*(Emax/ET),2)
-    CE = str(round(ETR/60,2)) # dividir
+    CE = round(ETR/60,2) # dividir
     CSX = round(Fmax*10/AR,2)
     
     if valor_actual_sistema_metrico == "EN":
@@ -1428,13 +1440,20 @@ dic_ultima_grafica_magnitud_invertida = {"arriba": ultima_magnitud_abajo, "abajo
 def sincronizar_grafica(event):
     global fig1, fig2, ax1, ax2, ultima_grafica_seleccionada, canvas1, canvas2
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, WU, WD
-    global numero_anterior
+    global numero_anterior, Button_num_grafica_arriba, Button_num_grafica_abajo
 
     if dic_ultima_grafica[ultima_grafica_seleccionada] != numero_anterior:
         A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
     else:
         pass
     numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
+
+    if ultima_grafica_seleccionada == "arriba":
+        Button_num_grafica_abajo.configure(text=str(numero_anterior))
+        dic_ultima_grafica["abajo"] = numero_anterior
+    else:
+        Button_num_grafica_arriba.configure(text=str(numero_anterior))
+        dic_ultima_grafica["arriba"] = numero_anterior
 
     dic_magnitud_sincronizacion = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
 
