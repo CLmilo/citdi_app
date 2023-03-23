@@ -440,7 +440,7 @@ container4c = ctk.CTkFrame(container4a, corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
-lista_botones = ["Salir", "Review", "Preparar Data", "Collet Wire", "Manual", "About"]
+lista_botones = ["Salir", "Review", "Preparar Data", "Collect Wire", "Manual", "About"]
 
 for i in range(len(lista_botones)):
     container4c.grid_columnconfigure(i, weight=1)
@@ -563,13 +563,13 @@ textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(
 
 ctk.CTkLabel(container1_1, text=textos_primer_frame[0]).grid(row=0,column=0, padx=10, pady=5, sticky='nw')
 pile_area_label = ctk.CTkLabel(container1_1, text=str(round(float(pile_area),2)))
-pile_area_label.grid(row=0, column=1, padx=10, pady=5, sticky='new')
+pile_area_label.grid(row=0, column=1, padx=10, pady=5, sticky='nw')
 ctk.CTkLabel(container1_1, text=textos_primer_frame[1]).grid(row=1,column=0, padx=10, pady=5, sticky='nw') 
 EM_label = ctk.CTkLabel(container1_1, text=str(round(float(EM_valor_original),2)))
-EM_label.grid(row=1, column=1, padx=10, pady=5, sticky='new')
+EM_label.grid(row=1, column=1, padx=10, pady=5, sticky='nw')
 ctk.CTkLabel(container1_1, text=textos_primer_frame[2]).grid(row=2,column=0, padx=10, pady=5, sticky='nw')
 ET_label = ctk.CTkLabel(container1_1, text=str("0"))
-ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='new')
+ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='nw')
 
 # Textos y Entrys Segundo Frame
 #textos_segundo_frame = ["BL #", "RSP(kN)", "RMX(kN)", "RSU(kN)", "FMX(kN)", "VMX(m/s)", "EMX(kN.m)", "DMX(mm)", "DFN(mm)", "CSX(MPa)", "TSX(MPa)", "BTA"]
