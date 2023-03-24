@@ -2453,23 +2453,27 @@ def create_toplevel_export():
     def mostrar_alertas_exportar(tipo_archivo):
         global filas, Num_golpes, Num_golpes_modificado, matriz_data_archivos, ruta_guardado_pdf, boton_exportar_pdf_excel
         contador = 0
-        longitudes = matriz_data_archivos[0][12:].split(",")
-        for fila in filas:
-            for i in range(len(fila)):
-                if str(fila[i].get()) != "":
-                    contador += 1
-        print(filas[0][0].get(), filas[-1][0].get())
-        print("las longitudes son:", longitudes)
-        if contador  != len(filas)*len(filas[0]):
-            MessageBox.showerror("Error", "Inserte todos los datos") 
-        elif str(float(filas[0][0].get())) != str(float(longitudes[1])) or str(float(filas[-1][0].get())) != str(float(longitudes[0])):
-            MessageBox.showerror("Error", "Las longitudes iniciales y finales no coinciden")
-        elif sum(Num_golpes) != len(matriz_data_archivos)-1:
-            MessageBox.showerror("Error", "La cantidad de golpes insertada no concuerda con la del archivo")
-        elif ruta_guardado_pdf == "":
-            MessageBox.showerror("Error", "Seleccione una ruta de guardado")
+        if tipo_archivo == "pdf":
+            longitudes = matriz_data_archivos[0][12:].split(",")
+            for fila in filas:
+                for i in range(len(fila)):
+                    if str(fila[i].get()) != "":
+                        contador += 1
+            print(filas[0][0].get(), filas[-1][0].get())
+            print("las longitudes son:", longitudes)
+            if contador  != len(filas)*len(filas[0]):
+                MessageBox.showerror("Error", "Inserte todos los datos") 
+            elif str(float(filas[0][0].get())) != str(float(longitudes[1])) or str(float(filas[-1][0].get())) != str(float(longitudes[0])):
+                MessageBox.showerror("Error", "Las longitudes iniciales y finales no coinciden")
+            elif sum(Num_golpes) != len(matriz_data_archivos)-1:
+                MessageBox.showerror("Error", "La cantidad de golpes insertada no concuerda con la del archivo")
+            elif ruta_guardado_pdf == "":
+                MessageBox.showerror("Error", "Seleccione una ruta de guardado")
+            else:
+                Calcular_Promedios("pdf")
         else:
-            Calcular_Promedios(tipo_archivo)
+            Num_golpes = [len(matriz_data_archivos)-1, 0, 0, 0]
+            Calcular_Promedios("excel")
             
     def Completar_Filas():
         global filas, Num_golpes, Num_golpes_modificado
@@ -2516,6 +2520,7 @@ def create_toplevel_export():
                     filas[i][6].insert(0, str(float(filas[i][0].get())*-1))
                 except:
                     filas[i][6].insert(0, 0)
+        print(Num_golpes)
 
 fila_resumen = []
 
@@ -2829,7 +2834,7 @@ def Calcular_Promedios(tipo_archivo):
         crear_excel(Segundos_data, Aceleraciones_data, Deformaciones_data, Fuerzas_data, Velocidades_data, Energias_data, Desplazamientos_data)
     elif tipo_archivo == "pdf": 
         crear_pdf(datas, img)
-    MessageBox.showinfo(title="Exportado", message="Se ha exportado con éxito")
+    MessageBox.showinfo(title="Exportado", message="Se ha exportado con éxito el "+tipo_archivo)
 
 def crear_excel(Segundos, A, S, F, V, E, D):
     global ruta_guardado_pdf, ruta_data_inicial
@@ -2999,7 +3004,7 @@ def create_toplevel_about():
 
     label1 = ctk.CTkLabel(container7, text="Kallpa Procesor hecho por el CITDI", font=('Times', 30))
     label1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
-    label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Ortiz Salas\nGrover Rios Soto\nRoberto Raucana Sulca\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
+    label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Eleana Ortiz Salas\nGrover Riveros Soto\nRoberto Freddy Raucana Sulca\nAlejandrina Nelly Huarcaya Junes\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
     label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
 
 # programa convertir rpn a ctn
