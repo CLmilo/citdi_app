@@ -39,13 +39,8 @@ MESSAGE = 'Hola, mundo!' # Datos que queremos enviar
 cont = 0
 
 extension = ""
-#colores
-azul_oscuro = "#002060"
-azul_claro = "#BDD7EE"
-azul_celeste = "#2F6CDF"
 
 ctk.set_appearance_mode("light")  # Modes: system (default), light, dark
-
 ctk.set_default_color_theme("citdi_theme.json")
 
 # Funcionalidades
@@ -65,6 +60,18 @@ ruta_guardado_pdf = ""
 L_T_Grafico = ""
 tipo_review = ""
 estado_continuidad = ""
+zooms_graficas = []
+zoom_x_general_arriba = ""
+zoom_y_general_arriba = ""
+zoom_x_general_abajo = ""
+zoom_y_general_abajo = ""
+magnitud_antigua_arriba = "aceleracion"
+magnitud_antigua_abajo = "deformacion"
+unidad_original = ""
+unidad_antigua = ""
+numero_grafica_antiguo_arriba = 1
+numero_grafica_antiguo_abajo = 1
+
 
 F1 = []
 F2 = []
@@ -264,10 +271,13 @@ def filtrado_velocidad(valores):
     return zh
 
 matriz_data_archivos = []
+orden = ""
+Switch_sistema_metrico = ""
 
 def browseFiles():
-    global tipo_review
+    global tipo_review, orden, unidad_antigua, valor_actual_sistema_metrico
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
+    global Switch_sistema_metrico
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
     ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
@@ -299,7 +309,19 @@ def browseFiles():
                     vector = []
                     j = 0
     except:
-        print("error2")            
+        print("error2")   
+    orden = str(orden_sensores[-1]).replace(" ","").split("|")
+    try:
+        unidad_original = orden[8]
+        unidad_antigua = unidad_original
+        valor_actual_sistema_metrico = unidad_original
+        Switch_sistema_metrico.set(unidad_original)
+        
+    except:
+        unidad_original = "SI"
+        unidad_antigua = "SI"
+        valor_actual_sistema_metrico = "SI" 
+        Switch_sistema_metrico.set("SI")     
     contador_grafica_arriba = 1
     contador_grafica_abajo = 1
 
@@ -310,43 +332,21 @@ ultima_magnitud_arriba = "aceleracion"
 ultima_magnitud_abajo = "deformacion"
 
 def Obtencion_data_serial(num):
-    global extension
+    global extension, unidad_original, unidad_antigua, orden
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
     segundos = []
-    S1 = []
-    S2 = []
-    A3 = []
-    A4 = []
-    SIN1 = []
-    SIN2 = []
-    SIN3 = []
-    SIN4 = []
-    NULL = []
-
+    S1, S2, A3, A4, SIN1, SIN2, SIN3, SIN4, NULL = [], [], [], [], [], [], [], [], []
 
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
 
-    orden = str(orden_sensores[-1]).replace(" ","").split("|")
-
     if len(orden[4])>1:
         frecuencia_muestreo.append(int(orden[4]))
-
-    try:
-        pile_area = orden[5]
-    except:
-        pile_area = "15.6"
-    try:
-        EM_valor_original = orden[6]
-    except:
-        EM_valor_original = "207000"
-
-    try:
-        ET_valor_original = orden[7]
-    except:
-        ET_valor_original = 981
+    pile_area = orden[5]
+    EM_valor_original = orden[6]
+    ET_valor_original = orden[7]
     
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     if extension == "ctn":
@@ -386,12 +386,8 @@ def Obtencion_data_serial(num):
             lugar = int(orden[i])
             if ((lugar== 1)) or (lugar == 2):
                 for datos in dic_orden_sensores2[orden[i]]:
-                #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-                #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
-                #for datos in dic_orden_sensores2[orden[i]]:  
-                #for datos in cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia):  
                 for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
 
@@ -401,22 +397,43 @@ def Obtencion_data_serial(num):
 # Interfaz
 
 def raise_frame(frame):
-    frame.tkraise()
+    Menup.grid_forget()
+    Review.grid_forget()
+    Collect_Wire.grid_forget()
+    frame.grid(row=0, column=0, sticky='nsew')
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
+
 
 root = Tk()        
 root.state("zoomed")
 root.grid_rowconfigure(0, weight=1)
 root.grid_columnconfigure(0, weight=1)
+
+menubar = Menu(root)
+root.config(menu=menubar)
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="Nuevo")
+filemenu.add_command(label="Abrir")
+filemenu.add_separator()
+filemenu.add_command(label="Salir", command=root.quit)
+editmenu = Menu(menubar, tearoff=0)
+editmenu.add_command(label="Cortar")
+editmenu.add_command(label="Copiar")
+editmenu.add_command(label="Pegar")
+helpmenu = Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Ayuda")
+helpmenu.add_separator()
+helpmenu.add_command(label="Acerca de...")
+
+menubar.add_cascade(label="Archivo", menu=filemenu)
+menubar.add_cascade(label="Editar", menu=editmenu)
+menubar.add_cascade(label="Ayuda", menu=helpmenu)
+
+
 Review = ctk.CTkFrame(root)
 Menup = ctk.CTkFrame(root)
 Collect_Wire = ctk.CTkFrame(root)
-Opciones = ctk.CTkFrame(root)
-
-
-for frame in (Menup, Review, Collect_Wire, Opciones):
-    frame.grid_rowconfigure(0,weight=1)
-    frame.grid_columnconfigure(0,weight=1)
-    frame.grid(row=0, column=0, sticky='nsew')
     
 # FRAME INICIAL
 container4a = ctk.CTkFrame(master= Menup, corner_radius = 20)
@@ -440,7 +457,7 @@ container4c = ctk.CTkFrame(container4a, corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
-lista_botones = ["Salir", "Review", "Preparar Data", "Collect Wire", "Manual", "About"]
+lista_botones = ["Exit", "Review", "Join Files", "Collect Wire", "Manual", "About"]
 
 for i in range(len(lista_botones)):
     container4c.grid_columnconfigure(i, weight=1)
@@ -508,10 +525,10 @@ def switch_event():
     print(str(switch_var.get()))
     if str(switch_var.get()) == "on":
         cambiar_tema("dark")
-        switch_1.configure(text="Tema Claro")
+        switch_1.configure(text="dark theme")
     else:
         cambiar_tema("light")
-        switch_1.configure(text="Tema Oscuro")
+        switch_1.configure(text="light theme")
 
 switch_1 = ctk.CTkSwitch(container4b, text="Tema Oscuro", font=fontBARRA, command=switch_event,
                                    variable=switch_var, onvalue="on", offvalue="off")
@@ -556,7 +573,7 @@ container1_2.grid_columnconfigure(0, weight=1)
 container1_2.grid_columnconfigure(1, weight=1)
 container1_2.grid_propagate("False")
 
-# Textos y Entrys Primer Frame
+# Textos y Entrys Primer FrameMACIÓN
 textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
 
 #ET_Entry
@@ -671,18 +688,23 @@ L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nw')
 frame_sistema_metrico = ctk.CTkFrame(container1_2)
 frame_sistema_metrico.grid(row=13, column=0, columnspan=2, padx=10, pady=10, sticky='nwe')
 
-valor_actual_sistema_metrico = "SI"
-
 def Switch_sistema_metrico_callback(nuevo_valor):
-    global valor_actual_sistema_metrico
+    global valor_actual_sistema_metrico, unidad_antigua, ultima_grafica_seleccionada
     valor_actual_sistema_metrico = nuevo_valor
-    Creacion_Grafica("arriba", dic_ultima_grafica_magnitud["arriba"], dic_ultima_grafica["arriba"], "original", "SI", "NO")
-    print("arriba cambiando a magnitud ", dic_ultima_grafica_magnitud["arriba"])
-    Creacion_Grafica("abajo", dic_ultima_grafica_magnitud["abajo"], dic_ultima_grafica["abajo"], "original", "SI", "NO")
-    print("abajo cambiando a magnitud ", dic_ultima_grafica_magnitud["abajo"])
+    if ultima_grafica_seleccionada == "arriba":
+        print("----", dic_ultima_grafica["abajo"])
+        Creacion_Grafica("abajo", dic_ultima_grafica_magnitud["abajo"], dic_ultima_grafica["abajo"], "original", "SI", "NO")
+        print("----", dic_ultima_grafica["arriba"])
+        Creacion_Grafica("arriba", dic_ultima_grafica_magnitud["arriba"], dic_ultima_grafica["arriba"], "original", "SI", "NO")
+    else:
+        print("----", dic_ultima_grafica["arriba"])
+        Creacion_Grafica("arriba", dic_ultima_grafica_magnitud["arriba"], dic_ultima_grafica["arriba"], "original", "SI", "NO")
+        print("----", dic_ultima_grafica["abajo"])
+        Creacion_Grafica("abajo", dic_ultima_grafica_magnitud["abajo"], dic_ultima_grafica["abajo"], "original", "SI", "NO")
 
-Switch_sistema_metrico_var = ctk.StringVar(value="SI")
-Switch_sistema_metrico = ctk.CTkSegmentedButton(frame_sistema_metrico, values=["SI", "EN"], variable=Switch_sistema_metrico_var, command=Switch_sistema_metrico_callback)
+    unidad_antigua = valor_actual_sistema_metrico
+
+Switch_sistema_metrico = ctk.CTkSegmentedButton(frame_sistema_metrico, values=["SI", "EN"], command=Switch_sistema_metrico_callback)
 
 Switch_sistema_metrico.grid_rowconfigure(0, weight=1)
 Switch_sistema_metrico.grid_columnconfigure(0, weight=1)
@@ -811,7 +833,7 @@ def actualizar_magnitud(posicion,i):
     global ultima_magnitud_arriba
     dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
 
-texto_botones_frame= ["ACELERACIÓN", "VELOCIDAD", "DEFORMACIÓN", "FUERZA", "DESPLAZAMIENTO", "F vs V", "Avg ED", "WU", "WD"]
+texto_botones_frame= ["ACCELERATION", "VELOCITY", "DEFORMATION", "STRENGTH", "DISPLACEMENT", "S vs V", "Avg E", "WU", "WD"]
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
@@ -824,7 +846,7 @@ def actualizacion_magnitud_sincronizada(magnitud):
     global numero_anterior
 
     if dic_ultima_grafica[ultima_grafica_seleccionada] != numero_anterior:
-        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
+        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
     else:
         pass
     numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
@@ -852,25 +874,25 @@ def segmented_button_callback1(value):
     if estado_sincro == "desincronizado" or ultima_grafica_seleccionada == "arriba":
         colorear_botones_seleccion_grafica(1)
         match value:
-            case "ACELERACIÓN":
+            case "ACCELERATION":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "VELOCIDAD":
+            case "VELOCITY":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "DEFORMACIÓN":
+            case "DEFORMATION":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "FUERZA":
+            case "STRENGTH":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "DESPLAZAMIENTO":
+            case "DISPLACEMENT":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "F vs V":
+            case "S vs V":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "Avg ED":
+            case "Avg E":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
             case "WU":
@@ -881,19 +903,19 @@ def segmented_button_callback1(value):
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
     else:
         match value:
-            case "ACELERACIÓN":
+            case "ACCELERATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "VELOCIDAD":
+            case "VELOCITY":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "DEFORMACIÓN":
+            case "DEFORMATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "FUERZA":
+            case "STRENGTH":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "DESPLAZAMIENTO":
+            case "DISPLACEMENT":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "F vs V":
+            case "S vs V":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "Avg ED":
+            case "Avg E":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "WU":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
@@ -907,25 +929,25 @@ def segmented_button_callback2(value):
     if estado_sincro == "desincronizado" or ultima_grafica_seleccionada == "abajo":
         colorear_botones_seleccion_grafica(2)
         match value:
-            case "ACELERACIÓN":
+            case "ACCELERATION":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "VELOCIDAD":
+            case "VELOCITY":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "DEFORMACIÓN":
+            case "DEFORMATION":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "FUERZA":
+            case "STRENGTH":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "DESPLAZAMIENTO":
+            case "DISPLACEMENT":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "F vs V":
+            case "S vs V":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "Avg ED":
+            case "Avg E":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
             case "WU":
@@ -936,19 +958,19 @@ def segmented_button_callback2(value):
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))    
     else:
         match value:
-            case "ACELERACIÓN":
+            case "ACCELERATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "VELOCIDAD":
+            case "VELOCITY":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "DEFORMACIÓN":
+            case "DEFORMATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "FUERZA":
+            case "STRENGTH":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "DESPLAZAMIENTO":
+            case "DISPLACEMENT":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "F vs V":
+            case "S vs V":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "Avg ED":
+            case "Avg E":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "WU":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
@@ -979,11 +1001,11 @@ Button_num_grafica_abajo.grid(row=0, column=0, sticky='nsw', pady=2, padx=2)
 Entry_num_grafica_exacto_abajo = ctk.CTkEntry(container_num_2_2_1, width=50)
 Entry_num_grafica_exacto_abajo.grid(row=0, column=1, sticky='nsw', pady=2, padx=(0,2))
 
-segemented_button_var1 = ctk.StringVar(value="ACELERACIÓN")
+segemented_button_var1 = ctk.StringVar(value="ACCELERATION")
 segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
 segemented_button.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
-segemented_button_var2 = ctk.StringVar(value="DEFORMACIÓN")
+segemented_button_var2 = ctk.StringVar(value="DEFORMATION")
 segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
 segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
@@ -1100,10 +1122,11 @@ def energy(F, V, freq):
     tr_energy.integrate(method = "cumtrapz")
     return tr_energy
 
-def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites):
-    global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original
+def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
+    global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original 
     global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
-    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica, valor_actual_sistema_metrico
+    global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica
+    global unidad_original, valor_actual_sistema_metrico
     
     F1 = []
     F2 = []
@@ -1272,31 +1295,34 @@ def Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites
     CE = round(ETR/60,2) # dividir
     CSX = round(Fmax*10/AR,2)
     
-    if valor_actual_sistema_metrico == "EN":
-        #cambiando la deformacion
-        S1 = np.dot(S1, 0.0393700787401574)
-        S2 = np.dot(S2, 0.0393700787401574)
+    if unidad_original != valor_actual_sistema_metrico:
+        valores_de_transformacion = {"EN":[0.0393700787401574, 0.22480894387096, 3.28083989501312, 0.7375621493, 0.1450377377],
+                                     "SI":[25.4, 4.4482216, 0.3048, 1.355817948289609, 6.894757294604437]}
+        
+    #cambiando la deformacion
+        S1 = np.dot(S1, valores_de_transformacion[valor_actual_sistema_metrico][0])
+        S2 = np.dot(S2, valores_de_transformacion[valor_actual_sistema_metrico][0])
         #cambiando la fuerza
-        F1 = np.dot(F1, 0.22480894387096)
-        F2 = np.dot(F2, 0.22480894387096)
-        F = np.dot(F, 0.22480894387096)
+        F1 = np.dot(F1, valores_de_transformacion[valor_actual_sistema_metrico][1])
+        F2 = np.dot(F2, valores_de_transformacion[valor_actual_sistema_metrico][1])
+        F = np.dot(F, valores_de_transformacion[valor_actual_sistema_metrico][1])
         #cambiando la velocidad
-        V1 = np.dot(V1, 3.28083989501312)
-        V2 = np.dot(V2, 3.28083989501312)
-        V_Transformado = np.dot(V_Transformado, 3.28083989501312)
+        V1 = np.dot(V1, valores_de_transformacion[valor_actual_sistema_metrico][2])
+        V2 = np.dot(V2, valores_de_transformacion[valor_actual_sistema_metrico][2])
+        V_Transformado = np.dot(V_Transformado, valores_de_transformacion[valor_actual_sistema_metrico][0])
         #camiando energía
-        E = np.dot(E, 0.7375621493)
+        E = np.dot(E, valores_de_transformacion[valor_actual_sistema_metrico][3])
         #cambiando desplazamiento
-        D1 = np.dot(D1, 0.0393700787401574)
-        D2 = np.dot(D2, 0.0393700787401574)
+        D1 = np.dot(D1, valores_de_transformacion[valor_actual_sistema_metrico][0])
+        D2 = np.dot(D2, valores_de_transformacion[valor_actual_sistema_metrico][0])
         #cambiando valores
-        ET = ET * 0.7375621493
-        Fmax = round(Fmax * 0.22480894387096,2)
-        Vmax = round(Vmax * 3.28083989501312,2)
-        Emax = round(Emax * 0.7375621493,2)
-        Dmax = round(Dmax * 0.0393700787401574,2)
-        CSX = round(CSX * 0.1450377377,2)
-        DFN = round(DFN * 0.0393700787401574, 2)
+        ET = ET * valores_de_transformacion[valor_actual_sistema_metrico][3]
+        Fmax = round(Fmax * valores_de_transformacion[valor_actual_sistema_metrico][1],2)
+        Vmax = round(Vmax * valores_de_transformacion[valor_actual_sistema_metrico][2],2)
+        Emax = round(Emax * valores_de_transformacion[valor_actual_sistema_metrico][3],2)
+        Dmax = round(Dmax * valores_de_transformacion[valor_actual_sistema_metrico][0],2)
+        CSX = round(CSX * valores_de_transformacion[valor_actual_sistema_metrico][4],2)
+        DFN = round(DFN * valores_de_transformacion[valor_actual_sistema_metrico][0], 2)
         
     return A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2 ,MEX, AMX
 
@@ -1349,9 +1375,13 @@ t4, = ax2.plot(np.arange(1, 8001), np.zeros(8000))
 estado = "aceleracion"
 
 def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspecto, mantener_limites):
+    
+    print("---------1el numero de gráfica que se hace es", num)
+    global zoom_x_general_arriba, zoom_x_general_abajo, zooms_graficas, magnitud_antigua_arriba, magnitud_antigua_abajo, zoom_y_general_arriba, zoom_y_general_abajo
     global t1, t2, t3, t4, ax1, fig1, canvas1, ax2, fig2, canvas2
+    global unidad_original, valor_actual_sistema_metrico, unidad_antigua
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, WU, WD
-    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(posicion, magnitud, num, direccion, mantener_limites)
+    A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
     dic_unidades = {'aceleracion':[["ms", "g's"], ["ms", "g's"]], 'deformacion':[["ms", "mm"], ["ms", "in"]], 'fuerza':[["ms", "kN"], ["ms", "kips"]], 'velocidad':[["ms", "m/s"], ["ms", "ft/s"]], 'avged':[["ms", "J"], ["ms", "ft-lbs"]],
@@ -1359,21 +1389,41 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
     
+    print("---------2el numero de gráfica que se hace es", num)
     if posicion == 'arriba': 
         Button_num_grafica_arriba.configure(text=dic_ultima_grafica[posicion])
     elif posicion == 'abajo': 
         Button_num_grafica_abajo.configure(text=dic_ultima_grafica[posicion])
     
-    
     modificar_datos_segundo_frame(posicion, texto_label_num_grafica, Fmax, Vmax, Emax, Dmax, ETR, CE, CSX, DFN, MEX1, MEX2, MEX, AMX)
-
+    print("---------3el numero de gráfica que se hace es", num)
     if posicion == 'arriba':
+        if magnitud_antigua_arriba == magnitud:
+            if zoom_y_general_arriba != "":
+                zoom_y_general_antiguo_arriba = ax1.get_ylim()
+            else:
+                zoom_y_general_antiguo_arriba = ""
+        
+        if zoom_x_general_arriba != "":
+            zoom_x_general_antiguo_arriba = ax1.get_xlim()
+        else:
+            zoom_x_general_antiguo_arriba = ""
         fig1.clear()
         ax1 = fig1.add_subplot(111)
         t1, = ax1.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
         t2, = ax1.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
         ax1.set_xlabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][0])
         ax1.set_ylabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][1])
+        zoom_x_general_arriba = ax1.get_xlim()
+        zoom_y_general_arriba = ax1.get_ylim()
+        if zoom_x_general_antiguo_arriba != zoom_x_general_arriba and zoom_x_general_antiguo_arriba != "":
+            ax1.set_xlim(zoom_x_general_antiguo_arriba)
+        if magnitud_antigua_arriba == magnitud :
+            if unidad_antigua != valor_actual_sistema_metrico or numero_grafica_antiguo_arriba != num:
+                pass
+            else:
+                if zoom_y_general_antiguo_arriba != zoom_y_general_arriba and zoom_y_general_antiguo_arriba != "":
+                    ax1.set_ylim(zoom_y_general_antiguo_arriba)
         try:
             ax1.legend(handles=[t1, t2])
         except:
@@ -1384,15 +1434,36 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
                     ax1.legend(handles=[t2])
                 except:
                     pass
+        magnitud_antigua_arriba = magnitud
+        
         canvas1.draw()
-        canvas1.draw()
+
     elif posicion == 'abajo':
+        if magnitud_antigua_abajo == magnitud:
+            if zoom_y_general_abajo != "":
+                zoom_y_general_antiguo_abajo = ax2.get_ylim()
+            else:
+                zoom_y_general_antiguo_abajo = ""
+        if zoom_x_general_abajo != "":
+            zoom_x_general_antiguo_abajo = ax2.get_xlim()
+        else:
+            zoom_x_general_antiguo_abajo = ""
         fig2.clear()
         ax2 = fig2.add_subplot(111)
         t3, = ax2.plot(segundos, dic_magnitud[magnitud][0], label=dic_legenda[magnitud][0])
         t4, = ax2.plot(segundos, dic_magnitud[magnitud][1], label=dic_legenda[magnitud][1])
         ax2.set_xlabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][0])
         ax2.set_ylabel(dic_unidades[magnitud][dic_metrico[valor_actual_sistema_metrico]][1])
+        zoom_x_general_abajo = ax2.get_xlim()
+        zoom_y_general_abajo = ax2.get_ylim()
+        if zoom_x_general_antiguo_abajo != zoom_x_general_abajo and zoom_x_general_antiguo_abajo != "":
+            ax2.set_xlim(zoom_x_general_antiguo_abajo)
+        if magnitud_antigua_abajo == magnitud:
+            if unidad_antigua != valor_actual_sistema_metrico or numero_grafica_antiguo_abajo != num:
+                pass
+            else:
+                if zoom_y_general_antiguo_abajo != zoom_y_general_abajo and zoom_y_general_antiguo_abajo != "":
+                    ax2.set_ylim(zoom_y_general_antiguo_abajo)
         try:
             ax2.legend(handles=[t3, t4])
         except:
@@ -1403,6 +1474,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
                     ax2.legend(handles=[t4])
                 except:
                     pass
+        magnitud_antigua_abajo = magnitud
         canvas2.draw()
 
 # Configuración de los botones comandos
@@ -1443,7 +1515,7 @@ def sincronizar_grafica(event):
     global numero_anterior, Button_num_grafica_arriba, Button_num_grafica_abajo
 
     if dic_ultima_grafica[ultima_grafica_seleccionada] != numero_anterior:
-        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
+        A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(dic_ultima_grafica_magnitud[ultima_grafica_seleccionada],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
     else:
         pass
     numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
@@ -1499,6 +1571,7 @@ def cambiar_grafica(direccion):
     global matriz_data_archivos, estado_continuidad
     global ultima_grafica_seleccionada
     global ultima_magnitud_arriba, ultima_magnitud_abajo
+    global numero_grafica_antiguo_arriba, numero_grafica_antiguo_abajo
     print(dic_direccion[direccion])
     print(dic_ultima_grafica[ultima_grafica_seleccionada])
     dic_ultima_grafica[ultima_grafica_seleccionada] += dic_direccion[direccion]
@@ -1511,13 +1584,21 @@ def cambiar_grafica(direccion):
         estado_continuidad = "especifico"
     else:
         estado_continuidad = "especifico"
+    
     Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
     print("en cambiar gráfica el num de gráfica es: ", dic_ultima_grafica[ultima_grafica_seleccionada])
+    
+    if ultima_grafica_seleccionada == "arriba":
+        numero_grafica_antiguo_arriba = dic_ultima_grafica["arriba"]
+    else:
+        numero_grafica_antiguo_abajo = dic_ultima_grafica["abajo"]
+    
     if direccion == 'nulo':
         if ultima_grafica_seleccionada == 'arriba':
             Creacion_Grafica('abajo', dic_ultima_grafica_magnitud['abajo'], dic_ultima_grafica['abajo'], "original", "SI", "NO")
         else:
             Creacion_Grafica('arriba', dic_ultima_grafica_magnitud['arriba'], dic_ultima_grafica['arriba'], "original", "SI", "NO")
+    
     
 def cambiar_grafica_exacto(numero, pos="ninguna"):
     global matriz_data_archivos, ultima_grafica_seleccionada, ultima_magnitud_arriba, ultima_magnitud_abajo
@@ -1540,7 +1621,7 @@ def cambiar_grafica_exacto(numero, pos="ninguna"):
         except:
             pass
 
-botones_barra_lateral = ['DEL','>','<','>>','<<', 'SYNC', 'INICIO', 'FINAL', 'EXPORTAR']
+botones_barra_lateral = ['DEL','>','<','>>','<<', 'SYNC', 'FIRST', 'LAST', 'EXPORT']
 
 for i in range(len(botones_barra_lateral)+1):
     container2_3.grid_rowconfigure(i, weight=1)
@@ -1565,9 +1646,9 @@ def preparaciones_exportar(label_cantidad_golpes, label_inicio, label_final):
     # este "," no debe ser reemplazado a ";" debido a que es para identificar las profundidades
     longitudes = matriz_data_archivos[0][12:].split(",")
     print(longitudes)
-    label_cantidad_golpes.configure(text='Cantidad de Golpes:'+str(len(matriz_data_archivos)-1))
-    label_inicio.configure(text='Inicio:'+str(longitudes[0]))
-    label_final.configure(text='Final:'+str(longitudes[1]))
+    label_cantidad_golpes.configure(text='Number of Impacts:'+str(len(matriz_data_archivos)-1))
+    label_inicio.configure(text='Initial Depth:'+str(longitudes[0]))
+    label_final.configure(text='Final Depth:'+str(longitudes[1]))
 
 #--------------------FRAME2------------------------------------------------------------
 
@@ -1596,9 +1677,9 @@ def detectar_puertos():
             socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             socket_tcp.connect((host, port))
             estado_puerto = True
-            MessageBox.showinfo(title="Conectado", message="Se ha conectado con éxito.")
+            MessageBox.showinfo(title="Conectado", message="The connection was successful")
         except:
-            MessageBox.showerror("Error", "No se puede conectar")
+            MessageBox.showerror("Error", "Error")
         print("Conectado al puerto")
         print(host)
     else:
@@ -1670,7 +1751,7 @@ container5_1_0.grid_rowconfigure(1, weight=1)
 container5_1_0.grid_rowconfigure(2, weight=1)
 container5_1_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_1 = ctk.CTkLabel(container5_1_0, text='Selección de Sensores', font=fontSUBcoll)
+Label_titulo_1 = ctk.CTkLabel(container5_1_0, text='Sensor Selection', font=fontSUBcoll)
 Label_titulo_1.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_1_1 = ctk.CTkFrame(container5_1)
@@ -1719,18 +1800,18 @@ Label_sensor3.grid(row=2, column=0, sticky='nsew', padx=(20,0), pady=(10,10))
 Label_sensor4 = ctk.CTkLabel(container5_1_2, text="Sensor 4:", font=fontTEXTcoll)
 Label_sensor4.grid(row=3, column=0, sticky='nsew', padx=(20,0), pady=(10,20))
 
-Label_sensor1_data = ctk.CTkLabel(container5_1_2, text="No disponible", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
+Label_sensor1_data = ctk.CTkLabel(container5_1_2, text="Not available", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
 Label_sensor1_data.grid(row=0, column=1, sticky='nsew', padx=(0,20), pady=(20,10))
-Label_sensor2_data = ctk.CTkLabel(container5_1_2, text="No disponible", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
+Label_sensor2_data = ctk.CTkLabel(container5_1_2, text="Not available", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
 Label_sensor2_data.grid(row=1, column=1, sticky='nsew', padx=(0,20), pady=(10,10))
-Label_sensor3_data = ctk.CTkLabel(container5_1_2, text="No disponible", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
+Label_sensor3_data = ctk.CTkLabel(container5_1_2, text="Not available", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
 Label_sensor3_data.grid(row=2, column=1, sticky='nsew', padx=(0,20), pady=(10,10))
-Label_sensor4_data = ctk.CTkLabel(container5_1_2, text="No disponible", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
+Label_sensor4_data = ctk.CTkLabel(container5_1_2, text="Not available", font=fontTEXTcoll, fg_color= ["#F9F9FA", "#343638"])
 Label_sensor4_data.grid(row=3, column=1, sticky='nsew', padx=(0,20), pady=(10,20))
 
 
-ctk.CTkButton(container5_1_1, text="Conectar al servidor", font=fontTEXTcoll, command=lambda: [detectar_puertos()]).grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
-ctk.CTkButton(container5_1_1, text="Actualizar orden de sensores", font=fontTEXTcoll,command=lambda: [verificacion_orden_sensores(), Generar_Tabla_Sensores()]).grid(row=0, column=1, sticky='nsew', padx=(0,5), pady=5)
+ctk.CTkButton(container5_1_1, text="Connect to server", font=fontTEXTcoll, command=lambda: [detectar_puertos()]).grid(row=0, column=0, sticky='nsew', padx=5, pady=5)
+ctk.CTkButton(container5_1_1, text="Update sensor order", font=fontTEXTcoll,command=lambda: [verificacion_orden_sensores(), Generar_Tabla_Sensores()]).grid(row=0, column=1, sticky='nsew', padx=(0,5), pady=5)
 
 container5_2 = ctk.CTkFrame(container5)
 container5_2.grid(row= 1, column=1, sticky='nsew', padx=(10,20), pady=20)
@@ -1745,7 +1826,7 @@ container5_2_0.grid_rowconfigure(2, weight=1)
 container5_2_0.grid_columnconfigure(0, weight=1)
 
 
-Label_titulo_2 = ctk.CTkLabel(container5_2_0, text='Parámetros de la varilla', font=fontSUBcoll)
+Label_titulo_2 = ctk.CTkLabel(container5_2_0, text='Rod Parameters', font=fontSUBcoll)
 Label_titulo_2.grid(row=1, column=0, sticky='nsew', padx=10)
 
 container5_2_2 = ctk.CTkFrame(container5_2)
@@ -1773,13 +1854,13 @@ container5_2_2_2.grid_columnconfigure(0, weight=3)
 container5_2_2_2.grid_columnconfigure(1, weight=2)
 container5_2_2_2.grid_columnconfigure(2, weight=1)
 
-Label_Area = ctk.CTkLabel(container5_2_2_1, text="Área", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
+Label_Area = ctk.CTkLabel(container5_2_2_1, text="Area", font=fontTEXTcoll, width=120).grid(row=1, column=0, sticky='nsew')
 Entry_Area = ctk.CTkEntry(container5_2_2_1, font=fontTEXTcoll)
 Entry_Area.grid(row=1, column=1, sticky='nsew')
 Entry_Area.insert(0, "7.8")
 Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm2", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
-Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Módulo de \nElasticidad ", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew')
+Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Elasticity \nModulus", font=fontTEXTcoll, width=120).grid(row=1, column=0, sticky='nsew')
 Entry_modulo_elasticidad = ctk.CTkEntry(container5_2_2_2, font=fontTEXTcoll)
 Entry_modulo_elasticidad.grid(row=1, column=1, sticky='nsew')
 Entry_modulo_elasticidad.insert(0, "207000")
@@ -1798,7 +1879,7 @@ conteiner5_3_0.grid_rowconfigure(1, weight=1)
 conteiner5_3_0.grid_rowconfigure(2, weight=1)
 conteiner5_3_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_3 = ctk.CTkLabel(conteiner5_3_0, text='Profundidad', font=fontSUBcoll)
+Label_titulo_3 = ctk.CTkLabel(conteiner5_3_0, text='Depth', font=fontSUBcoll)
 Label_titulo_3.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_3_1 = ctk.CTkFrame(container5_3)
@@ -1817,7 +1898,7 @@ container5_3_1_1.grid_columnconfigure(1, weight=2)
 container5_3_1_1.grid_columnconfigure(2, weight=1)
 container5_3_1_1.grid_columnconfigure(3, weight=2)
 
-Label_titulo_4 = ctk.CTkLabel(container5_3_1_1, text="Rango de \nProfundidades\n(m)", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=(30,20))
+Label_titulo_4 = ctk.CTkLabel(container5_3_1_1, text="Range of \nDepths\n(m)", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=(30,20))
 
 Entry_Profundidad_inicial = ctk.CTkEntry(container5_3_1_1, font=fontTEXTcoll, height=10)
 Entry_Profundidad_inicial.grid(row=0, column=1, sticky='nsew', pady=(50,20))
@@ -1857,7 +1938,7 @@ EntryLR.grid(row=0, column=1, sticky='nsew')
 LabelLR_unidades = ctk.CTkLabel(container5_3_1_3, text="m", font=fontTEXTcoll)
 LabelLR_unidades.grid(row=0, column=2, sticky='nsew')
 
-ctk.CTkButton(container5_3_1, text="Regresar", font=fontTEXTcoll, command=lambda: [detener_conexion_puerto(), raise_frame(Menup)]).grid(row=2, column=0, sticky='nsew', pady=(40,10))
+ctk.CTkButton(container5_3_1, text="Back", font=fontTEXTcoll, command=lambda: [detener_conexion_puerto(), raise_frame(Menup)]).grid(row=2, column=0, sticky='nsew', pady=(40,10))
 
 container5_4 = ctk.CTkFrame(container5)
 container5_4.grid(row=3, column=1, sticky='nsew', padx=(10,20), pady=20)
@@ -1871,7 +1952,7 @@ container5_4_0.grid_rowconfigure(1, weight=1)
 container5_4_0.grid_rowconfigure(0, weight=1)
 container5_4_0.grid_columnconfigure(0, weight=1)
 
-ctk.CTkLabel(container5_4_0, text="Parámetros del Martillo", font = fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+ctk.CTkLabel(container5_4_0, text="Hammer Parameters", font = fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_4_1 = ctk.CTkFrame(container5_4)
 container5_4_1.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
@@ -1889,19 +1970,19 @@ container5_4_1_1.grid_columnconfigure(1, weight=2)
 container5_4_1_1.grid_columnconfigure(2, weight=1)
 container5_4_1_1.grid_columnconfigure(3, weight=3)
 
-Label_Masa = ctk.CTkLabel(container5_4_1_1, text="Masa", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(0,10))
+Label_Masa = ctk.CTkLabel(container5_4_1_1, text="Mass", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(0,10))
 Entry_masa = ctk.CTkEntry(container5_4_1_1, font=fontTEXTcoll)
 Entry_masa.grid(row=1, column=1, sticky='nsew', pady=(0,10))
 Entry_masa.insert(0, "63.5")
 Label_Masa_unidades = ctk.CTkLabel(container5_4_1_1, text='kg', font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', pady=(0,10))
 
-Label_Altura = ctk.CTkLabel(container5_4_1_1, text="Altura", font=fontTEXTcoll).grid(row=2, column=0, sticky='nsew', pady=(10,0))
+Label_Altura = ctk.CTkLabel(container5_4_1_1, text="Height", font=fontTEXTcoll).grid(row=2, column=0, sticky='nsew', pady=(10,0))
 Entry_altura = ctk.CTkEntry(container5_4_1_1, font=fontTEXTcoll)
 Entry_altura.grid(row=2, column=1, sticky='nsew', pady=(10,0))
 Entry_altura.insert(0, "0.76")
 Label_Altura_unidades = ctk.CTkLabel(container5_4_1_1, text="m", font=fontTEXTcoll).grid(row=2, column=2, sticky='nsew', pady=(10,0))
 
-Boton_calcular_energia = ctk.CTkButton(container5_4_1_1, text="Calcular Energía", font=fontTEXTcoll, command=lambda:calcular()).grid(row=1, column=3, rowspan=2, sticky='nsew', padx=10)
+Boton_calcular_energia = ctk.CTkButton(container5_4_1_1, text="Calculate Energy", font=fontTEXTcoll, command=lambda:calcular()).grid(row=1, column=3, rowspan=2, sticky='nsew', padx=10)
 
 container5_4_1_2 = ctk.CTkFrame(container5_4_1)
 container5_4_1_2.grid(row=1, column=0, sticky='nsew', padx=10, pady=(30,60))
@@ -1912,7 +1993,7 @@ container5_4_1_2.grid_columnconfigure(0, weight=1)
 container5_4_1_2.grid_columnconfigure(1, weight=1)
 container5_4_1_2.grid_columnconfigure(2, weight=1)
 
-Label_Energia = ctk.CTkLabel(container5_4_1_2, text="Energia", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', padx=(10,0), pady=10)
+Label_Energia = ctk.CTkLabel(container5_4_1_2, text="Energy", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', padx=(10,0), pady=10)
 Label_Energia_valor = ctk.CTkLabel(container5_4_1_2, text="473", font=fontTEXTcoll)
 Label_Energia_valor.grid(row=1, column=1, sticky='nsew', pady=10)
 Label_Energia_unidades = ctk.CTkLabel(container5_4_1_2, text="J", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,10), pady=10)
@@ -1934,7 +2015,7 @@ container5_5_0.grid_rowconfigure(1, weight=1)
 container5_5_0.grid_rowconfigure(2, weight=1)
 container5_5_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_5 = ctk.CTkLabel(container5_5_0, text="Parámetros de muestreo", font=fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+Label_titulo_5 = ctk.CTkLabel(container5_5_0, text="Sampling parameters", font=fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_5_1 = ctk.CTkFrame(container5_5)
 container5_5_1.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
@@ -1945,7 +2026,7 @@ container5_5_1.grid_rowconfigure(2, weight=4)
 container5_5_1.grid_columnconfigure(0, weight=1)
 container5_5_1.grid_columnconfigure(1, weight=1)
 
-ctk.CTkLabel(container5_5_1, text='Frecuencia de Muestreo', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', padx=20, pady=20)
+ctk.CTkLabel(container5_5_1, text='Sampling Rate', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', padx=20, pady=20)
 
 container5_5_1_1 = ctk.CTkFrame(container5_5_1)
 container5_5_1_1.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10)
@@ -1990,26 +2071,26 @@ container5_5_1_2.grid_columnconfigure(0, weight=3)
 container5_5_1_2.grid_columnconfigure(1, weight=2)
 container5_5_1_2.grid_columnconfigure(2, weight=1)
 
-ctk.CTkLabel(container5_5_1_2, text="Tiempo de \nmuestreo:", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', pady=(40,20))
+ctk.CTkLabel(container5_5_1_2, text="Sampling \ntime:", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', pady=(40,20))
 Entry_tiempo_muestreo = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
 Entry_tiempo_muestreo.grid(row=0, column=1, sticky='nsew', pady=(40,20))
 Entry_tiempo_muestreo.insert(0, "100")
 ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=0, column=2, sticky='nsew', pady=(40,20), padx=(0,10))
 
-ctk.CTkLabel(container5_5_1_2, text="Tiempo de \nretardo", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,80))
+ctk.CTkLabel(container5_5_1_2, text="Delay \ntime", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,80))
 Entry_tiempo_Retardo = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
 Entry_tiempo_Retardo.grid(row=1, column=1, sticky='nsew', pady=(20,80))
 Entry_tiempo_Retardo.insert(0, "10")
 ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', pady=(20,80), padx=(0,10))
 
-ctk.CTkButton(container5_5_1_2, text= "Seleccionar ruta \nde guardado", font=fontTEXTcoll, command=lambda: [escoger_ruta_guardado()]).grid(row=2, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
+ctk.CTkButton(container5_5_1_2, text= "Select save path", font=fontTEXTcoll, command=lambda: [escoger_ruta_guardado()]).grid(row=2, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
 
 entry_ruta_guardado = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
 entry_ruta_guardado.grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10))
 
 
 
-ctk.CTkButton(container5_5_1_2, text= "Siguiente", font=fontTEXTcoll, command=lambda: [mostrar_alertas()]).grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
+ctk.CTkButton(container5_5_1_2, text= "Next", font=fontTEXTcoll, command=lambda: [mostrar_alertas()]).grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
 
 def escoger_ruta_guardado():
     global ruta_guardado
@@ -2092,10 +2173,10 @@ def eliminar_columna_muestreo():
     dic_ultima_grafica["arriba"] = 1
     Button_num_grafica_arriba.configure(text=str(dic_ultima_grafica["arriba"]))
     Button_num_grafica_abajo.configure(text=str(dic_ultima_grafica["abajo"]))
-    segemented_button2.set("DEFORMACIÓN")
-    segmented_button_callback2("DEFORMACIÓN")
-    segemented_button.set("ACELERACIÓN")
-    segmented_button_callback1("ACELERACIÓN")
+    segemented_button2.set("DEFORMATION")
+    segmented_button_callback2("DEFORMATION")
+    segemented_button.set("ACCELERATION")
+    segmented_button_callback1("ACCELERATION")
     
     try:
         if len(container1.grid_slaves()) > 3:
@@ -2415,7 +2496,7 @@ def create_toplevel_export():
     container6_1_1 = ctk.CTkFrame(container6_1)
     container6_1_1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
 
-    texto_columnas_export = ["Profundidad (m)", "conteo de golpes", "Longitud de Incremento (m)", "BN remanente", "Tasa de golpes (bl/m)", "set/blow (mm/bl)", "Elevación (m)"]
+    texto_columnas_export = ["Depth (m)", "Number of impacts", "Increase (m)", "BN remainder", "Hit rate (bl/m)", "Set/blow (mm/bl)", "Elevation (m)"]
 
     for i in range(7):
         container6_1_1.grid_columnconfigure(i, weight=1)
@@ -2431,12 +2512,12 @@ def create_toplevel_export():
     ctk.CTkButton(container6_2, text="Insertar fila", command=lambda:Insertar_Fila(container6_1_1)).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=10)
     ctk.CTkButton(container6_2, text="Eliminar fila", command=lambda:Eliminar_Fila()).grid(row=0, column=1, sticky='nsew', padx=(10,0), pady=10)
     ctk.CTkButton(container6_2, text="Completar", command=lambda:Completar_Filas()).grid(row=0, column=2, sticky='nsew', padx=(10,0), pady=10)
-    #ctk.CTkButton(container6_2, text="Seleccionar \Ruta", command=lambda:Seleccionar_ruta_guardado_pdf()).grid(row=0, column=3, sticky='nsew')
-    boton_exportar_excel = ctk.CTkButton(container6_2, text="Exportar PDF", command=lambda: [mostrar_alertas_exportar("pdf")])
-    boton_exportar_excel.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
+    
+    boton_exportar_pdf = ctk.CTkButton(container6_2, text="Exportar PDF", command=lambda: [mostrar_alertas_exportar("pdf")])
+    boton_exportar_pdf.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
 
-    boton_exportar_pdf = ctk.CTkButton(container6_2, text="Exportar Excel", command=lambda: [mostrar_alertas_exportar("excel")])
-    boton_exportar_pdf.grid(row=0, column=4, sticky='nsew', padx=(10), pady=10)
+    boton_exportar_excel = ctk.CTkButton(container6_2, text="Exportar Excel", command=lambda: [mostrar_alertas_exportar("excel")])
+    boton_exportar_excel.grid(row=0, column=4, sticky='nsew', padx=(10), pady=10)
 
     filas = []
     contador_fila = 1
@@ -2528,25 +2609,7 @@ def obtener_datos_grafica(j):
     global Energias, Fuerzas, Velocidades, Energias_teoricas, Impedancias, orden_sensores, frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original, matriz_data_archivos, Num_golpes, Num_golpes_modificado, segundo_inicial, segundo_final, fila_resumen
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
     segundos = []
-    S1 = []
-    S2 = []
-    A3 = []
-    A4 = []
-    F1 = []
-    F2 = []
-    F = []
-    V1 = []
-    V2 = []
-    V = []
-    E = []
-    D1 = []
-    D2 = []
-    D = []
-    SIN1 = []
-    SIN2 = []
-    SIN3 = []
-    SIN4 = []
-    NULL = []
+    S1, S2, A3, A4, F1, F2, F, V1, V2, V, E, D1, D2, D, SIN1, SIN2, SIN3, SIN4, NULL = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
     
     V_Transformado = []
     V_Transformado_valor_real = []
@@ -2573,13 +2636,9 @@ def obtener_datos_grafica(j):
         lugar = int(orden[i])
         if ((lugar== 1)) or (lugar == 2):
             for datos in dic_orden_sensores2[orden[i]]:
-            #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-            #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                 dic_orden_sensores[orden[i]].append(datos)
         elif (lugar!=0):
             for datos in dic_orden_sensores2[orden[i]]:  
-            #for datos in cuentas_a_deformacion(dic_orden_sensores2[orden[i]],frecuencia):  
-            #for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                 dic_orden_sensores[orden[i]].append(datos)
     
     EM = float(EM_valor_original)
@@ -2706,7 +2765,8 @@ Energias_teoricas = []
 Impedancias = []
 
 def Calcular_Promedios(tipo_archivo):
-    global Energias, Fuerzas, Velocidades, Energias_teoricas, Impedancias, orden_sensores, frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original, matriz_data_archivos, Num_golpes, Num_golpes_modificado, segundo_inicial, segundo_final, fila_resumen
+    global Energias, Fuerzas, Velocidades, Energias_teoricas, orden_sensores, frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original, matriz_data_archivos, Num_golpes, Num_golpes_modificado, segundo_inicial, segundo_final, fila_resumen
+    global ET_valor_original
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
 
     if len(orden[4])>1:
@@ -2726,8 +2786,6 @@ def Calcular_Promedios(tipo_archivo):
     Fuerzas = []
     Velocidades = [] 
     Energias_teoricas = []
-    Impedancias = []
-
     Aceleraciones_data = []
     Deformaciones_data = []
     Fuerzas_data = []
@@ -2737,7 +2795,11 @@ def Calcular_Promedios(tipo_archivo):
     Desplazamientos_data = []
 
     for j in range(1, len(matriz_data_archivos)):
-        F, Velocidad_transformados, segundos, Z, E, V, D, A, S = obtener_datos_grafica(j)
+        A, t, S, t, t, t, V, t, E, D, t, F, V_Transformado, segundos, ET, t, t, Fmax, Vmax, Emax, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", j, "original", "SI")
+        Energias.append(Emax)
+        Fuerzas.append(Fmax)
+        Velocidades.append(Vmax)
+        Energias_teoricas.append(ET)
         Aceleraciones_data.append(A)
         Deformaciones_data.append(S)
         Fuerzas_data.append(F)
@@ -2750,10 +2812,8 @@ def Calcular_Promedios(tipo_archivo):
         Velocidades_data.append(V)
         Desplazamientos_data.append(D)
     
-    maxZ = Impedancias.index(max(Impedancias))
-    
     #Aquí se añade una fila más a cada variable de arriba Energias, fuerzas, etc, por lo cual se le quita una fila a cada una abajo
-    Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t = obtener_datos_grafica(maxZ+1)
+    t, t, t, t, t, t, t, t, t, t, t, Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", 1, "original", "SI")
 
     Energias.pop()
     Fuerzas.pop()
@@ -2810,7 +2870,7 @@ def Calcular_Promedios(tipo_archivo):
             Velocidades_impedancia_maxima_grafica.append(Velocidades_impedancia_maxima[i])
 
     t1, = a.plot(segundos_grafica, Fuerzas_impedancia_maxima_grafica, label= "F")
-    t2, = a.plot(segundos_grafica, Velocidades_impedancia_maxima_grafica, label=str(round(Z, 2))+"*V")
+    t2, = a.plot(segundos_grafica, Velocidades_impedancia_maxima_grafica, label=str(round(0, 2))+"*V")
     #a.axis('off')
     try:
         a.legend(handles=[t1, t2])
@@ -2983,7 +3043,7 @@ def crear_pdf(datas, img):
     pdf.set_font("Times", size=12)
     # Cuadro Resumen
 
-    nombre_archivo = 'Informe_' + cadenas + '.pdf'
+    nombre_archivo = 'Report_' + cadenas + '.pdf'
     print(nombre_archivo)
     pdf.output(ruta_guardado_pdf + "/" + nombre_archivo)
 
@@ -3002,15 +3062,15 @@ def create_toplevel_about():
     container7.grid_rowconfigure(1, weight=2)
     container7.grid_columnconfigure(0, weight=1)
 
-    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor hecho por el CITDI", font=('Times', 30))
+    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor made by CITDI", font=('Times', 30))
     label1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
-    label2 = ctk.CTkLabel(container7, text="Creado con colaboración de:\nCarmen Eleana Ortiz Salas\nGrover Riveros Soto\nRoberto Freddy Raucana Sulca\nAlejandrina Nelly Huarcaya Junes\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
+    label2 = ctk.CTkLabel(container7, text="Created in collaboration with:\nCarmen Eleana Ortiz Salas\nGrover Riveros Soto\nRoberto Freddy Raucana Sulca\nAlejandrina Nelly Huarcaya Junes\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
     label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
 
 # programa convertir rpn a ctn
 
 def escoger_ruta_guardado2():
-    archivos = filedialog.askopenfilenames(initialdir = "/", title = "Seleccione los archivos a convertir")
+    archivos = filedialog.askopenfilenames(initialdir = "/", title = "Select the files to convert")
     #ruta_guardado += "/"
     return archivos
 
@@ -3086,13 +3146,13 @@ def lectura_data(frecuencia_post, filas, identificador):
         string_data+=nueva_fila+"\n"
     return string_data
 
-def crear_ctn(profundidad, ruta_guardado_combinado, identificador):
+def crear_ctn(profundidad, ruta_guardado_combinado, identificador, sistema_unidades):
     texto = ""
     for index in range(len(ruta_guardado_combinado)):
         if index == 0:
             texto += "profundidad:"+profundidad
         frecuencia_post, filas, orden_string, frecuencia, ar, em, et = leer_data_cabecera(ruta_guardado_combinado[index], identificador)
-        cabecera = orden_string+str(frecuencia)+"|"+str(ar)+"|"+str(em)+"|"+str(et)
+        cabecera = orden_string+str(frecuencia)+"|"+str(ar)+"|"+str(em)+"|"+str(et)+"|"+sistema_unidades
         texto+="\nINICIO_ARCHIVO\nARCHIVO:"+str(index+1)+"\n"+cabecera+"\n"
         texto+=lectura_data(frecuencia_post, filas, identificador)
         texto+="FIN_ARCHIVO"
@@ -3118,11 +3178,11 @@ def boton_escoger_archivos_combinar():
 
     scrollable_frame.insert(0.0, string)
 
-def boton_preparar(inicio, fin, identificador):
+def boton_preparar(inicio, fin, identificador, sistema_unidades):
     global scrollable_frame, label_frecuencia, label_AR, label_EM, label_ET, ruta_guardado_combinado
 
     nombre = str(inicio) +","+str(fin)
-    texto, frecuencia, ar, em, et = crear_ctn(nombre, ruta_combinados, identificador)
+    texto, frecuencia, ar, em, et = crear_ctn(nombre, ruta_combinados, identificador, sistema_unidades)
 
     label_frecuencia.configure(text=frecuencia)
     label_AR.configure(text=ar)
@@ -3158,11 +3218,12 @@ def create_toplevel_preparar():
     container8.grid_rowconfigure(3, weight=1)
     container8.grid_rowconfigure(4, weight=1)
     container8.grid_rowconfigure(5, weight=1)
+    container8.grid_rowconfigure(6, weight=1)
     container8.grid_columnconfigure(0, weight=1)
     container8.grid_columnconfigure(1, weight=1)
     container8.grid_columnconfigure(2, weight=1)
 
-    ctk.CTkLabel(container8, text="Indique el inicio y fin de la profundidad").grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
+    ctk.CTkLabel(container8, text="Indicate the start and end of the depth").grid(row=0, column=0, sticky='nsew', padx=20, pady=10)
 
     container8_0 = ctk.CTkFrame(container8)
     container8_0.grid(row=1, column=0, sticky='nsew', padx=20, pady=10)
@@ -3178,11 +3239,11 @@ def create_toplevel_preparar():
 
     ctk.CTkLabel(container8_0, text=" - ").grid(row=0, column=1, sticky='nsew', padx=5, pady=20)
 
-    button_escoger_archivos = ctk.CTkButton(container8, text="Seleccionar archivos", font=fontTEXTcoll, command=lambda:[boton_escoger_archivos_combinar()])
+    button_escoger_archivos = ctk.CTkButton(container8, text="Select Files", font=fontTEXTcoll, command=lambda:[boton_escoger_archivos_combinar()])
     button_escoger_archivos.grid(row=2, column=0, sticky='nsew', padx=20, pady=(10,20))
 
     scrollable_frame = ctk.CTkTextbox(container8, width=150, height=200)
-    scrollable_frame.grid(row=3, column=0, rowspan=3, sticky='nsew', padx=20, pady=(0,20))
+    scrollable_frame.grid(row=3, column=0, rowspan=4, sticky='nsew', padx=20, pady=(0,20))
 
 
     container8_1 = ctk.CTkFrame(container8)
@@ -3199,55 +3260,61 @@ def create_toplevel_preparar():
     container8_1_1.grid_columnconfigure(0, weight=3)
     container8_1_1.grid_columnconfigure(1, weight=1)
 
-    ctk.CTkLabel(container8_1_1, text="Frecuencia: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    ctk.CTkLabel(container8_1_1, text="Frequency: ", width=60).grid(row=0, column=0, sticky='nsw', padx=20, pady=(20))
     label_frecuencia = ctk.CTkLabel(container8_1_1, text="")
     label_frecuencia.grid(row=0, column=1, sticky='nswe', padx=20, pady=(20))
 
 
     container8_1_2 = ctk.CTkFrame(container8_1)
-    container8_1_2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(10,20))
+    container8_1_2.grid(row=1, column=0, sticky='nsw', padx=20, pady=(10,20))
     container8_1_2.grid_columnconfigure(0, weight=3)
     container8_1_2.grid_columnconfigure(0, weight=1)
 
-    ctk.CTkLabel(container8_1_2, text="AR: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    ctk.CTkLabel(container8_1_2, text="Area: ", width=60).grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
     label_AR = ctk.CTkLabel(container8_1_2, text="")
     label_AR.grid(row=0, column=1, sticky='nswe', padx=20, pady=(20))
 
   
     container8_1_3 = ctk.CTkFrame(container8_1)
-    container8_1_3.grid(row=0, column=1, sticky='nsew', padx=20,  pady=(20,10))
+    container8_1_3.grid(row=0, column=1, sticky='nsw', padx=20,  pady=(20,10))
     container8_1_3.grid_columnconfigure(0, weight=3)
     container8_1_3.grid_columnconfigure(0, weight=1)
 
-    ctk.CTkLabel(container8_1_3, text="EM: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=20)
+    ctk.CTkLabel(container8_1_3, text="EM: ", width=60).grid(row=0, column=0, sticky='nswe', padx=20, pady=20)
     label_EM = ctk.CTkLabel(container8_1_3, text="")
     label_EM.grid(row=0, column=1, sticky='nswe', padx=20, pady=10)
 
    
     container8_1_4 = ctk.CTkFrame(container8_1)
-    container8_1_4.grid(row=1, column=1, sticky='nsew', padx=20, pady=(10,20))
+    container8_1_4.grid(row=1, column=1, sticky='nsw', padx=20, pady=(10,20))
     container8_1_4.grid_columnconfigure(0, weight=3)
     container8_1_4.grid_columnconfigure(0, weight=1)
 
-    ctk.CTkLabel(container8_1_4, text="ET: ").grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
+    ctk.CTkLabel(container8_1_4, text="ET: ", width=60).grid(row=0, column=0, sticky='nswe', padx=20, pady=(20))
     label_ET = ctk.CTkLabel(container8_1_4, text="")
     label_ET.grid(row=0, column=1, sticky='nswe', padx=20, pady=(10,20))
 
-    ctk.CTkLabel(container8, text="Separador del CSV:").grid(row=3, column=1, padx=20, pady=20)
+    ctk.CTkLabel(container8, text="CSV separator:").grid(row=3, column=1, padx=20, pady=20)
 
     var_identificador = ctk.StringVar(value=",")
     boton_identificador = ctk.CTkSegmentedButton(container8, values=[",", ";"], variable=var_identificador)
     boton_identificador.grid(row=3, column=2, padx=20, pady=20)
 
-    ctk.CTkButton(container8, text="Escoger Ruta Guardado", command=lambda:[escoger_ruta_combinado()]).grid(row=5, column=1, padx=20, pady=(20))
+    ctk.CTkLabel(container8, text="System of Units:").grid(row=4, column=1, padx=20, pady=20)
+    
+    var_identificador_unidades = ctk.StringVar(value="SI")
+    boton_unidades_unir = ctk.CTkSegmentedButton(container8, values=["SI", "EN"], variable=var_identificador_unidades)
+    boton_unidades_unir.grid(row=4, column=2, padx=20, pady=20)
 
     ruta_guardado_label_combinado = ctk.CTkEntry(container8)
-    ruta_guardado_label_combinado.grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=10)
+    ruta_guardado_label_combinado.grid(row=5, column=1, columnspan=2, sticky='nsew', padx=20, pady=10)
 
-    ctk.CTkButton(container8, text="Unir", command=lambda:[boton_preparar(Entry_archivo_inicio.get(), Entry_archivo_final.get(), boton_identificador.get())]).grid(row=5, column=2, padx=20, pady=(20))
+    ctk.CTkButton(container8, text="Choose save path", command=lambda:[escoger_ruta_combinado()]).grid(row=6, column=1, padx=20, pady=(20))
+    ctk.CTkButton(container8, text="Join", command=lambda:[boton_preparar(Entry_archivo_inicio.get(), Entry_archivo_final.get(), boton_identificador.get(), boton_unidades_unir.get())]).grid(row=6, column=2, padx=20, pady=(20))
 
 
-
-raise_frame(Menup)
+Menup.grid(row=0, column=0, sticky='nsew')
+Menup.grid_rowconfigure(0, weight=1)
+Menup.grid_columnconfigure(0, weight=1)
 
 root.mainloop()

@@ -22,11 +22,4 @@ ax3.margins(x=0, y=-0.25)   # Values in (-0.5, 0.0) zooms in to center
 ax3.plot(t1, f(t1))
 ax3.set_title('Zoomed in')
 
-def onclick(event):
-    print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-          ('double' if event.dblclick else 'single', event.button,
-           event.x, event.y, event.xdata, event.ydata))
-
-ax3.mpl_connect('button_press_event', onclick)
-
 plt.show()
