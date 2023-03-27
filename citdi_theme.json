@@ -8,14 +8,14 @@
   "CTkFrame": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["#73a6e0", "#71808c"],
-    "top_fg_color": ["#e1ecf2", "#323a53"],
+    "fg_color": ["#c2d2e9", "#3a4e7a"],
+    "top_fg_color": ["#f1f1f0", "#091d36"],
     "border_color": ["#e1ecf2", "gray28"]
   },
   "CTkButton": {
     "corner_radius": 6,
     "border_width": 0,
-    "fg_color": ["#003785", "#0a0a0a"],
+    "fg_color": ["#091d36", "#0a0a0a"],
     "hover_color": ["#001448", "#323a53"],
     "border_color": ["#003785", "#949A9F"],
     "text_color": ["#DCE4EE", "#DCE4EE"],
@@ -24,14 +24,14 @@
   "CTkLabel": {
     "corner_radius": 0,
     "fg_color": "transparent",
-    "text_color": ["gray14", "gray14"]
+    "text_color": ["#091d36", "#f1f1f0"]
   },
   "CTkEntry": {
     "corner_radius": 6,
     "border_width": 2,
-    "fg_color": ["#e9e7db", "#343638"],
+    "fg_color": ["#e9e7db", "#c2d2e9"],
     "border_color": ["#000000", "#565B5E"],
-    "text_color": ["#000000", "gray84"],
+    "text_color": ["#091d36", "#091d36"],
     "placeholder_text_color": ["gray14", "gray84"]
   },
   "CTkCheckbox": {
@@ -52,7 +52,7 @@
     "progress_color": ["#001448", "#001448"],
     "button_color": ["gray36", "#D5D9DE"],
     "button_hover_color": ["gray20", "gray100"],
-    "text_color": ["gray14", "gray14"],
+    "text_color": ["#091d36", "#f1f1f0"],
     "text_color_disabled": ["gray60", "gray45"]
   },
   "CTkRadiobutton": {
@@ -110,12 +110,12 @@
   "CTkSegmentedButton": {
     "corner_radius": 6,
     "border_width": 2,
-    "fg_color": ["#003785", "gray29"],
-    "selected_color": ["#001A60", "#001A60"],
-    "selected_hover_color": ["#001448", "#001448"],
-    "unselected_color": ["#979DA2", "gray29"],
-    "unselected_hover_color": ["gray70", "gray41"],
-    "text_color": ["#DCE4EE", "#DCE4EE"],
+    "fg_color": ["#091d36", "#091d36"],
+    "selected_color": ["#3a4e7a", "#3a4e7a"],
+    "selected_hover_color": ["#3a4e7a", "#3a4e7a"],
+    "unselected_color": ["#091d36", "#091d36"],
+    "unselected_hover_color": ["#3a4e7a", "#3a4e7a"],
+    "text_color": ["#f1f1f0", "#DCE4EE"],
     "text_color_disabled": ["gray74", "gray60"]
   },
   "CTkTextbox": {

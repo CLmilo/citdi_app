@@ -440,7 +440,7 @@ container4a.grid_rowconfigure(1, weight=1)
 container4a.grid_columnconfigure(0, weight=1)
 container4a.grid(row=0, column=0, sticky='nsew', padx=40, pady=40)
 
-container4b = ctk.CTkFrame(container4a, corner_radius=20, fg_color="#BADCF1")
+container4b = ctk.CTkFrame(container4a, corner_radius=20, fg_color=["#f1f1f0","#091d36"])
 container4b.grid(row=0, column=0, sticky='nsew', padx=40, pady=(40,0))
 
 container4b.grid_rowconfigure(0, weight=10)
@@ -476,10 +476,14 @@ def limpiar_entrys():
 
 fontTITULO = ctk.CTkFont(family='FRanklin Gothic Book',size=100, weight="bold")
 fontBARRA = ('FRanklin Gothic Book',40)
-fontSUBcoll = ('FRanklin Gothic Book',26)
+#fontSUBcoll = ('FRanklin Gothic Book',26)
+fontSUBcoll = ctk.CTkFont(family='FRanklin Gothic Book',size=35, weight="bold")
 fontTEXTcoll = ('FRanklin Gothic Book',18)
 fontBARRAleft = ('FRanklin Gothic Book',14)
 family_barra_derecha = 'FRanklin Gothic Book'
+
+fontABOUTtitulo = ctk.CTkFont(family='FRanklin Gothic Book',size=40, weight="bold")
+fontABOUTtexto = ctk.CTkFont(family='FRanklin Gothic Book',size=35)
 
 font_barra_derecha = ctk.CTkFont(family='FRanklin Gothic Book',size=35, weight="bold")
 font_barra_cambio_magnitud = ctk.CTkFont(family='FRanklin Gothic Book',size=20)
@@ -1763,7 +1767,7 @@ container5_1_0.grid_rowconfigure(1, weight=1)
 container5_1_0.grid_rowconfigure(2, weight=1)
 container5_1_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_1 = ctk.CTkLabel(container5_1_0, text='Sensor Selection', font=fontSUBcoll)
+Label_titulo_1 = ctk.CTkLabel(container5_1_0, text='SENSOR SELECTION', font=fontSUBcoll)
 Label_titulo_1.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_1_1 = ctk.CTkFrame(container5_1)
@@ -1838,7 +1842,7 @@ container5_2_0.grid_rowconfigure(2, weight=1)
 container5_2_0.grid_columnconfigure(0, weight=1)
 
 
-Label_titulo_2 = ctk.CTkLabel(container5_2_0, text='Rod Parameters', font=fontSUBcoll)
+Label_titulo_2 = ctk.CTkLabel(container5_2_0, text='ROD PARAMETERS', font=fontSUBcoll)
 Label_titulo_2.grid(row=1, column=0, sticky='nsew', padx=10)
 
 container5_2_2 = ctk.CTkFrame(container5_2)
@@ -1891,7 +1895,7 @@ conteiner5_3_0.grid_rowconfigure(1, weight=1)
 conteiner5_3_0.grid_rowconfigure(2, weight=1)
 conteiner5_3_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_3 = ctk.CTkLabel(conteiner5_3_0, text='Depth', font=fontSUBcoll)
+Label_titulo_3 = ctk.CTkLabel(conteiner5_3_0, text='DEPTH', font=fontSUBcoll)
 Label_titulo_3.grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_3_1 = ctk.CTkFrame(container5_3)
@@ -1964,7 +1968,7 @@ container5_4_0.grid_rowconfigure(1, weight=1)
 container5_4_0.grid_rowconfigure(0, weight=1)
 container5_4_0.grid_columnconfigure(0, weight=1)
 
-ctk.CTkLabel(container5_4_0, text="Hammer Parameters", font = fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+ctk.CTkLabel(container5_4_0, text="HAMMER PARAMETERS", font = fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_4_1 = ctk.CTkFrame(container5_4)
 container5_4_1.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
@@ -2027,7 +2031,7 @@ container5_5_0.grid_rowconfigure(1, weight=1)
 container5_5_0.grid_rowconfigure(2, weight=1)
 container5_5_0.grid_columnconfigure(0, weight=1)
 
-Label_titulo_5 = ctk.CTkLabel(container5_5_0, text="Sampling parameters", font=fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
+Label_titulo_5 = ctk.CTkLabel(container5_5_0, text="SAMPLING PARAMETERS", font=fontSUBcoll).grid(row=1, column=0, sticky='nsew', padx=10, pady=10)
 
 container5_5_1 = ctk.CTkFrame(container5_5)
 container5_5_1.grid(row=0, column=0, sticky='nsew', padx=10, pady=10)
@@ -3127,9 +3131,9 @@ def create_toplevel_about():
     container7.grid_rowconfigure(1, weight=2)
     container7.grid_columnconfigure(0, weight=1)
 
-    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor made by CITDI", font=('Times', 30))
+    label1 = ctk.CTkLabel(container7, text="Kallpa Procesor made by CITDI", font=fontABOUTtitulo)
     label1.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
-    label2 = ctk.CTkLabel(container7, text="Created in collaboration with:\nCarmen Eleana Ortiz Salas\nGrover Riveros Soto\nRoberto Freddy Raucana Sulca\nAlejandrina Nelly Huarcaya Junes\nJoseph Mottoccanche Tantaruna", font=('Times', 20))
+    label2 = ctk.CTkLabel(container7, text="Created in collaboration with:\n\nCarmen Eleana Ortiz Salas\nGrover Riveros Soto\nRoberto Freddy Raucana Sulca\nAlejandrina Nelly Huarcaya Junes\nJoseph Mottoccanche Tantaruna", font=fontABOUTtexto)
     label2.grid(row=1, column=0, sticky='nsew', padx=20, pady=(20))
 
 # programa convertir rpn a ctn
