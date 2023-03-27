@@ -385,9 +385,9 @@ def Obtencion_data_serial(num):
         for i in range(4):
             lugar = int(orden[i])
             if ((lugar== 1)) or (lugar == 2):
-                for datos in dic_orden_sensores2[orden[i]]:
+                #for datos in dic_orden_sensores2[orden[i]]:
                 #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-                #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+                for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
                 #for datos in dic_orden_sensores2[orden[i]]:  
@@ -2595,9 +2595,9 @@ def obtener_datos_grafica(j):
         for i in range(4):
             lugar = int(orden[i])
             if ((lugar== 1)) or (lugar == 2):
-                for datos in dic_orden_sensores2[orden[i]]:
+                #for datos in dic_orden_sensores2[orden[i]]:
                 #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
-                #for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
+                for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
                 #for datos in dic_orden_sensores2[orden[i]]:  
