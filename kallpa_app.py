@@ -561,7 +561,7 @@ container1_0 = ctk.CTkFrame(container1)
 
 container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
 
-ctk.CTkButton(container1_0, text='Regresar', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
+ctk.CTkButton(container1_0, text='Return', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
 
 container1_1 = ctk.CTkFrame(container1, width=230, height=120)
 container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
@@ -576,7 +576,7 @@ container1_2.grid_columnconfigure(1, weight=1)
 container1_2.grid_propagate("False")
 
 # Textos y Entrys Primer FrameMACIÓN
-textos_primer_frame = ["Área(cm^2)", "M. Elasticidad(MPa)", "Energía Teórica(J)"]
+textos_primer_frame = ["Area (cm^2)", "Elasticity Modulus (MPa)", "Theoretical energy (J)"]
 
 #ET_Entry
 
@@ -643,7 +643,7 @@ def create_toplevel_ayuda_unidades():
 boton_ayuda_unidades = ctk.CTkButton(container1_2, width=80, text="?", command=lambda:create_toplevel_ayuda_unidades(), font=fontTEXTcoll).grid(row=0, column=1, padx=5, pady=5)
 
 textos_segundo_frame = ["FMX", "VMX", "EFV", "DMX", "ETR", "CE", "CSX", "DFN", "MEX1", "MEX2", "MEX", "AMX"]
-unidades_segundo_frame = [[" kN"," kip"], [" m/s", " ft/s"], [" J", " ft-lbs"], [" mm", " in"], [" %", " %"], ["", ""], [" MPa", " ksi"], [" mm", " in"], [" µe", " µe"], [" µe", " µe"], [" µe", " µe"], [" g's", " g's"]]
+unidades_segundo_frame = [[" kN"," kip"], [" m/s", " ft/s"], [" J", " ft-lbs"], [" mm", " mm"], [" %", " %"], ["", ""], [" MPa", " ksi"], [" mm", " in"], [" µe", " µe"], [" µe", " µe"], [" µe", " µe"], [" g's", " g's"]]
 unidades_primer_frame = [[" cm^2", " in^2"], [" MPa", " ksi"], [" J", " ft-lbs"]]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
@@ -835,7 +835,7 @@ def actualizar_magnitud(posicion,i):
     global ultima_magnitud_arriba
     dic_ultima_grafica_magnitud[posicion] = dic_magnitud_botones[i]
 
-texto_botones_frame= ["ACCELERATION", "VELOCITY", "DEFORMATION", "STRENGTH", "DISPLACEMENT", "S vs V", "Avg E", "WU", "WD"]
+texto_botones_frame= ["ACCELERATION", "VELOCITY", "DEFORMATION", "FORCE", "DISPLACEMENT", "F vs V", "Avg E", "WU", "WD"]
 
 # Estos botones están fuera de un bucle for por usar una función lambda dentro de sus comandos, los cuales dan i como 3 siempre que se ejecutan
 
@@ -885,13 +885,13 @@ def segmented_button_callback1(value):
             case "DEFORMATION":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "STRENGTH":
+            case "FORCE":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
             case "DISPLACEMENT":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
-            case "S vs V":
+            case "F vs V":
                 cambiar_magnitud_grafica("arriba", texto_botones_frame.index(value))
                 actualizar_magnitud("arriba", texto_botones_frame.index(value))
             case "Avg E":
@@ -911,11 +911,11 @@ def segmented_button_callback1(value):
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "DEFORMATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "STRENGTH":
+            case "FORCE":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "DISPLACEMENT":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "S vs V":
+            case "F vs V":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "Avg E":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
@@ -940,13 +940,13 @@ def segmented_button_callback2(value):
             case "DEFORMATION":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "STRENGTH":
+            case "FORCE":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
             case "DISPLACEMENT":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
-            case "S vs V":
+            case "F vs V":
                 cambiar_magnitud_grafica("abajo", texto_botones_frame.index(value))
                 actualizar_magnitud("abajo", texto_botones_frame.index(value))
             case "Avg E":
@@ -966,11 +966,11 @@ def segmented_button_callback2(value):
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "DEFORMATION":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "STRENGTH":
+            case "FORCE":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "DISPLACEMENT":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
-            case "S vs V":
+            case "F vs V":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
             case "Avg E":
                 actualizacion_magnitud_sincronizada(dic_magnitud_botones[texto_botones_frame.index(value)])
@@ -1386,7 +1386,7 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
     A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, ET, ETR, CE, Fmax, Vmax, Emax, Dmax, Z, WU, WD, CSX, DFN, MEX1, MEX2, MEX, AMX = Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites)
     dic_magnitud = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
     dic_legenda = {'aceleracion':["A3", "A4"], 'deformacion':["S1", "S2"], 'fuerza':["F1", "F2"], 'velocidad':["V1", "V2"], 'avged':["E", "E"], 'desplazamiento':["D1", "D2"], 'fuerzaxvelocidad':["F", str(round(Z, 2))+"*V"], 'wu':['WU', 'WU'], 'wd':['WD', 'WD']}
-    dic_unidades = {'aceleracion':[["ms", "g's"], ["ms", "g's"]], 'deformacion':[["ms", "mm"], ["ms", "in"]], 'fuerza':[["ms", "kN"], ["ms", "kips"]], 'velocidad':[["ms", "m/s"], ["ms", "ft/s"]], 'avged':[["ms", "J"], ["ms", "ft-lbs"]],
+    dic_unidades = {'aceleracion':[["ms", "g's"], ["ms", "g's"]], 'deformacion':[["ms", "ue"], ["ms", "ue"]], 'fuerza':[["ms", "kN"], ["ms", "kips"]], 'velocidad':[["ms", "m/s"], ["ms", "ft/s"]], 'avged':[["ms", "J"], ["ms", "ft-lbs"]],
                     'desplazamiento':[["ms", "mm"],["ms", "in"]], 'fuerzaxvelocidad':[["ms", ""], ["ms", ""]], 'wu':[['ms', 'kN'], ['ms', 'kip']], 'wd':[['ms', 'kN'], ['ms', 'kip']]}
 
     texto_label_num_grafica = str(dic_ultima_grafica[posicion])+"/"+str(len(matriz_data_archivos)-1)
@@ -2511,14 +2511,14 @@ def create_toplevel_export():
     for i in range(5):
         container6_2.grid_columnconfigure(i, weight=1)
 
-    ctk.CTkButton(container6_2, text="Insertar fila", command=lambda:Insertar_Fila(container6_1_1)).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=10)
-    ctk.CTkButton(container6_2, text="Eliminar fila", command=lambda:Eliminar_Fila()).grid(row=0, column=1, sticky='nsew', padx=(10,0), pady=10)
-    ctk.CTkButton(container6_2, text="Completar", command=lambda:Completar_Filas()).grid(row=0, column=2, sticky='nsew', padx=(10,0), pady=10)
+    ctk.CTkButton(container6_2, text="Insert row", command=lambda:Insertar_Fila(container6_1_1)).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=10)
+    ctk.CTkButton(container6_2, text="Delete row", command=lambda:Eliminar_Fila()).grid(row=0, column=1, sticky='nsew', padx=(10,0), pady=10)
+    ctk.CTkButton(container6_2, text="Complete", command=lambda:Completar_Filas()).grid(row=0, column=2, sticky='nsew', padx=(10,0), pady=10)
     
-    boton_exportar_pdf = ctk.CTkButton(container6_2, text="Exportar PDF", command=lambda: [mostrar_alertas_exportar("pdf")])
+    boton_exportar_pdf = ctk.CTkButton(container6_2, text="Export PDF", command=lambda: [mostrar_alertas_exportar("pdf")])
     boton_exportar_pdf.grid(row=0, column=3, sticky='nsew', padx=(10), pady=10)
 
-    boton_exportar_excel = ctk.CTkButton(container6_2, text="Exportar Excel", command=lambda: [mostrar_alertas_exportar("excel")])
+    boton_exportar_excel = ctk.CTkButton(container6_2, text="Export Excel", command=lambda: [mostrar_alertas_exportar("excel")])
     boton_exportar_excel.grid(row=0, column=4, sticky='nsew', padx=(10), pady=10)
 
     filas = []
