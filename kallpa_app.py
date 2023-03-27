@@ -1,5 +1,6 @@
 import random
 import time
+import tkinter
 from tkinter import *
 from datetime import datetime
 from matplotlib import style
@@ -26,12 +27,6 @@ print(host)
 port = 65432
 BUFFER_SIZE = 16
 MESSAGE = 'Hola, mundo!' # Datos que queremos enviar
-
-#Fuentes
-fontTITULO = ('@Microsoft YaHei',100)
-fontBARRA = ('@Microsoft YaHei Light',40)
-fontSUBcoll = ('@Microsoft YaHei',26)
-fontTEXTcoll = ('@Microsoft YaHei Light',18)
 
 port = 65432
 BUFFER_SIZE = 16
@@ -459,7 +454,7 @@ container4c = ctk.CTkFrame(container4a, corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
-lista_botones = ["Exit", "Review", "Join Files", "Collect Wire", "Manual", "About"]
+lista_botones = ["EXIT", "REVIEW", "JOIN FILES", "COLLECT WIRE", "MANUAL", "ABOUT"]
 
 for i in range(len(lista_botones)):
     container4c.grid_columnconfigure(i, weight=1)
@@ -475,6 +470,21 @@ def limpiar_entrys():
     except:
         pass
     tipo_review = "collectwire"
+
+
+#Fuentes
+
+fontTITULO = ctk.CTkFont(family='FRanklin Gothic Book',size=100, weight="bold")
+fontBARRA = ('FRanklin Gothic Book',40)
+fontSUBcoll = ('FRanklin Gothic Book',26)
+fontTEXTcoll = ('FRanklin Gothic Book',18)
+fontBARRAleft = ('FRanklin Gothic Book',14)
+family_barra_derecha = 'FRanklin Gothic Book'
+
+font_barra_derecha = ctk.CTkFont(family='FRanklin Gothic Book',size=35, weight="bold")
+font_barra_cambio_magnitud = ctk.CTkFont(family='FRanklin Gothic Book',size=20)
+
+
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
@@ -513,7 +523,7 @@ new_imagen = imagen.subsample(5, 5)
 
 ctk.CTkLabel(container4b, image=new_imagen, text="").grid(row=0,column=1, columnspan=2, padx=(40), pady=40)
 
-ctk.CTkLabel(container4b, font=fontTITULO, text="Kallpa Processor").grid(row=0, column=0, sticky='nsw', padx=(40,0), pady=20)
+ctk.CTkLabel(container4b, font=fontTITULO, text="KALLPA PROCESSOR").grid(row=0, column=0, sticky='nsw', padx=(40,0), pady=20)
 
 switch_var = ctk.StringVar(value="off")
 
@@ -527,12 +537,12 @@ def switch_event():
     print(str(switch_var.get()))
     if str(switch_var.get()) == "on":
         cambiar_tema("dark")
-        switch_1.configure(text="dark theme")
+        switch_1.configure(text="LIGHT THEME")
     else:
         cambiar_tema("light")
-        switch_1.configure(text="light theme")
+        switch_1.configure(text="DARK THEME")
 
-switch_1 = ctk.CTkSwitch(container4b, text="Tema Oscuro", font=fontBARRA, command=switch_event,
+switch_1 = ctk.CTkSwitch(container4b, text="DARK THEME", font=fontBARRA, command=switch_event,
                                    variable=switch_var, onvalue="on", offvalue="off")
 
 switch_1.grid(row=2, column=2, sticky='nse', padx= 40, pady=20)
@@ -561,7 +571,7 @@ container1_0 = ctk.CTkFrame(container1)
 
 container1_0.grid(row=0, column=0, padx=20, pady=(40,10), sticky='new')
 
-ctk.CTkButton(container1_0, text='Return', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
+ctk.CTkButton(container1_0, font=fontTEXTcoll, text='Return', command=lambda:raise_frame(Menup)).grid(row=0,column=0, sticky='nsew', padx=(5,0) , pady=5)
 
 container1_1 = ctk.CTkFrame(container1, width=230, height=120)
 container1_1.grid(row=1, column=0, padx=20, pady=(0,10), sticky='new')
@@ -576,24 +586,24 @@ container1_2.grid_columnconfigure(1, weight=1)
 container1_2.grid_propagate("False")
 
 # Textos y Entrys Primer FrameMACIÓN
-textos_primer_frame = ["Area (cm^2)", "Elasticity Modulus (MPa)", "Theoretical energy (J)"]
+textos_primer_frame = ["Area", "Elasticity Modulus", "Theoretical energy"]
 
 #ET_Entry
 
-ctk.CTkLabel(container1_1, text=textos_primer_frame[0]).grid(row=0,column=0, padx=10, pady=5, sticky='nw')
-pile_area_label = ctk.CTkLabel(container1_1, text=str(round(float(pile_area),2)))
+ctk.CTkLabel(container1_1, font=fontBARRAleft, text=textos_primer_frame[0]).grid(row=0,column=0, padx=10, pady=5, sticky='nw')
+pile_area_label = ctk.CTkLabel(container1_1, font=fontBARRAleft, text=str(round(float(pile_area),2)))
 pile_area_label.grid(row=0, column=1, padx=10, pady=5, sticky='nw')
-ctk.CTkLabel(container1_1, text=textos_primer_frame[1]).grid(row=1,column=0, padx=10, pady=5, sticky='nw') 
-EM_label = ctk.CTkLabel(container1_1, text=str(round(float(EM_valor_original),2)))
+ctk.CTkLabel(container1_1, font=fontBARRAleft, text=textos_primer_frame[1]).grid(row=1,column=0, padx=10, pady=5, sticky='nw') 
+EM_label = ctk.CTkLabel(container1_1, font=fontBARRAleft, text=str(round(float(EM_valor_original),2)))
 EM_label.grid(row=1, column=1, padx=10, pady=5, sticky='nw')
-ctk.CTkLabel(container1_1, text=textos_primer_frame[2]).grid(row=2,column=0, padx=10, pady=5, sticky='nw')
-ET_label = ctk.CTkLabel(container1_1, text=str("0"))
+ctk.CTkLabel(container1_1, font=fontBARRAleft, text=textos_primer_frame[2]).grid(row=2,column=0, padx=10, pady=5, sticky='nw')
+ET_label = ctk.CTkLabel(container1_1, font=fontBARRAleft, text=str("0"))
 ET_label.grid(row=2, column=1, padx=10, pady=5, sticky='nw')
 
 # Textos y Entrys Segundo Frame
 #textos_segundo_frame = ["BL #", "RSP(kN)", "RMX(kN)", "RSU(kN)", "FMX(kN)", "VMX(m/s)", "EMX(kN.m)", "DMX(mm)", "DFN(mm)", "CSX(MPa)", "TSX(MPa)", "BTA"]
 
-Button_Num_Grafica = ctk.CTkButton(container1_2, text="")
+Button_Num_Grafica = ctk.CTkButton(container1_2, font=fontBARRAleft, text="")
 Button_Num_Grafica.grid(row=0,column=0, padx=10, pady=5, sticky='new') 
 
 def create_toplevel_ayuda_unidades():
@@ -644,47 +654,47 @@ boton_ayuda_unidades = ctk.CTkButton(container1_2, width=80, text="?", command=l
 
 textos_segundo_frame = ["FMX", "VMX", "EFV", "DMX", "ETR", "CE", "CSX", "DFN", "MEX1", "MEX2", "MEX", "AMX"]
 unidades_segundo_frame = [[" kN"," kip"], [" m/s", " ft/s"], [" J", " ft-lbs"], [" mm", " mm"], [" %", " %"], ["", ""], [" MPa", " ksi"], [" mm", " in"], [" µe", " µe"], [" µe", " µe"], [" µe", " µe"], [" g's", " g's"]]
-unidades_primer_frame = [[" cm^2", " in^2"], [" MPa", " ksi"], [" J", " ft-lbs"]]
+unidades_primer_frame = [[" cm²", " in^2"], [" MPa", " ksi"], [" J", " ft-lbs"]]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
 for i in range(len(textos_segundo_frame)):
-    ctk.CTkLabel(container1_2, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
+    ctk.CTkLabel(container1_2, font=fontBARRAleft, text=textos_segundo_frame[i]).grid(row=i+1,column=0, padx=10, pady=5, sticky='nw') 
 
-L_FMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[0])
+L_FMX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[0])
 L_FMX.grid(row=1, column=1,padx=10, pady=5, sticky='nw')
 
-L_VMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[1])
+L_VMX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[1])
 L_VMX.grid(row=2, column=1,padx=10, pady=5, sticky='nw')
 
-L_EMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[2])
+L_EMX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[2])
 L_EMX.grid(row=3, column=1,padx=10, pady=5, sticky='nw')
 
-L_DMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[3])
+L_DMX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[3])
 L_DMX.grid(row=4, column=1,padx=10, pady=5, sticky='nw')  
  
-L_ETR = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[4])
+L_ETR = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[4])
 L_ETR.grid(row=5, column=1,padx=10, pady=5, sticky='nw')
 
-L_CE = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[5])
+L_CE = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[5])
 L_CE.grid(row=6, column=1,padx=10, pady=5, sticky='nw')  
 
-L_CSX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[6])
+L_CSX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[6])
 L_CSX.grid(row=7, column=1,padx=10, pady=5, sticky='nw')
 
-L_DFN = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[7])
+L_DFN = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[7])
 L_DFN.grid(row=8, column=1,padx=10, pady=5, sticky='nw')
 
-L_MEX1 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[8])
+L_MEX1 = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[8])
 L_MEX1.grid(row=9, column=1,padx=10, pady=5, sticky='nw')  
 
-L_MEX2 = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[9])
+L_MEX2 = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[9])
 L_MEX2.grid(row=10, column=1,padx=10, pady=5, sticky='nw') 
 
-L_MEX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[10])
+L_MEX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[10])
 L_MEX.grid(row=11, column=1,padx=10, pady=5, sticky='nw')
 
-L_AMX = ctk.CTkLabel(container1_2, text=valores_segundo_frame_arriba[11])
+L_AMX = ctk.CTkLabel(container1_2, font=fontBARRAleft, text=valores_segundo_frame_arriba[11])
 L_AMX.grid(row=12, column=1,padx=10, pady=5, sticky='nw')  
 
 frame_sistema_metrico = ctk.CTkFrame(container1_2)
@@ -1004,11 +1014,11 @@ Entry_num_grafica_exacto_abajo = ctk.CTkEntry(container_num_2_2_1, width=50)
 Entry_num_grafica_exacto_abajo.grid(row=0, column=1, sticky='nsw', pady=2, padx=(0,2))
 
 segemented_button_var1 = ctk.StringVar(value="ACCELERATION")
-segemented_button = ctk.CTkSegmentedButton(container2_1_1, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
+segemented_button = ctk.CTkSegmentedButton(container2_1_1, font=font_barra_cambio_magnitud, values=texto_botones_frame, command=segmented_button_callback1, variable=segemented_button_var1)
 segemented_button.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
 segemented_button_var2 = ctk.StringVar(value="DEFORMATION")
-segemented_button2 = ctk.CTkSegmentedButton(container2_2_1, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
+segemented_button2 = ctk.CTkSegmentedButton(container2_2_1,font=font_barra_cambio_magnitud, values=texto_botones_frame, command=segmented_button_callback2, variable=segemented_button_var2)
 segemented_button2.grid(row=0,column=1, sticky='nsew', pady=5, padx=(0))
 
 # Barra lateral de la columna de la derecha
@@ -1628,16 +1638,16 @@ botones_barra_lateral = ['DEL','>','<','>>','<<', 'SYNC', 'FIRST', 'LAST', 'EXPO
 for i in range(len(botones_barra_lateral)+1):
     container2_3.grid_rowconfigure(i, weight=1)
 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[0], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: eliminar_grafica()).grid(row=0,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha")).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("derecha+")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: cambiar_grafica("izquierda+")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-boton_sincro = ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [creador_sincronizacion()])
+ctk.CTkButton(container2_3, text=botones_barra_lateral[0], font=font_barra_derecha, command=lambda: eliminar_grafica()).grid(row=0,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[1], font=font_barra_derecha, command=lambda: cambiar_grafica("derecha")).grid(row=1,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[2], font=font_barra_derecha, command=lambda: cambiar_grafica("izquierda")).grid(row=2,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[3], font=font_barra_derecha, command=lambda: cambiar_grafica("derecha+")).grid(row=3,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5,0)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[4], font=font_barra_derecha, command=lambda: cambiar_grafica("izquierda+")).grid(row=4,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+boton_sincro = ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=font_barra_derecha, command=lambda: [creador_sincronizacion()])
 boton_sincro.grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=font_barra_derecha, command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=font_barra_derecha, command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 
 #----------------------------------------------------
@@ -1860,7 +1870,7 @@ Label_Area = ctk.CTkLabel(container5_2_2_1, text="Area", font=fontTEXTcoll, widt
 Entry_Area = ctk.CTkEntry(container5_2_2_1, font=fontTEXTcoll)
 Entry_Area.grid(row=1, column=1, sticky='nsew')
 Entry_Area.insert(0, "7.8")
-Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm2", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
+Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm²", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Elasticity \nModulus", font=fontTEXTcoll, width=120).grid(row=1, column=0, sticky='nsew')
 Entry_modulo_elasticidad = ctk.CTkEntry(container5_2_2_2, font=fontTEXTcoll)
@@ -2198,7 +2208,7 @@ def eliminar_columna_muestreo():
             if boton.cget("text") == "EXPORTAR":
                 validador_exportar = 1
         if validador_exportar == 0:
-            ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=ctk.CTkFont(size=20, weight="bold"), command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+            ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 
 numero_grafica_insertada = 0
