@@ -1,24 +1,33 @@
 from matplotlib.figure import Figure
 import numpy as np
-from tkinter import Tk, Frame,Button,Label, ttk
+from tkinter import Tk, Frame,Button,Label, ttk, Menu
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import customtkinter as ctk
 
-ventana = Tk()
-ventana.geometry('642x535')
-ventana.state("zoomed")
+root = Tk()
+#ventana.geometry('642x535')
 
-Menup = ctk.CTkFrame(ventana)
-Collect_Wire = ctk.CTkFrame(ventana)
+menubar = Menu(root)
+root.config(menu=menubar)
 
-def raise_frame(frame):
-    frame.tkraise()
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="Nuevo")
+filemenu.add_command(label="Abrir")
+filemenu.add_separator()
+filemenu.add_command(label="Salir", command=root.quit)
+editmenu = Menu(menubar, tearoff=0)
+editmenu.add_command(label="Cortar")
+editmenu.add_command(label="Copiar")
+editmenu.add_command(label="Pegar")
+helpmenu = Menu(menubar, tearoff=0)
+helpmenu.add_command(label="Ayuda")
+helpmenu.add_separator()
+helpmenu.add_command(label="Acerca de...")
 
+menubar.add_cascade(label="Archivo", menu=filemenu)
+menubar.add_cascade(label="Editar", menu=editmenu)
+menubar.add_cascade(label="Ayuda", menu=helpmenu)
 
-for frame in (Menup, Collect_Wire):
-    frame.grid_rowconfigure(0,weight=1)
-    frame.grid_columnconfigure(0,weight=1)
-    frame.grid(row=0, column=0, sticky='nsew')
 
 x = np.arange(-3, 3, 0.01)
 j = 1
@@ -30,35 +39,32 @@ ax = fig.add_subplot(111)
 #plot a line along points x,y
 line, = ax.plot(x, y)
 
-Menup = Frame(ventana,  bg='gray22',bd=3)
+Menup = Frame(root, bg="red")
 
-canvas = FigureCanvasTkAgg(fig, master = frame)
+ventana = Frame(Menup,  bg='gray22',bd=3)
+ventana.grid(row=0, column=0, sticky="nsew")
+
+canvas = FigureCanvasTkAgg(fig, master = ventana)
 canvas.draw()
 canvas.get_tk_widget().pack(padx=5, pady=5 , expand=1, fill='both') 
 
 
-def salir():
-    frame.destroy()
-    Menup.destroy()
-
-def cambiar():
-    global x, y
-    print(1)
-    x = []
-    y = []
-    fig.clear()
-    ax = fig.add_subplot(111)
-    x = np.arange(-3, 3, 0.01)
-    j = 3
-    y = np.sin( np.pi*x*j ) / ( np.pi*x*j )
-    line, = ax.plot(x, y)
-    canvas.draw()
-    print(2)
-
-Button(frame, text='Salir', command=salir).pack()
-Button(frame, text="cambiar", command=lambda:cambiar()).pack()
 
 
-raise_frame(Menup)
 
-ventana.mainloop()
+def raise_frame(frame):
+    Collect_Wire.pack_forget()
+    Menup.pack_forget()
+    frame.pack(fill="both", expand=1)
+    
+Menup = Frame(root, bg="red")
+Menup.pack(fill="both", expand=1)
+Collect_Wire = Frame(root, bg="blue")
+
+#Button(Menup, text='Salir', command=salir).pack()
+#Button(Menup, text="cambiar", command=lambda:cambiar()).pack()
+Button(Menup, text="collect", command=lambda:raise_frame(Collect_Wire)).pack()
+
+Button(Collect_Wire, text="menup", command=lambda:raise_frame(Menup)).pack()
+
+root.mainloop()
