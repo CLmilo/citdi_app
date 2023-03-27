@@ -2059,17 +2059,17 @@ def colorear_botones(n):
     dic_colorear_botones = {50:B_50, 100:B_100, 150:B_150, 200:B_200}
     for boton in [B_50, B_100, B_150, B_200]:
         if boton == dic_colorear_botones[n]:
-            boton.configure(fg_color = ["#58D68D", "#1D8348"], hover_color= ["#27AE60", "#196F3D"])
+            boton.configure(fg_color = ["#27AE60", "#27AE60"], hover_color= ["#27AE60", "#27AE60"])
         else:
-            boton.configure(fg_color = ["#003785", "#0a0a0a"], hover_color= ["#001448", "#323a53"])
+            boton.configure(fg_color = ["#091d36", "#091d36"], hover_color= ["#58D68D", "#58D68D"])
 
-B_50 = ctk.CTkButton(container5_5_1_1, text="50khz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=fontTEXTcoll)
+B_50 = ctk.CTkButton(container5_5_1_1, text="50 kHz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=fontTEXTcoll)
 B_50.grid(row=0, column=0, padx=(20,10), pady=(20,10), sticky='nsew')
-B_100 = ctk.CTkButton(container5_5_1_1, text="100khz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=fontTEXTcoll)
+B_100 = ctk.CTkButton(container5_5_1_1, text="100 kHz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=fontTEXTcoll)
 B_100.grid(row=0, column=1, padx=(10,20), pady=(20,10), sticky='nsew')
-B_150 = ctk.CTkButton(container5_5_1_1, text="150khz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=fontTEXTcoll)
+B_150 = ctk.CTkButton(container5_5_1_1, text="150 kHz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=fontTEXTcoll)
 B_150.grid(row=1, column=0, padx=(20,10), pady=(10,20), sticky='nsew')
-B_200 = ctk.CTkButton(container5_5_1_1, text="200khz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=fontTEXTcoll)
+B_200 = ctk.CTkButton(container5_5_1_1, text="200 kHz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=fontTEXTcoll)
 B_200.grid(row=1, column=1, padx=(10,20), pady=(10,20), sticky='nsew')
 
 B_50.invoke()
