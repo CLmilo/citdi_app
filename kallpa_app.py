@@ -474,7 +474,7 @@ container4b.grid_columnconfigure(1, weight=10)
 container4b.grid_columnconfigure(2, weight=1)
 
 
-container4c = ctk.CTkFrame(container4a, corner_radius=10)
+container4c = ctk.CTkFrame(container4a, width=200,corner_radius=10)
 container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
@@ -501,8 +501,8 @@ def limpiar_entrys():
 fontTITULO = ctk.CTkFont(family='FRanklin Gothic Book',size=100, weight="bold")
 fontBARRA = ('FRanklin Gothic Book',40)
 #fontSUBcoll = ('FRanklin Gothic Book',26)
-fontSUBcoll = ctk.CTkFont(family='FRanklin Gothic Book',size=35, weight="bold")
-fontTEXTcoll = ('FRanklin Gothic Book',18)
+fontSUBcoll = ctk.CTkFont(family='FRanklin Gothic Book',size=30, weight="bold")
+fontTEXTcoll = ctk.CTkFont(family='FRanklin Gothic Book',size=22)
 fontBARRAleft = ('FRanklin Gothic Book',14)
 family_barra_derecha = 'FRanklin Gothic Book'
 
@@ -515,6 +515,7 @@ font_barra_cambio_magnitud = ctk.CTkFont(family='FRanklin Gothic Book',size=20)
 
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
+ancho_barra_abajo = 10
 ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
 ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
 ctk.CTkButton(container4c, text=lista_botones[2], font=fontBARRA, command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
@@ -2073,12 +2074,12 @@ container5_5_1.grid_rowconfigure(2, weight=4)
 container5_5_1.grid_columnconfigure(0, weight=1)
 container5_5_1.grid_columnconfigure(1, weight=1)
 
-ctk.CTkLabel(container5_5_1, text='Sampling Rate', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', padx=20, pady=20)
+ctk.CTkLabel(container5_5_1,height=60, text='Sampling Rate', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', padx=5, pady=5)
 
 container5_5_1_1 = ctk.CTkFrame(container5_5_1)
-container5_5_1_1.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=10)
-container5_5_1_1.grid_rowconfigure(0, weight=1)
-container5_5_1_1.grid_rowconfigure(1, weight=1)
+container5_5_1_1.grid(row=1, column=0, columnspan=2, sticky='nsew', padx=5)
+container5_5_1_1.grid_rowconfigure(0, weight=2)
+container5_5_1_1.grid_rowconfigure(1, weight=2)
 container5_5_1_1.grid_columnconfigure(0, weight=1)
 container5_5_1_1.grid_columnconfigure(1, weight=1)
 
@@ -2093,15 +2094,15 @@ def colorear_botones(n):
             boton.configure(fg_color = ["#27AE60", "#27AE60"], hover_color= ["#27AE60", "#27AE60"])
         else:
             boton.configure(fg_color = ["#091d36", "#091d36"], hover_color= ["#58D68D", "#58D68D"])
-
-B_50 = ctk.CTkButton(container5_5_1_1, text="50 kHz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=fontTEXTcoll)
-B_50.grid(row=0, column=0, padx=(20,10), pady=(20,10), sticky='nsew')
-B_100 = ctk.CTkButton(container5_5_1_1, text="100 kHz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=fontTEXTcoll)
-B_100.grid(row=0, column=1, padx=(10,20), pady=(20,10), sticky='nsew')
-B_150 = ctk.CTkButton(container5_5_1_1, text="150 kHz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=fontTEXTcoll)
-B_150.grid(row=1, column=0, padx=(20,10), pady=(10,20), sticky='nsew')
-B_200 = ctk.CTkButton(container5_5_1_1, text="200 kHz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=fontTEXTcoll)
-B_200.grid(row=1, column=1, padx=(10,20), pady=(10,20), sticky='nsew')
+ancho_boton = 80
+B_50 = ctk.CTkButton(container5_5_1_1,height=ancho_boton, text="50 kHz", command=lambda:[mod_frecuencia_muestreo(50), colorear_botones(50)], font=fontTEXTcoll)
+B_50.grid(row=0, column=0, padx=(20,10), pady=(10,5), sticky='nsew')
+B_100 = ctk.CTkButton(container5_5_1_1,height=ancho_boton, text="100 kHz", command=lambda:[mod_frecuencia_muestreo(100), colorear_botones(100)], font=fontTEXTcoll)
+B_100.grid(row=0, column=1, padx=(10,20), pady=(10,5), sticky='nsew')
+B_150 = ctk.CTkButton(container5_5_1_1,height=ancho_boton, text="150 kHz", command=lambda:[mod_frecuencia_muestreo(150), colorear_botones(150)], font=fontTEXTcoll)
+B_150.grid(row=1, column=0, padx=(20,10), pady=(5,10), sticky='nsew')
+B_200 = ctk.CTkButton(container5_5_1_1,height=ancho_boton, text="200 kHz", command=lambda:[mod_frecuencia_muestreo(200), colorear_botones(200)], font=fontTEXTcoll)
+B_200.grid(row=1, column=1, padx=(10,20), pady=(5,10), sticky='nsew')
 
 B_50.invoke()
 
@@ -2118,13 +2119,13 @@ container5_5_1_2.grid_columnconfigure(0, weight=3)
 container5_5_1_2.grid_columnconfigure(1, weight=2)
 container5_5_1_2.grid_columnconfigure(2, weight=1)
 
-ctk.CTkLabel(container5_5_1_2, text="Sampling \ntime:", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', pady=(40,20))
+ctk.CTkLabel(container5_5_1_2, height=60,text="Sampling \ntime:", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', pady=(10,5))
 Entry_tiempo_muestreo = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
-Entry_tiempo_muestreo.grid(row=0, column=1, sticky='nsew', pady=(40,20))
+Entry_tiempo_muestreo.grid(row=0, column=1, sticky='nsew', pady=(10,5))
 Entry_tiempo_muestreo.insert(0, "100")
-ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=0, column=2, sticky='nsew', pady=(40,20), padx=(0,10))
+ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=0, column=2, sticky='nsew', pady=(10,5), padx=(0,10))
 
-ctk.CTkLabel(container5_5_1_2, text="Delay \ntime", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,20))
+ctk.CTkLabel(container5_5_1_2,height=60, text="Delay \ntime", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,20))
 Entry_tiempo_Retardo = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
 Entry_tiempo_Retardo.grid(row=1, column=1, sticky='nsew', pady=(20,20))
 Entry_tiempo_Retardo.insert(0, "10")
