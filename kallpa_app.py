@@ -52,7 +52,6 @@ EM_valor_original = 10
 ET_valor_original = 981
 ruta_guardado = ""
 ruta_guardado_pdf = ""
-L_T_Grafico = ""
 tipo_review = ""
 estado_continuidad = ""
 zooms_graficas = []
@@ -1164,7 +1163,7 @@ def energy(F, V, freq):
 
 def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     global frecuencia_muestreo, pile_area, EM_valor_original, ET_valor_original 
-    global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba, L_T_Grafico
+    global x_zoom_grafica_abajo, y_zoom_grafica_abajo, x_zoom_grafica_arriba, y_zoom_grafica_arriba
     global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica
     global unidad_original, valor_actual_sistema_metrico
     
@@ -1898,13 +1897,15 @@ Label_Area = ctk.CTkLabel(container5_2_2_1, text="Area", font=fontTEXTcoll, widt
 Entry_Area = ctk.CTkEntry(container5_2_2_1, font=fontTEXTcoll)
 Entry_Area.grid(row=1, column=1, sticky='nsew')
 Entry_Area.insert(0, "7.8")
-Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm²", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
+Label_Area_unidad = ctk.CTkLabel(container5_2_2_1, text="cm²", font=fontTEXTcoll)
+Label_Area_unidad.grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 Label_Modulo_Elasticidad = ctk.CTkLabel(container5_2_2_2, text="Elasticity \nModulus", font=fontTEXTcoll, width=120).grid(row=1, column=0, sticky='nsew')
 Entry_modulo_elasticidad = ctk.CTkEntry(container5_2_2_2, font=fontTEXTcoll)
 Entry_modulo_elasticidad.grid(row=1, column=1, sticky='nsew')
 Entry_modulo_elasticidad.insert(0, "207000")
-Label_Modulo_Elasticidad_unidad = ctk.CTkLabel(container5_2_2_2, text="MPa", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,5))
+Label_Modulo_Elasticidad_unidad = ctk.CTkLabel(container5_2_2_2, text="MPa", font=fontTEXTcoll)
+Label_Modulo_Elasticidad_unidad.grid(row=1, column=2, sticky='nsew', padx=(0,5))
 
 
 container5_3 = ctk.CTkFrame(container5)
@@ -1938,7 +1939,8 @@ container5_3_1_1.grid_columnconfigure(1, weight=2)
 container5_3_1_1.grid_columnconfigure(2, weight=1)
 container5_3_1_1.grid_columnconfigure(3, weight=2)
 
-Label_titulo_4 = ctk.CTkLabel(container5_3_1_1, text="Range of \nDepths\n(m)", font=fontTEXTcoll).grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=(30,20))
+Label_titulo_4 = ctk.CTkLabel(container5_3_1_1, text="Range of \nDepths\n(m)", font=fontTEXTcoll)
+Label_titulo_4.grid(row=0, column=0, sticky='nsew', padx=(10,0), pady=(30,20))
 
 Entry_Profundidad_inicial = ctk.CTkEntry(container5_3_1_1, font=fontTEXTcoll, height=10)
 Entry_Profundidad_inicial.grid(row=0, column=1, sticky='nsew', pady=(50,20))
@@ -2014,13 +2016,15 @@ Label_Masa = ctk.CTkLabel(container5_4_1_1, text="Mass", font=fontTEXTcoll).grid
 Entry_masa = ctk.CTkEntry(container5_4_1_1, font=fontTEXTcoll)
 Entry_masa.grid(row=1, column=1, sticky='nsew', pady=(0,10))
 Entry_masa.insert(0, "63.5")
-Label_Masa_unidades = ctk.CTkLabel(container5_4_1_1, text='kg', font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', pady=(0,10))
+Label_Masa_unidades = ctk.CTkLabel(container5_4_1_1, text='kg', font=fontTEXTcoll)
+Label_Masa_unidades.grid(row=1, column=2, sticky='nsew', pady=(0,10))
 
 Label_Altura = ctk.CTkLabel(container5_4_1_1, text="Height", font=fontTEXTcoll).grid(row=2, column=0, sticky='nsew', pady=(10,0))
 Entry_altura = ctk.CTkEntry(container5_4_1_1, font=fontTEXTcoll)
 Entry_altura.grid(row=2, column=1, sticky='nsew', pady=(10,0))
 Entry_altura.insert(0, "0.76")
-Label_Altura_unidades = ctk.CTkLabel(container5_4_1_1, text="m", font=fontTEXTcoll).grid(row=2, column=2, sticky='nsew', pady=(10,0))
+Label_Altura_unidades = ctk.CTkLabel(container5_4_1_1, text="m", font=fontTEXTcoll)
+Label_Altura_unidades.grid(row=2, column=2, sticky='nsew', pady=(10,0))
 
 Boton_calcular_energia = ctk.CTkButton(container5_4_1_1, text="Calculate Energy", font=fontTEXTcoll, command=lambda:calcular()).grid(row=1, column=3, rowspan=2, sticky='nsew', padx=10)
 
@@ -2036,7 +2040,8 @@ container5_4_1_2.grid_columnconfigure(2, weight=1)
 Label_Energia = ctk.CTkLabel(container5_4_1_2, text="Energy", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', padx=(10,0), pady=10)
 Label_Energia_valor = ctk.CTkLabel(container5_4_1_2, text="473", font=fontTEXTcoll)
 Label_Energia_valor.grid(row=1, column=1, sticky='nsew', pady=10)
-Label_Energia_unidades = ctk.CTkLabel(container5_4_1_2, text="J", font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', padx=(0,10), pady=10)
+Label_Energia_unidades = ctk.CTkLabel(container5_4_1_2, text="J", font=fontTEXTcoll)
+Label_Energia_unidades.grid(row=1, column=2, sticky='nsew', padx=(0,10), pady=10)
 
 def calcular():
     global Entry_masa, Entry_altura, producto, Label_Energia_valor
@@ -2131,15 +2136,59 @@ container5_5_1_2_unidades.grid_columnconfigure(0, weight=1)
 container5_5_1_2_unidades.grid_columnconfigure(1, weight=1)
 
 def boton_cambio_unidades_collectwire(valor):
+    print(valor)
     global valor_actual_sistema_metrico, unidad_original, Button_EN, Button_SI
     dic_colorear_botones_unidades = {'EN':Button_EN, 'SI':Button_SI}
     for boton in [Button_EN, Button_SI]:
         if boton == dic_colorear_botones_unidades[valor]:
+            print(1)
             boton.configure(fg_color = ["#27AE60", "#27AE60"], hover_color= ["#27AE60", "#27AE60"])
             valor_actual_sistema_metrico = valor
             unidad_original = valor
+            Cambiar_Unidades_CollectWire()
         else:
+            print(2)
             boton.configure(fg_color = ["#091d36", "#091d36"], hover_color= ["#58D68D", "#58D68D"])
+
+def Cambiar_Unidades_CollectWire():
+    global valor_actual_sistema_metrico
+    global Label_titulo_4, LabelLE_unidades, EntryLE, EntryLR, LabelLR_unidades, Label_Modulo_Elasticidad_unidad
+    global Entry_modulo_elasticidad, Entry_Area, Label_Area_unidad, Label_Modulo_Elasticidad_unidad, Entry_masa, Label_Masa_unidades, Entry_altura, Label_Altura_unidades, Label_Energia_valor, Label_Energia_unidades 
+    dic_unidades_collectwire = [["Range of \nDepths\n(m)", "Range of \nDepths\n(ft)"], ["m", "ft"], ["cm2", "in2"], ["Mpa", "ksi"], ["kg", "kg"], ["m", "ft"], ["J", "kip"]]
+    dic_valores_unidades_collectwire = [["0", "0"], ["5", ""], ["7.8", ""], ["207000", ""], ["63.5", ""], ["0.76", ""], ["473", ""]]
+    if valor_actual_sistema_metrico == "SI":
+        num =  0
+    else:
+        num = 1
+    #cambiando labels
+    Label_titulo_4.configure(text=dic_unidades_collectwire[0][num])
+    LabelLE_unidades.configure(text=dic_unidades_collectwire[1][num])
+    LabelLR_unidades.configure(text=dic_unidades_collectwire[1][num])
+    Label_Area_unidad.configure(text=dic_unidades_collectwire[2][num])
+    Label_Modulo_Elasticidad_unidad.configure(text=dic_unidades_collectwire[3][num])
+    Label_Masa_unidades.configure(text=dic_unidades_collectwire[4][num])
+    Label_Altura_unidades.configure(text=dic_unidades_collectwire[5][num])
+    Label_Energia_unidades.configure(text=dic_unidades_collectwire[6][num])
+    Label_Energia_valor.configure(text=dic_valores_unidades_collectwire[6][num])         
+
+    #cambiando Entrys
+    valores_anteriores = [EntryLE.cget("text"), EntryLR.cget("text"), Entry_Area.cget("text"), Entry_modulo_elasticidad.cget("text"), Entry_masa.cget("text"), Entry_altura.cget("text")]
+    EntryLE.delete(0, END)
+    EntryLR.delete(0, END)
+    Entry_Area.delete(0, END)
+    Entry_modulo_elasticidad.delete(0, END)
+    Entry_masa.delete(0, END)
+    Entry_altura.delete(0, END)
+    
+    EntryLE.insert(0, valores_anteriores[0])
+    EntryLR.insert(0, valores_anteriores[1])
+    Entry_Area.insert(0, valores_anteriores[2])
+    Entry_modulo_elasticidad.insert(0, valores_anteriores[3])
+    Entry_masa.insert(0, valores_anteriores[4])
+    Entry_altura.insert(0, valores_anteriores[5])
+
+
+
 
 ctk.CTkLabel(container5_5_1_2_unidades, text='System of Units', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', pady=10, padx=10)
 
@@ -2274,7 +2323,7 @@ bandera_grafica = False
 def crear_columna_muestreo():
     global frecuencia_muestreo, ruta_guardado
     global pile_area_label, EM_label, ET_label, container2_3
-    global numero_grafica_insertada, marca, L_T_Grafico, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
+    global numero_grafica_insertada, marca, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
     global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad, estado_continuidad
     matriz_data_archivos = []
 
@@ -2290,23 +2339,17 @@ def crear_columna_muestreo():
     container1_3.grid_rowconfigure(0, weight=1)
     container1_3.grid_rowconfigure(1, weight=1)
     container1_3.grid_rowconfigure(2, weight=1)
-    container1_3.grid_rowconfigure(3, weight=1)
 
-    ctk.CTkLabel(container1_3, text="Total Number of Graphs:", font=fontTEXTcoll).grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
-
-    ctk.CTkLabel(container1_3, text="Sample Rate:", font=fontTEXTcoll).grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
-    ctk.CTkLabel(container1_3, text="Time Rate:", font=fontTEXTcoll).grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
-    ctk.CTkLabel(container1_3, text="Time Delay:", font=fontTEXTcoll).grid(row=3, column=0, padx=10, pady=10, sticky='nsew')
+    ctk.CTkLabel(container1_3, text="Sample Rate:", font=fontTEXTcoll).grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+    ctk.CTkLabel(container1_3, text="Time Rate:", font=fontTEXTcoll).grid(row=1, column=0, padx=10, pady=10, sticky='nsew')
+    ctk.CTkLabel(container1_3, text="Delay Time:", font=fontTEXTcoll).grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
     
-
-    L_T_Grafico = ctk.CTkLabel(container1_3, text="0", font=fontTEXTcoll)
-    L_T_Grafico.grid(row=0, column=1, padx=10, pady=10, sticky='ns')
     L_Frecuencia = ctk.CTkLabel(container1_3, text=str(frecuencia_muestreo[-1])+" khz", font=fontTEXTcoll)
-    L_Frecuencia.grid(row=1, column=1, padx=10, pady=10, sticky='ns')
+    L_Frecuencia.grid(row=0, column=1, padx=10, pady=10, sticky='ns')
     L_T_Muestreo = ctk.CTkLabel(container1_3, text=Entry_tiempo_muestreo.get()+" ms", font=fontTEXTcoll)
-    L_T_Muestreo.grid(row=2, column=1, padx=10, pady=10, sticky='ns')
+    L_T_Muestreo.grid(row=1, column=1, padx=10, pady=10, sticky='ns')
     L_T_Retardo = ctk.CTkLabel(container1_3, text=Entry_tiempo_Retardo.get()+" ms", font=fontTEXTcoll)
-    L_T_Retardo.grid(row=3, column=1, padx=10, pady=10, sticky='ns')
+    L_T_Retardo.grid(row=2, column=1, padx=10, pady=10, sticky='ns')
     matriz_data_archivos.append(str(Entry_Profundidad_inicial.get())+","+str(Entry_Profundidad_final.get()))
     orden_sensores2 = []
     orden_sensores2.append(str(orden_sensores[-1].replace("\n", ""))+str(frecuencia_muestreo[-1])+"|"+str(Entry_Area.get())+"|"+str(Entry_modulo_elasticidad.get())+"|"+str(int(float(Entry_masa.get())* float(Entry_altura.get())*9.81)))
@@ -2316,13 +2359,13 @@ def crear_columna_muestreo():
     Boton_play.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
     def graficas_tiempo_real(num):
-        global bandera_grafica, L_T_Grafico, matriz_data_archivos
+        global bandera_grafica, matriz_data_archivos
         global marca
         
         print(marca, bandera_grafica)
         
         def graficar():
-            global bandera_grafica, marca, L_T_Grafico
+            global bandera_grafica, marca
             while bandera_grafica and marca:
                 #time.sleep(0.2)
                 try:
