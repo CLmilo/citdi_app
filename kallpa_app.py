@@ -469,8 +469,8 @@ container4b.grid_columnconfigure(1, weight=10)
 container4b.grid_columnconfigure(2, weight=1)
 
 
-container4c = ctk.CTkFrame(container4a, width=200,corner_radius=10)
-container4c.grid(row=1, column=0, sticky='nsew', padx=40, pady=(20,40))
+container4c = ctk.CTkFrame(container4a, width=200,height=200,corner_radius=10)
+container4c.grid(row=1, column=0, sticky='nsew', padx=20, pady=(10,20))
 container4c.grid_rowconfigure(0, weight=1)
 # Botones
 lista_botones = ["EXIT", "REVIEW", "JOIN FILES", "COLLECT WIRE", "MANUAL", "ABOUT"]
