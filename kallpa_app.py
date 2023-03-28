@@ -303,7 +303,8 @@ def browseFiles():
                         matriz_data_archivos.append(vector)
                     vector = []
                     j = 0
-    except:
+    except Exception as e:
+        print(e)
         print("error2")   
     orden = str(orden_sensores[-1]).replace(" ","").split("|")
     try:
@@ -312,7 +313,8 @@ def browseFiles():
         valor_actual_sistema_metrico = unidad_original
         Switch_sistema_metrico.set(unidad_original)
         
-    except:
+    except Exception as e:
+        print(e)
         unidad_original = "SI"
         unidad_antigua = "SI"
         valor_actual_sistema_metrico = "SI" 
@@ -349,15 +351,18 @@ def Obtencion_data_serial(num):
         frecuencia_muestreo.append(100)
     try:
         pile_area = orden[5]
-    except:
+    except Exception as e:
+        print(e)
         pile_area = "15.6"
     try:
         EM_valor_original = orden[6]
-    except:
+    except Exception as e:
+        print(e)
         EM_valor_original = "207000"
     try:
         ET_valor_original = orden[7]
-    except:
+    except Exception as e:
+        print(e)
         ET_valor_original = 981
 
     print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
@@ -486,8 +491,8 @@ def limpiar_entrys():
     try:
         Entry_Profundidad_inicial.configure.delete(0, END)
         Entry_Profundidad_final.configure.delete(0, END)
-    except:
-        pass
+    except Exception as e:
+        print(e)
     tipo_review = "collectwire"
 
 
@@ -772,8 +777,8 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
                     valores2[index] = str(i)+"0"
                 else:
                     valores2[index] = str(i)
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
     pile_area_label.configure(text=str(valores2[0]) + unidades_primer_frame[0][dic_metrico[valor_actual_sistema_metrico]])
     EM_label.configure(text=str(valores2[1]) + unidades_primer_frame[1][dic_metrico[valor_actual_sistema_metrico]])
@@ -1196,12 +1201,12 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     for i in range(longitud):
         try:
             m1 = S1[i]*factor/10000000
-        except:
-            pass
+        except Exception as e:
+            print(e)
         try:
             m2 = S2[i]*factor/10000000
-        except:
-            pass
+        except Exception as e:
+            print(e)
         promedio = (m1+m2)/2
         if S1 != [] and len(S1) == longitud:
             F1.append(m1)
@@ -1470,8 +1475,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
             except:
                 try:
                     ax1.legend(handles=[t2])
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
         magnitud_antigua_arriba = magnitud
         
         canvas1.draw()
@@ -1510,8 +1515,8 @@ def Creacion_Grafica(posicion, magnitud, num, direccion, mantener_relacion_aspec
             except:
                 try:
                     ax2.legend(handles=[t4])
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
         magnitud_antigua_abajo = magnitud
         canvas2.draw()
 
@@ -1656,8 +1661,8 @@ def cambiar_grafica_exacto(numero, pos="ninguna"):
                 dic_ultima_grafica[ultima_grafica_seleccionada] = int(numero)
                 Creacion_Grafica(ultima_grafica_seleccionada, dic_ultima_grafica_magnitud[ultima_grafica_seleccionada], dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI", "NO")
                 dic_entry_num_grafica[pos].delete(0, END)
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
 botones_barra_lateral = ['DEL','>','<','>>','<<', 'SYNC', 'FIRST', 'LAST', 'EXPORT']
 
@@ -1730,8 +1735,8 @@ def detener_conexion_puerto():
     try:
         estado_puerto = False
         socket_tcp.close()
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 bandera = True
 
@@ -1822,12 +1827,10 @@ def Generar_Tabla_Sensores():
             Label_sensor2_data.configure(text=dic_sensores[orden[1]], font=fontTEXTcoll)
             Label_sensor3_data.configure(text=dic_sensores[orden[2]], font=fontTEXTcoll)
             Label_sensor4_data.configure(text=dic_sensores[orden[3]], font=fontTEXTcoll)
-        except:
-            print("debe ser esto")
-            pass
-    except:
-        print("No sabo")
-        pass
+        except Exception as e:
+            print(e)
+    except Exception as e:
+        print(e)
 
 Label_sensor1 = ctk.CTkLabel(container5_1_2, text="Sensor 1:", font=fontTEXTcoll)
 Label_sensor1.grid(row=0, column=0, sticky='nsew', padx=(20,0), pady=(20,10))
@@ -2220,8 +2223,8 @@ def mostrar_alertas():
     global socket_tcp
     try:
         orden = str(orden_sensores[-1]).replace(" ","").split("|")
-    except:
-        pass
+    except Exception as e:
+        print(e)
     if int(Entry_tiempo_muestreo.get()) <50 or int(Entry_tiempo_muestreo.get()) >300:
         MessageBox.showerror("Error", "El tiempo de muestreo tiene que estar entre 50 y 300")
         pass
@@ -2296,8 +2299,8 @@ def eliminar_columna_muestreo():
             for index,l in enumerate(container1.grid_slaves()):
                 if index == 0:
                     l.destroy()
-    except:
-        pass
+    except Exception as e:
+        print(e)
     print(tipo_review)
     if tipo_review == "collectwire":
         for boton in container2_3.grid_slaves():
@@ -2534,8 +2537,8 @@ def Eliminar_todas_filas():
     for i in range(10):
         try:
             Eliminar_Fila()
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
 filas = []
 contador_fila = 1
@@ -2560,8 +2563,8 @@ def Seleccionar_ruta_guardado_pdf():
         print("la ruta de guardado es ", ruta_guardado_pdf)
         if ruta_guardado_pdf != "":
             create_toplevel_export()
-    except:
-        pass
+    except Exception as e:
+        print(e)
 
 boton_exportar_pdf_excel = ""
 
@@ -2813,12 +2816,12 @@ def obtener_datos_grafica(j):
     for i in range(longitud):
         try:
             m1 = S1[i]*factor/10000000
-        except:
-            pass
+        except Exception as e:
+            print(e)
         try:
             m2 = S2[i]*factor/10000000
-        except:
-            pass
+        except Exception as e:
+            print(e)
         promedio = (m1+m2)/2
         if S1 != []:
             F1.append(m1)
@@ -2910,8 +2913,8 @@ def obtener_datos_grafica(j):
 
     try:
         Emax = round(max(E), 2)
-    except:
-        pass
+    except Exception as e:
+        print(e)
     Energias.append(Emax)
     Velocidades.append(Vmax)
     Fuerzas.append(Fmax)
@@ -2936,12 +2939,14 @@ def Calcular_Promedios(tipo_archivo):
 
     try:
         pile_area = orden[5]
-    except:
+    except Exception as e:
+        print(e)
         pile_area = "15.6"
         print("algo está mal")
     try:
         EM_valor_original = orden[6]
-    except:
+    except Exception as e:
+        print(e)
         EM_valor_original = "207000"
         
     Energias = []
@@ -3042,8 +3047,9 @@ def Calcular_Promedios(tipo_archivo):
         except:
             try:
                 a.legend(handles=[t2])
-            except:
-                pass
+            except Exception as e:
+                print(e)
+
     a.tick_params (left = False ,
                  bottom = False,
                  labelleft = False ,
@@ -3265,12 +3271,14 @@ def leer_data_cabecera(ruta, identificador):
     orden = [fila_orden[2].split("@")[0], fila_orden[3].split("@")[0]]
     try:
         orden.append(fila_orden[4].split("@")[0])
-    except:
+    except Exception as e:
+        print(e)
         orden.append("0")
 
     try:
         orden.append(fila_orden[5].split("@")[0])
-    except:
+    except Exception as e:
+        print(e)
         orden.append("0")
         
     dic_orden = {"S3":"3", "S4":"4", "S1":"3", "S2":"4", "A1":"1", "A2":"2", "A3":"1", "A4":"2", "0":"0"}
@@ -3292,18 +3300,19 @@ def lectura_data(frecuencia_post, filas, identificador):
         V2 = float(fila[3])
         try:
             V3 = float(fila[4])
-        except:
-            pass
+        except Exception as e:
+            print(e)
         try:
             V4 = float(fila[5])
-        except:
-            pass
+        except Exception as e:
+            print(e)
         try:
             nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|" + str(V4) + "|"
         except:
             try:
                 nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|" + str(V3) + "|0|"
-            except:
+            except Exception as e:
+                print(e)
                 nueva_fila = str(segundos) + "|" + str(V1) + "|" + str(V2) + "|0|0|"
         string_data+=nueva_fila+"\n"
     return string_data
