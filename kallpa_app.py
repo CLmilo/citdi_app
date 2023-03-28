@@ -66,6 +66,7 @@ unidad_original = ""
 unidad_antigua = ""
 numero_grafica_antiguo_arriba = 1
 numero_grafica_antiguo_abajo = 1
+valor_actual_sistema_metrico = "SI"
 
 
 F1 = []
@@ -337,12 +338,30 @@ def Obtencion_data_serial(num):
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
 
-    if len(orden[4])>1:
-        frecuencia_muestreo.append(int(orden[4]))
-    pile_area = orden[5]
-    EM_valor_original = orden[6]
-    ET_valor_original = orden[7]
-    
+    print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
+    orden = orden_sensores[-1].split('|')
+
+    try:
+        if len(orden[4])>1:
+            frecuencia_muestreo.append(int(orden[4]))
+    except Exception as e:
+        print(e)
+        print(orden)
+        frecuencia_muestreo.append(100)
+    try:
+        pile_area = orden[5]
+    except:
+        pile_area = "15.6"
+    try:
+        EM_valor_original = orden[6]
+    except:
+        EM_valor_original = "207000"
+    try:
+        ET_valor_original = orden[7]
+    except:
+        ET_valor_original = 981
+
+    print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     if extension == "ctn":
         data = matriz_data_archivos[num]
@@ -387,6 +406,7 @@ def Obtencion_data_serial(num):
             elif (lugar!=0):
                 for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
+    print("Estoy aquí1")
 
     return segundos, S1, S2, A3, A4
 
@@ -734,7 +754,7 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     global L_FMX, L_VMX, L_EMX, L_DMX, L_ETR, L_CE, L_CSX, L_DFN, L_MEX1, L_MEX2, L_MEX, L_AMX
     global pile_area, pile_area_label, EM_valor_original, EM_label, ET_valor_original, ET_label
     Button_Num_Grafica.configure(text= str(texto_label_num_grafica), font=fontTEXTcoll)
-    
+
     dic_transformacion_primer_frame = {"SI":[1,1,1], "EN":[0.15500031000062, 0.14503773800722, 0.7375621493]}
 
     pile_area_value = round(float(pile_area)*dic_transformacion_primer_frame[valor_actual_sistema_metrico][0],2)
@@ -743,15 +763,18 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
 
     valores = [pile_area_value, EM_label_value, ET_label_value, V_FMX, V_VMX, V_EMX, V_DMX, V_ETR, V_CE, V_CSX, V_DFN, V_MEX1, V_MEX2, V_MEX, V_AMX]
     valores2 = valores.copy()
+    
     for index, i in enumerate(valores2):
         if index > 1:
-            print(i)
-            parte_entera = int(i)
-            parte_decimal = round(abs(i) - abs(int(i)),2)
-            if len(str(parte_decimal)) < 4:
-                valores2[index] = str(i)+"0"
-            else:
-                valores2[index] = str(i)
+            try:
+                parte_entera = int(i)
+                parte_decimal = round(abs(i) - abs(int(i)),2)
+                if len(str(parte_decimal)) < 4:
+                    valores2[index] = str(i)+"0"
+                else:
+                    valores2[index] = str(i)
+            except:
+                pass
 
     pile_area_label.configure(text=str(valores2[0]) + unidades_primer_frame[0][dic_metrico[valor_actual_sistema_metrico]])
     EM_label.configure(text=str(valores2[1]) + unidades_primer_frame[1][dic_metrico[valor_actual_sistema_metrico]])
@@ -1651,7 +1674,7 @@ boton_sincro = ctk.CTkButton(container2_3, text=botones_barra_lateral[5], font=f
 boton_sincro.grid(row=5,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[6], font=font_barra_derecha, command=lambda: [cambiar_grafica_exacto("primero")]).grid(row=6,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=font_barra_derecha, command=lambda: [cambiar_grafica_exacto("ultimo")]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
-ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+ctk.CTkButton(container2_3, text=botones_barra_lateral[8], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf() ]).grid(row=8,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 
 #----------------------------------------------------
@@ -2082,7 +2105,7 @@ container5_5_1_2.grid_rowconfigure(1, weight=4)
 container5_5_1_2.grid_rowconfigure(2, weight=1)
 container5_5_1_2.grid_rowconfigure(3, weight=1)
 container5_5_1_2.grid_rowconfigure(4, weight=2)
-container5_5_1_2.grid_rowconfigure(5, weight=4)
+container5_5_1_2.grid_rowconfigure(5, weight=2)
 container5_5_1_2.grid_columnconfigure(0, weight=3)
 container5_5_1_2.grid_columnconfigure(1, weight=2)
 container5_5_1_2.grid_columnconfigure(2, weight=1)
@@ -2093,20 +2116,45 @@ Entry_tiempo_muestreo.grid(row=0, column=1, sticky='nsew', pady=(40,20))
 Entry_tiempo_muestreo.insert(0, "100")
 ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=0, column=2, sticky='nsew', pady=(40,20), padx=(0,10))
 
-ctk.CTkLabel(container5_5_1_2, text="Delay \ntime", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,80))
+ctk.CTkLabel(container5_5_1_2, text="Delay \ntime", font=fontTEXTcoll).grid(row=1, column=0, sticky='nsew', pady=(20,20))
 Entry_tiempo_Retardo = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
-Entry_tiempo_Retardo.grid(row=1, column=1, sticky='nsew', pady=(20,80))
+Entry_tiempo_Retardo.grid(row=1, column=1, sticky='nsew', pady=(20,20))
 Entry_tiempo_Retardo.insert(0, "10")
-ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', pady=(20,80), padx=(0,10))
+ctk.CTkLabel(container5_5_1_2, text='ms', font=fontTEXTcoll).grid(row=1, column=2, sticky='nsew', pady=(20,20), padx=(0,10))
 
-ctk.CTkButton(container5_5_1_2, text= "Select save path", font=fontTEXTcoll, command=lambda: [escoger_ruta_guardado()]).grid(row=2, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
+container5_5_1_2_unidades = ctk.CTkFrame(container5_5_1_2)
+container5_5_1_2_unidades.grid(row=2, column=0, columnspan=3, sticky='nsew', padx=20, pady=20)
+container5_5_1_2_unidades.grid_rowconfigure(0, weight=1)
+container5_5_1_2_unidades.grid_rowconfigure(1, weight=1)
+container5_5_1_2_unidades.grid_columnconfigure(0, weight=1)
+container5_5_1_2_unidades.grid_columnconfigure(1, weight=1)
+
+def boton_cambio_unidades_collectwire(valor):
+    global valor_actual_sistema_metrico, unidad_original, Button_EN, Button_SI
+    dic_colorear_botones_unidades = {'EN':Button_EN, 'SI':Button_SI}
+    for boton in [Button_EN, Button_SI]:
+        if boton == dic_colorear_botones_unidades[valor]:
+            boton.configure(fg_color = ["#27AE60", "#27AE60"], hover_color= ["#27AE60", "#27AE60"])
+            valor_actual_sistema_metrico = valor
+            unidad_original = valor
+        else:
+            boton.configure(fg_color = ["#091d36", "#091d36"], hover_color= ["#58D68D", "#58D68D"])
+
+ctk.CTkLabel(container5_5_1_2_unidades, text='System of Units', font=fontTEXTcoll).grid(row=0, column=0, columnspan=2, sticky='nsew', pady=10, padx=10)
+
+Button_SI = ctk.CTkButton(container5_5_1_2_unidades, text='SI', font=fontTEXTcoll, command=lambda:boton_cambio_unidades_collectwire('SI'))
+Button_SI.grid(row=1, column=0, sticky='nsew', pady=10, padx=10)
+Button_EN = ctk.CTkButton(container5_5_1_2_unidades, text='EN', font=fontTEXTcoll, command=lambda:boton_cambio_unidades_collectwire('EN'))
+Button_EN.grid(row=1, column=1, sticky='nsew', pady=10, padx=[0,10])
+
+ctk.CTkButton(container5_5_1_2, text= "Select save path", font=fontTEXTcoll, command=lambda: [escoger_ruta_guardado()]).grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
 
 entry_ruta_guardado = ctk.CTkEntry(container5_5_1_2, font=fontTEXTcoll)
-entry_ruta_guardado.grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10))
+entry_ruta_guardado.grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10))
 
 
 
-ctk.CTkButton(container5_5_1_2, text= "Next", font=fontTEXTcoll, command=lambda: [mostrar_alertas()]).grid(row=4, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
+ctk.CTkButton(container5_5_1_2, text= "Next", font=fontTEXTcoll, command=lambda: [mostrar_alertas()]).grid(row=5, column=1, columnspan=2, sticky='nsew', padx=20, pady=(10,200))
 
 def escoger_ruta_guardado():
     global ruta_guardado
@@ -2204,15 +2252,15 @@ def eliminar_columna_muestreo():
     print(tipo_review)
     if tipo_review == "collectwire":
         for boton in container2_3.grid_slaves():
-            if boton.cget("text") == "EXPORTAR":
+            if boton.cget("text") == "EXPORT":
                 boton.destroy()
     else:
         validador_exportar = 0
         for boton in container2_3.grid_slaves():
-            if boton.cget("text") == "EXPORTAR":
+            if boton.cget("text") == "EXPORT":
                 validador_exportar = 1
         if validador_exportar == 0:
-            ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf(), ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
+            ctk.CTkButton(container2_3, text=botones_barra_lateral[7], font=font_barra_derecha, command=lambda: [Seleccionar_ruta_guardado_pdf() ]).grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
 
 
 numero_grafica_insertada = 0
@@ -2280,16 +2328,18 @@ def crear_columna_muestreo():
                     marca = False
                     
                     print("Intentando graficar2 ", num)
-                    try:
-                        dic_ultima_grafica['arriba'] = int(num)
-                        Creacion_Grafica("arriba",dic_ultima_grafica_magnitud["arriba"], int(num), "original", "NO", "NO")
-                    except Exception as e:
-                        print("error en grafica arriba", e)
+                    #try:
+                    print(1)
+                    dic_ultima_grafica['arriba'] = int(num)
+                    print(2)
+                    Creacion_Grafica("arriba",dic_ultima_grafica_magnitud["arriba"], int(num), "original", "NO", "NO")
+                    #except Exception as e:
+                    #    print("error en grafica arriba", e)
                     try:
                         dic_ultima_grafica['abajo'] = int(num)
                         Creacion_Grafica("abajo",dic_ultima_grafica_magnitud["abajo"], int(num), "original", "NO", "NO")
-                    except:
-                        print("error en grafica abajo")
+                    except Exception as e:
+                        print("error en grafica abajo", e)
                 except:
                     print("no hay Data")
         threading.Thread(target=graficar).start()
