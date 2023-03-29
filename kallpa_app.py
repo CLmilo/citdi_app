@@ -270,9 +270,13 @@ orden = ""
 Switch_sistema_metrico = ""
 
 def browseFiles():
-    global tipo_review, orden, unidad_antigua, valor_actual_sistema_metrico
+    global tipo_review, orden, unidad_antigua, valor_actual_sistema_metrico, unidad_original
     global ruta_data_inicial, contador_grafica_abajo, contador_grafica_arriba, matriz_data_archivos, orden_sensores
     global Switch_sistema_metrico
+    global zoom_x_general_arriba, zoom_y_general_arriba, zoom_x_general_abajo, zoom_y_general_abajo
+    global estado_continuidad
+    estado_continuidad = ""
+    zoom_x_general_arriba, zoom_y_general_arriba, zoom_x_general_abajo, zoom_y_general_abajo = "", "", "", ""
     print("esta es la ruta inicial: ", ruta_data_inicial)
     matriz_data_archivos = []
     ruta_data_inicial = filedialog.askopenfilename(initialdir = "/", title = "Select a File", filetypes = [("CT files", "*.ct*")])   
@@ -329,7 +333,7 @@ ultima_magnitud_arriba = "aceleracion"
 ultima_magnitud_abajo = "deformacion"
 
 def Obtencion_data_serial(num):
-    global extension, unidad_original, unidad_antigua, orden
+    global extension, unidad_antigua, orden
     global frecuencia_muestreo, matriz_data_archivos, pile_area, EM_valor_original, ET_valor_original, segundo_final, segundo_inicial
     global orden_sensores, ruta_data_inicial
     global S1, S2, A3, A4
@@ -434,22 +438,21 @@ root.grid_columnconfigure(0, weight=1)
 menubar = Menu(root)
 root.config(menu=menubar)
 filemenu = Menu(menubar, tearoff=0)
-filemenu.add_command(label="Nuevo")
-filemenu.add_command(label="Abrir")
-filemenu.add_separator()
-filemenu.add_command(label="Salir", command=root.quit)
+filemenu.add_command(label="Open", command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)])
+filemenu.add_command(label="Exit", command=root.quit)
 editmenu = Menu(menubar, tearoff=0)
-editmenu.add_command(label="Cortar")
-editmenu.add_command(label="Copiar")
-editmenu.add_command(label="Pegar")
+editmenu.add_command(label="Delete Impact", command=lambda: eliminar_grafica())
+editmenu.add_command(label="Go to First Impact", command=lambda: cambiar_grafica_exacto("primero"))
+editmenu.add_command(label="Go to Last Impact", command=lambda: cambiar_grafica_exacto("ultimo"))
+editmenu.add_command(label="Sync up", command=lambda: creador_sincronizacion())
+editmenu.add_command(label="Export", command=lambda: Seleccionar_ruta_guardado_pdf())
 helpmenu = Menu(menubar, tearoff=0)
-helpmenu.add_command(label="Ayuda")
+helpmenu.add_command(label="About", command=lambda:create_toplevel_about())
 helpmenu.add_separator()
-helpmenu.add_command(label="Acerca de...")
-
-menubar.add_cascade(label="Archivo", menu=filemenu)
-menubar.add_cascade(label="Editar", menu=editmenu)
-menubar.add_cascade(label="Ayuda", menu=helpmenu)
+helpmenu.add_command(label="Manual")
+menubar.add_cascade(label="File", menu=filemenu)
+menubar.add_cascade(label="Menu", menu=editmenu)
+menubar.add_cascade(label="Help", menu=helpmenu)
 
 
 Review = ctk.CTkFrame(root)
@@ -516,12 +519,12 @@ font_barra_cambio_magnitud = ctk.CTkFont(family='FRanklin Gothic Book',size=20)
 
 #Button(container4, text=lista_botones[0], bg=azul_oscuro, font=fontBARRA, fg='#FFFFFF',command=lambda:root.destroy()).grid(row=4,column=0, sticky='nsew')
 ancho_barra_abajo = 10
-ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=5, pady=5)
-ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[2], font=fontBARRA, command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[3], font=fontBARRA, command=lambda:[raise_frame(Collect_Wire), limpiar_entrys()]).grid(row=0,column=3, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[4], font=fontBARRA, command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=5, padx=(0,5))
-ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda:create_toplevel_about()).grid(row=0,column=5, sticky='nsew', pady=5, padx=(0,5))
+ctk.CTkButton(container4c, text=lista_botones[0], font=fontBARRA, command=lambda:root.destroy()).grid(row=0,column=0, sticky='nsew', padx=10, pady=10)
+ctk.CTkButton(container4c, text=lista_botones[1], font=fontBARRA, command=lambda:[browseFiles(), Creacion_Grafica("arriba","aceleracion", 1, "original", "NO", "NO"), Creacion_Grafica("abajo", "deformacion", 1, "original", "NO", "NO"), eliminar_columna_muestreo(), raise_frame(Review)]).grid(row=0,column=1, sticky='nsew', pady=10, padx=(0,10))
+ctk.CTkButton(container4c, text=lista_botones[2], font=fontBARRA, command=lambda:create_toplevel_preparar()).grid(row=0,column=2, sticky='nsew', pady=10, padx=(0,10))
+ctk.CTkButton(container4c, text=lista_botones[3], font=fontBARRA, command=lambda:[raise_frame(Collect_Wire), limpiar_entrys()]).grid(row=0,column=3, sticky='nsew', pady=10, padx=(0,10))
+ctk.CTkButton(container4c, text=lista_botones[4], font=fontBARRA, command=lambda:print("manual")).grid(row=0,column=4, sticky='nsew', pady=10, padx=(0,10))
+ctk.CTkButton(container4c, text=lista_botones[5], font=fontBARRA, command=lambda:create_toplevel_about()).grid(row=0,column=5, sticky='nsew', pady=10, padx=(0,10))
 
 # Mostrar Hora
 def Obtener_hora_actual():
@@ -1172,18 +1175,8 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     global p_primera_marca, p_segunda_marca, segundo_inicial, segundo_final, Button_Num_Grafica
     global unidad_original, valor_actual_sistema_metrico
     
-    F1 = []
-    F2 = []
-    F = []
-    V1 = []
-    V2 = []
-    V = []
-    E = []
-    D1 = []
-    D2 = []
-    D = []
-    WU = []
-    WD = []
+    F1, F2, F, V1, V2, V, E, D1, D2, D, WU, WD = [], [], [], [], [], [], [], [], [], [], [], []
+
     V_Transformado = []
     V_Transformado_valor_real = []
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR
@@ -1202,12 +1195,12 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     for i in range(longitud):
         try:
             m1 = S1[i]*factor/10000000
-        except Exception as e:
-            print(e, 9)
+        except:
+            pass
         try:
             m2 = S2[i]*factor/10000000
-        except Exception as e:
-            print(e, 10)
+        except:
+            pass
         promedio = (m1+m2)/2
         if S1 != [] and len(S1) == longitud:
             F1.append(m1)
@@ -1224,6 +1217,8 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
         S2 = S1
         F = F1
         F2 = F1
+
+    print("valores de máxima deformación", max(S1), max(S2))
 
     MEX1 = round(max(S1),2)
     MEX2 = round(max(S2),2)
@@ -1338,14 +1333,12 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     ETR = round(100*(Emax/ET),2)
     CE = round(ETR/60,2) # dividir
     CSX = round(Fmax*10/AR,2)
-    
+
+    print("los valores de unidades son", unidad_original, "|", valor_actual_sistema_metrico)
+
     if unidad_original != valor_actual_sistema_metrico:
         valores_de_transformacion = {"EN":[0.0393700787401574, 0.22480894387096, 3.28083989501312, 0.7375621493, 0.1450377377],
-                                     "SI":[25.4, 4.4482216, 0.3048, 1.355817948289609, 6.894757294604437]}
-        
-    #cambiando la deformacion
-        S1 = np.dot(S1, valores_de_transformacion[valor_actual_sistema_metrico][0])
-        S2 = np.dot(S2, valores_de_transformacion[valor_actual_sistema_metrico][0])
+                                     "SI":[25.4, 4.4482216, 0.3048, 1.355817948289609, 6.894757294604437]}   
         #cambiando la fuerza
         F1 = np.dot(F1, valores_de_transformacion[valor_actual_sistema_metrico][1])
         F2 = np.dot(F2, valores_de_transformacion[valor_actual_sistema_metrico][1])
@@ -1535,10 +1528,12 @@ def creador_sincronizacion():
     global boton_sincro
     global canvas1, canvas2, ultima_grafica_seleccionada, cid, estado_sincro
     dic_canvas_sinc = {"arriba":canvas1, "abajo":canvas2}
+    dic_invertido = {"arriba":"abajo", "abajo":"arriba"}
     if estado_sincro == "desincronizado":
         #colorear boton 
         boton_sincro.configure(fg_color = ["#58D68D", "#1D8348"], hover_color= ["#27AE60", "#196F3D"])
-        cid = dic_canvas_sinc[ultima_grafica_seleccionada].mpl_connect('motion_notify_event', sincronizar_grafica)
+        cid = dic_canvas_sinc[ultima_grafica_seleccionada].mpl_connect('motion_notify_event', sincronizar_grafica_principal)
+        #cid2 = dic_canvas_sinc[dic_invertido[ultima_grafica_seleccionada]].mpl_connect('motion_notify_event', sincronizar_grafica_secundaria)
         if ultima_grafica_seleccionada == "arriba":
             estado_sincro = "sincronizado_arriba"
         else:
@@ -1547,13 +1542,15 @@ def creador_sincronizacion():
         boton_sincro.configure(fg_color = ["#003785", "#0a0a0a"], hover_color= ["#001448", "#323a53"])
         if estado_sincro == "sincronizado_arriba":
             dic_canvas_sinc["arriba"].mpl_disconnect(cid)
+            #dic_canvas_sinc["abajo"].mpl_disconnect(cid2)
         else:
             dic_canvas_sinc["abajo"].mpl_disconnect(cid)
+            #dic_canvas_sinc["arriba"].mpl_disconnect(cid2)
         estado_sincro = "desincronizado"
 
 dic_ultima_grafica_magnitud_invertida = {"arriba": ultima_magnitud_abajo, "abajo": ultima_magnitud_arriba}
 
-def sincronizar_grafica(event):
+def sincronizar_grafica_principal(event):
     global fig1, fig2, ax1, ax2, ultima_grafica_seleccionada, canvas1, canvas2
     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, WU, WD
     global numero_anterior, Button_num_grafica_arriba, Button_num_grafica_abajo
@@ -1582,6 +1579,31 @@ def sincronizar_grafica(event):
     if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
         dic_sincronizacion[ultima_grafica_seleccionada][1].set_ylim(dic_sincronizacion[ultima_grafica_seleccionada][2].get_ylim())
     dic_sincronizacion[ultima_grafica_seleccionada][3].draw()
+
+# def sincronizar_grafica_secundaria(event):
+#     global fig1, fig2, ax1, ax2, ultima_grafica_seleccionada, canvas1, canvas2
+#     global A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, WU, WD
+#     global numero_anterior, Button_num_grafica_arriba, Button_num_grafica_abajo
+
+#     dic_invertido = {"arriba":"abajo", "abajo":"arriba"}
+
+#     if dic_ultima_grafica[dic_invertido[ultima_grafica_seleccionada]] != numero_anterior:
+#         A3, A4, S1, S2, F1, F2, V1, V2, E, D1, D2, F, V_Transformado, segundos, t, t, t, t, t, t, t, t, WU, WD, t, t, t, t, t, t = Creacion_Datos_Graficas(dic_ultima_grafica_magnitud[dic_invertido[ultima_grafica_seleccionada]],  dic_ultima_grafica[ultima_grafica_seleccionada], "original", "SI")
+#     else:
+#         pass
+#     numero_anterior = dic_ultima_grafica[ultima_grafica_seleccionada]
+
+#     dic_magnitud_sincronizacion = {'aceleracion':[A3, A4], 'deformacion':[S1, S2], 'fuerza':[F1, F2], 'velocidad':[V1, V2], 'avged':[E, E], 'desplazamiento':[D1, D2], 'fuerzaxvelocidad':[F,V_Transformado], 'wu':[WU, WU], 'wd':[WD, WD]}
+
+#     dic_sincronizacion = {"arriba": [fig2, ax2, ax1, canvas2], "abajo": [fig1, ax1, ax2, canvas1]}
+#     dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][0].clear()
+#     dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][1] = dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][0].add_subplot(111)
+#     t, = dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][1].plot(segundos, dic_magnitud_sincronizacion[dic_ultima_grafica_magnitud_invertida[dic_invertido[ultima_grafica_seleccionada]]][0])
+#     t2, = dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][1].plot(segundos, dic_magnitud_sincronizacion[dic_ultima_grafica_magnitud_invertida[dic_invertido[ultima_grafica_seleccionada]]][1])
+#     dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][1].set_xlim(dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][2].get_xlim())
+#     if dic_ultima_grafica_magnitud['arriba'] == dic_ultima_grafica_magnitud['abajo']:
+#         dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][1].set_ylim(dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][2].get_ylim())
+#     dic_sincronizacion[dic_invertido[ultima_grafica_seleccionada]][3].draw()
 
 def eliminar_grafica():
     global ultima_grafica_seleccionada, matriz_data_archivos, Button_Num_Grafica, ruta_data_inicial, orden_sensores
@@ -2324,7 +2346,7 @@ tipo_señal = ""
 bandera_grafica = False
 
 def crear_columna_muestreo():
-    global frecuencia_muestreo, ruta_guardado
+    global frecuencia_muestreo, ruta_guardado, font_barra_derecha
     global pile_area_label, EM_label, ET_label, container2_3
     global numero_grafica_insertada, marca, tipo_señal, bandera_grafica, matriz_data_archivos, Entry_Profundidad_inicial, Entry_Profundidad_final
     global Entry_altura, Entry_Area, Entry_masa, Entry_modulo_elasticidad, estado_continuidad
@@ -2485,12 +2507,12 @@ def crear_columna_muestreo():
         print("eliminar botones")
         for boton in container2_3.grid_slaves():
             print(boton.cget("text"))
-            if boton.cget("text") == "STOP" or boton.cget("text") == "►" or boton.cget("text") == "EXPORTAR":
+            if boton.cget("text") == "STOP" or boton.cget("text") == "►" or boton.cget("text") == "EXPORT":
                 boton.destroy()
                 print("eliminado")
 
     def cambio_boton_play():
-        global señal_continua, tipo_señal, conexion, container2_3
+        global señal_continua, tipo_señal, conexion, container2_3, font_barra_derecha
         if tipo_señal == "F":
             print("vengo del pause")
             tipo_señal = "M" 
@@ -2501,7 +2523,7 @@ def crear_columna_muestreo():
         señal_continua = True
         eliminar_botones()
 
-        Boton_stop = ctk.CTkButton(container2_3, text="STOP", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_stop()])
+        Boton_stop = ctk.CTkButton(container2_3, text="STOP", font=font_barra_derecha, command=lambda:[cambio_boton_stop()])
         Boton_stop.grid(row=7,column=0, columnspan=2, sticky='nsew', padx=10, pady=(5)) 
         
         inicio_secuencia_grabado()
@@ -2516,7 +2538,7 @@ def crear_columna_muestreo():
         #time.sleep(0.2)
         conexion.close()
 
-        Boton_play = ctk.CTkButton(container2_3, text="►", font=ctk.CTkFont(size=20, weight="bold"), command=lambda:[cambio_boton_play()])
+        Boton_play = ctk.CTkButton(container2_3, text="►", font=font_barra_derecha, command=lambda:[cambio_boton_play()])
         Boton_play.grid(row=7, column=0, columnspan=2, sticky='nsew', padx=(30), pady=(150,10))
 
     def cambio_boton_stop():
@@ -2771,41 +2793,11 @@ def obtener_datos_grafica(j):
         for i in range(4):
             lugar = int(orden[i])
             if ((lugar== 1)) or (lugar == 2):
-                #for datos in dic_orden_sensores2[orden[i]]:
-                #for datos in cuentas_a_aceleracion(dic_orden_sensores2[orden[i]],frecuencia):
                 for datos in filtro_acelerometro(cuentas_a_aceleracion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):
                     dic_orden_sensores[orden[i]].append(datos)
             elif (lugar!=0):
-                #for datos in dic_orden_sensores2[orden[i]]:  
-                #for datos in cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia):  
                 for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
-    """
-
-    for index,linea in enumerate(matriz_data_archivos[j]):
-        linea = linea.split("|")
-        if index > 0 and index < len(matriz_data_archivos[j])-1:
-            segundos.append(float(linea[0])/1000)
-            for i in range(4):
-                #dic_orden_sensores2[orden[i]].append(float(linea[i+1])*dic_factor_conversion_producto[orden[i]]+dic_factor_conversion_suma[orden[i]])
-                dic_orden_sensores2[orden[i]].append(float(linea[i+1]))
-        else:
-            pass
-          
-    frecuencia = int(frecuencia_muestreo[-1])
-
-    for i in range(4):
-        lugar = int(orden[i])
-        if ((lugar== 1)) or (lugar == 2):
-            for datos in dic_orden_sensores2[orden[i]]:
-                dic_orden_sensores[orden[i]].append(datos)
-        
-        elif (lugar!=0):
-            for datos in dic_orden_sensores2[orden[i]]:  
-                dic_orden_sensores[orden[i]].append(datos)
-    """
-
-
 
     EM = float(EM_valor_original)
     AR = float(pile_area)
@@ -2963,11 +2955,11 @@ def Calcular_Promedios(tipo_archivo):
     Desplazamientos_data = []
 
     for j in range(1, len(matriz_data_archivos)):
-        A, t, S, t, t, t, V, t, E, D, t, F, V_Transformado, segundos, ET, t, t, Fmax, Vmax, Emax, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", j, "original", "SI")
+        A, t, S, t, t, t, V, t, E, D, t, F, V_Transformado, segundos, ET, ETR, t, Fmax, Vmax, Emax, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", j, "original", "SI")
         Energias.append(Emax)
         Fuerzas.append(Fmax)
         Velocidades.append(Vmax)
-        Energias_teoricas.append(ET)
+        Energias_teoricas.append(ETR)
         Aceleraciones_data.append(A)
         Deformaciones_data.append(S)
         Fuerzas_data.append(F)
@@ -2982,14 +2974,9 @@ def Calcular_Promedios(tipo_archivo):
     
     #Aquí se añade una fila más a cada variable de arriba Energias, fuerzas, etc, por lo cual se le quita una fila a cada una abajo
     t, t, t, t, t, t, t, t, t, t, t, Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", 1, "original", "SI")
+    print("las energías recién sacadas son las siguientes", Energias, Energias_teoricas)
 
-    Energias.pop()
-    Fuerzas.pop()
-    Velocidades.pop()
-    Energias_teoricas.pop()
-    Energias_teoricas = [num*100 for num in Energias_teoricas]
-
-    datas = [[["", "BL#", "BC", "FMX", "VMX", "BPM", "EFV", "ETR"],["", "", "/150mm", "tn", "m/s", "bpm", "J", "%"]], [], []]
+    datas = [[["", "BL#", "BC", "FMX", "VMX", "BPM", "EFV", "ETR"],["", "", "/150mm", "kN", "m/s", "bpm", "J", "%"]], [], []]
     Num_golpes_modificado2 = []
     Num_golpes_modificado2.append(0)
     acumulado = 0
@@ -3002,6 +2989,7 @@ def Calcular_Promedios(tipo_archivo):
     Velocidades_recortadas = Velocidades[Num_golpes[-2]:]
     Fuerzas_recortadas = Fuerzas[Num_golpes[-2]:]
     Energias_teoricas_recortadas = Energias_teoricas[Num_golpes[-2]:]
+    print(Energias_recortadas)
     orden_golpes = []
     for i in range(len(Num_golpes)-1):
         orden_golpes.append(Num_golpes[len(Num_golpes)-i-2])
@@ -3015,6 +3003,7 @@ def Calcular_Promedios(tipo_archivo):
     fila_resumen.append(str(round(random.random()*30,2)))
     fila_resumen.append(str(round(sum(Energias_recortadas)/len(Energias_recortadas),1)))
     fila_resumen.append(str(round(sum(Energias_teoricas_recortadas)/len(Energias_teoricas_recortadas),1)))
+    print("las energias recortadas son", Energias_recortadas)
 
     for j in range(3):
         for i in range(Num_golpes_modificado2[j],Num_golpes_modificado2[j+1]):
@@ -3024,7 +3013,6 @@ def Calcular_Promedios(tipo_archivo):
                 print(i, j, e)
     #Graficar y convertirla en imagen
     
-    style.use('ggplot')
     f = Figure(figsize=(15,5), dpi=300)
     a = f.add_subplot(111)
 
@@ -3094,7 +3082,7 @@ def crear_excel(Segundos, A, S, F, V, E, D):
             for k in range(len(data[j][i])):
                 worksheet.write(k+2, j+1, data[j][i][k], cell_format4)
         
-        columnas = ["Segundos", "Aceleración", "Deformación", "Fuerza", "Velocidad", "Energía", "Desplazamiento"]
+        columnas = ["Seconds", "Acceleration", "Deformation", "Force", "Velocity", "Energy", "Displacement"]
 
         worksheet.set_column("A:A",5)
         worksheet.set_column("B:B",25)#
@@ -3111,9 +3099,10 @@ def crear_excel(Segundos, A, S, F, V, E, D):
     workbook.close()
 
 def crear_pdf(datas, img):
-    global pile_area, EM_valor_original, ET_valor_original, fila_resumen, ruta_data_inicial, ruta_guardado_pdf
+    global pile_area, EM_valor_original, ET_valor_original, fila_resumen, ruta_data_inicial, ruta_guardado_pdf, extension
     nombre_archivo = ""
-    cadenas =ruta_data_inicial.split("/")[-1][:-3]
+    num_extension = -1 * (len(extension)+1)
+    cadenas =ruta_data_inicial.split("/")[-1][:num_extension]
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Times", size=12)
@@ -3148,7 +3137,7 @@ def crear_pdf(datas, img):
                     new_x="RIGHT", new_y="TOP", max_line_height=pdf.font_size)
         pdf.ln(line_height)
     col_width = pdf.epw / 5
-    legendas = ["FMX: Fuerza Máxima", "VMX: Velocidad Máxima", "BPM: Golpes/Minuto", "EFV: Energía Máxima", "ETR: Energía Teórica"]
+    legendas = ["FMX: Maximun Force", "VMX: Maximum Velocity", "BPM: Blows/Minute", "EFV: Maximun Energy", "ETR: Theoric Energy"]
     for datum in legendas:
         pdf.multi_cell(col_width, line_height, datum, border=0,
                 new_x="RIGHT", new_y="TOP", max_line_height=pdf.font_size)
@@ -3190,7 +3179,7 @@ def crear_pdf(datas, img):
     pdf.line(x1=20, y1=y, x2=185, y2=y)
     col_width = pdf.epw / 9
     cabezera_resumen = [["Instr.", "Blows", "N", "N60", "Average", "Average", "Average", "Average", "Average"], 
-    ["Length", "Applied", "Value", "Value", "FMX", "VMX", "BPM", "EFV", "ETR"], ["m", "/150mm", "", "", "tn", "m/s", "bpm", "J", "%"]]
+    ["Length", "Applied", "Value", "Value", "FMX", "VMX", "BPM", "EFV", "ETR"], ["m", "/150mm", "", "", "kN", "m/s", "bpm", "J", "%"]]
 
     for row in cabezera_resumen:
         for datum in row:
@@ -3384,13 +3373,8 @@ def create_toplevel_preparar():
     container8 = ctk.CTkFrame((preparar_frame))
     container8.grid(row=0, column=0, sticky='nsew', padx=20, pady=20)
 
-    container8.grid_rowconfigure(0, weight=1)
-    container8.grid_rowconfigure(1, weight=1)
-    container8.grid_rowconfigure(2, weight=1)
-    container8.grid_rowconfigure(3, weight=1)
-    container8.grid_rowconfigure(4, weight=1)
-    container8.grid_rowconfigure(5, weight=1)
-    container8.grid_rowconfigure(6, weight=1)
+    for i in range(7):
+        container8.grid_rowconfigure(i, weight=1)
     container8.grid_columnconfigure(0, weight=1)
     container8.grid_columnconfigure(1, weight=1)
     container8.grid_columnconfigure(2, weight=1)
