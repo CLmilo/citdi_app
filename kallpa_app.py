@@ -686,7 +686,7 @@ boton_ayuda_unidades = ctk.CTkButton(container1_2, width=80, text="?", command=l
 
 textos_segundo_frame = ["FMX", "VMX", "EFV", "DMX", "ETR", "CE", "CSX", "DFN", "MEX1", "MEX2", "MEX", "AMX"]
 unidades_segundo_frame = [[" kN"," kip"], [" m/s", " ft/s"], [" J", " ft-lbs"], [" mm", " mm"], [" %", " %"], ["", ""], [" MPa", " ksi"], [" mm", " in"], [" µe", " µe"], [" µe", " µe"], [" µe", " µe"], [" g's", " g's"]]
-unidades_primer_frame = [[" cm²", " in^2"], [" MPa", " ksi"], [" J", " ft-lbs"]]
+unidades_primer_frame = [[" cm²", " in²"], [" MPa", " ksi"], [" J", " ft-lbs"]]
 valores_segundo_frame_arriba = ["", "", "", "", "", "", "", "", "", "", "", ""]
 valores_segundo_frame_abajo = ["", "", "", "", "", "", "", "", "", "", "", ""]
 # labels fijos de texto
@@ -2179,7 +2179,7 @@ def Cambiar_Unidades_CollectWire():
     global valor_actual_sistema_metrico
     global Label_titulo_4, LabelLE_unidades, EntryLE, EntryLR, LabelLR_unidades, Label_Modulo_Elasticidad_unidad
     global Entry_modulo_elasticidad, Entry_Area, Label_Area_unidad, Label_Modulo_Elasticidad_unidad, Entry_masa, Label_Masa_unidades, Entry_altura, Label_Altura_unidades, Label_Energia_valor, Label_Energia_unidades 
-    dic_unidades_collectwire = [["Range of \nDepths\n(m)", "Range of \nDepths\n(ft)"], ["m", "ft"], ["cm2", "in2"], ["Mpa", "ksi"], ["kg", "kg"], ["m", "ft"], ["J", "kip"]]
+    dic_unidades_collectwire = [["Range of \nDepths\n(m)", "Range of \nDepths\n(ft)"], ["m", "ft"], ["cm²", "in²"], ["Mpa", "ksi"], ["kg", "kg"], ["m", "ft"], ["J", "kip"]]
     dic_valores_unidades_collectwire = [["0", "0"], ["5", ""], ["7.8", ""], ["207000", ""], ["63.5", ""], ["0.76", ""], ["473", ""]]
     if valor_actual_sistema_metrico == "SI":
         num =  0
@@ -3365,7 +3365,7 @@ def create_toplevel_preparar():
 
     preparar_frame = ctk.CTkToplevel()
 
-    preparar_frame.title("Preparar Datos")
+    preparar_frame.title("Join Files")
     preparar_frame.resizable(False, False) 
     preparar_frame.grab_set()
     preparar_frame.focus()
