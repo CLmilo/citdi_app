@@ -492,7 +492,9 @@ Entry_Profundidad_final = ''
 def limpiar_entrys():
     global Entry_Profundidad_inicial, Entry_Profundidad_final, tipo_review
     try:
+        print("5464")
         Entry_Profundidad_inicial.configure.delete(0, END)
+        print("12876")
         Entry_Profundidad_final.configure.delete(0, END)
     except Exception as e:
         print(e, 7)
@@ -2166,13 +2168,13 @@ def boton_cambio_unidades_collectwire(valor):
     dic_colorear_botones_unidades = {'EN':Button_EN, 'SI':Button_SI}
     for boton in [Button_EN, Button_SI]:
         if boton == dic_colorear_botones_unidades[valor]:
-            print(1)
+            print(691)
             boton.configure(fg_color = ["#27AE60", "#27AE60"], hover_color= ["#27AE60", "#27AE60"])
             valor_actual_sistema_metrico = valor
             unidad_original = valor
             Cambiar_Unidades_CollectWire()
         else:
-            print(2)
+            print(892)
             boton.configure(fg_color = ["#091d36", "#091d36"], hover_color= ["#58D68D", "#58D68D"])
 
 def Cambiar_Unidades_CollectWire():
@@ -2196,8 +2198,9 @@ def Cambiar_Unidades_CollectWire():
     Label_Energia_unidades.configure(text=dic_unidades_collectwire[6][num])
     Label_Energia_valor.configure(text=dic_valores_unidades_collectwire[6][num])         
 
+    """
     #cambiando Entrys
-    valores_anteriores = [EntryLE.cget("text"), EntryLR.cget("text"), Entry_Area.cget("text"), Entry_modulo_elasticidad.cget("text"), Entry_masa.cget("text"), Entry_altura.cget("text")]
+    valores_anteriores = [str(EntryLE.get()), EntryLR.cget("text"), Entry_Area.cget("text"), Entry_modulo_elasticidad.cget("text"), Entry_masa.cget("text"), Entry_altura.cget("text")]
     EntryLE.delete(0, END)
     EntryLR.delete(0, END)
     Entry_Area.delete(0, END)
@@ -2211,6 +2214,7 @@ def Cambiar_Unidades_CollectWire():
     Entry_modulo_elasticidad.insert(0, valores_anteriores[3])
     Entry_masa.insert(0, valores_anteriores[4])
     Entry_altura.insert(0, valores_anteriores[5])
+    """ 
 
 
 
