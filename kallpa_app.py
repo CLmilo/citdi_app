@@ -343,7 +343,7 @@ def Obtencion_data_serial(num):
     dic_orden_sensores = {"1":A3, "2":A4, "3":S1, "4":S2, "5":S1, "6":S2, "0":NULL}
     dic_orden_sensores2 = {"1":SIN1, "2":SIN2, "3":SIN3, "4":SIN4, "5":SIN3, "6":SIN4, "0": NULL}
 
-    print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
+    #print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
     orden = orden_sensores[-1].split('|')
 
     try:
@@ -369,7 +369,7 @@ def Obtencion_data_serial(num):
         print(e, 6)
         ET_valor_original = 981
 
-    print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
+    #print("el orden de los sensores es ", orden_sensores, "el orden es ", orden)
     extension = ruta_data_inicial.split("/")[-1].split(".")[-1]
     if extension == "ctn":
         data = matriz_data_archivos[num]
@@ -414,7 +414,7 @@ def Obtencion_data_serial(num):
             elif (lugar!=0):
                 for datos in filtro_deformimetro(cuentas_a_deformacion2(dic_orden_sensores2[orden[i]],frecuencia),frecuencia,lugar):              
                     dic_orden_sensores[orden[i]].append(datos)
-    print("Estoy aquí1")
+    #print("Estoy aquí1")
 
     return segundos, S1, S2, A3, A4
 
@@ -775,14 +775,18 @@ def modificar_datos_segundo_frame(posicion,texto_label_num_grafica, V_FMX, V_VMX
     valores2 = valores.copy()
     
     for index, i in enumerate(valores2):
+        
         if index > 1:
             try:
-                parte_entera = int(i)
-                parte_decimal = round(abs(i) - abs(int(i)),2)
-                if len(str(parte_decimal)) < 4:
-                    valores2[index] = str(i)+"0"
+                if i=="":
+                    valores2[index] = "0.00"
                 else:
-                    valores2[index] = str(i)
+                    parte_entera = int(i)
+                    parte_decimal = round(abs(i) - abs(int(i)),2)
+                    if len(str(parte_decimal)) < 4:
+                        valores2[index] = str(i)+"0"
+                    else:
+                        valores2[index] = str(i)
             except Exception as e:
                 print(e, 8)
 
@@ -1183,7 +1187,7 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     V_Transformado_valor_real = []
     global L_EMX, L_FMX, L_VMX, L_DMX, L_CE, L_ETR
 
-    print("el gráfico que se hace es ", num)
+    #print("el gráfico que se hace es ", num)
     segundos, S1, S2, A3, A4 = Obtencion_data_serial(num)
 
     Z = 0
@@ -1220,7 +1224,7 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
         F = F1
         F2 = F1
 
-    print("valores de máxima deformación", max(S1), max(S2))
+    #print("valores de máxima deformación", max(S1), max(S2))
 
     MEX1 = round(max(S1),2)
     MEX2 = round(max(S2),2)
@@ -1336,7 +1340,7 @@ def Creacion_Datos_Graficas(magnitud, num, direccion, mantener_limites):
     CE = round(ETR/60,2) # dividir
     CSX = round(Fmax*10/AR,2)
 
-    print("los valores de unidades son", unidad_original, "|", valor_actual_sistema_metrico)
+    #print("los valores de unidades son", unidad_original, "|", valor_actual_sistema_metrico)
 
     if unidad_original != valor_actual_sistema_metrico:
         valores_de_transformacion = {"EN":[0.0393700787401574, 0.22480894387096, 3.28083989501312, 0.7375621493, 0.1450377377],
@@ -2182,7 +2186,7 @@ def Cambiar_Unidades_CollectWire():
     global Label_titulo_4, LabelLE_unidades, EntryLE, EntryLR, LabelLR_unidades, Label_Modulo_Elasticidad_unidad
     global Entry_modulo_elasticidad, Entry_Area, Label_Area_unidad, Label_Modulo_Elasticidad_unidad, Entry_masa, Label_Masa_unidades, Entry_altura, Label_Altura_unidades, Label_Energia_valor, Label_Energia_unidades 
     dic_unidades_collectwire = [["Range of \nDepths\n(m)", "Range of \nDepths\n(ft)"], ["m", "ft"], ["cm²", "in²"], ["Mpa", "ksi"], ["kg", "kg"], ["m", "ft"], ["J", "kip"]]
-    dic_valores_unidades_collectwire = [["0", "0"], ["5", ""], ["7.8", ""], ["207000", ""], ["63.5", ""], ["0.76", ""], ["473", ""]]
+    dic_valores_unidades_collectwire = [["0", "0"], ["5", ""], ["7.8", ""], ["207000", ""], ["63.5", ""], ["0.76", ""], ["473", "473"]]
     if valor_actual_sistema_metrico == "SI":
         num =  0
     else:
@@ -2967,7 +2971,7 @@ def Calcular_Promedios(tipo_archivo):
         Aceleraciones_data.append(A)
         Deformaciones_data.append(S)
         Fuerzas_data.append(F)
-        print("LA FUERZA EN ", j, "ES:", F[20])
+        #print("LA FUERZA EN ", j, "ES:", F[20])
         segundos_corregidos = []
         for i in segundos:
             segundos_corregidos.append(float(i)/10)
@@ -2978,7 +2982,7 @@ def Calcular_Promedios(tipo_archivo):
     
     #Aquí se añade una fila más a cada variable de arriba Energias, fuerzas, etc, por lo cual se le quita una fila a cada una abajo
     t, t, t, t, t, t, t, t, t, t, t, Fuerzas_impedancia_maxima, Velocidades_impedancia_maxima, segundos, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t, t = Creacion_Datos_Graficas("fuerzaxvelocidad", 1, "original", "SI")
-    print("las energías recién sacadas son las siguientes", Energias, Energias_teoricas)
+    #print("las energías recién sacadas son las siguientes", Energias, Energias_teoricas)
 
     datas = [[["", "BL#", "BC", "FMX", "VMX", "BPM", "EFV", "ETR"],["", "", "/150mm", "kN", "m/s", "bpm", "J", "%"]], [], []]
     Num_golpes_modificado2 = []
@@ -2993,7 +2997,7 @@ def Calcular_Promedios(tipo_archivo):
     Velocidades_recortadas = Velocidades[Num_golpes[-2]:]
     Fuerzas_recortadas = Fuerzas[Num_golpes[-2]:]
     Energias_teoricas_recortadas = Energias_teoricas[Num_golpes[-2]:]
-    print(Energias_recortadas)
+    #print(Energias_recortadas)
     orden_golpes = []
     for i in range(len(Num_golpes)-1):
         orden_golpes.append(Num_golpes[len(Num_golpes)-i-2])
@@ -3007,7 +3011,7 @@ def Calcular_Promedios(tipo_archivo):
     fila_resumen.append(str(round(random.random()*30,2)))
     fila_resumen.append(str(round(sum(Energias_recortadas)/len(Energias_recortadas),1)))
     fila_resumen.append(str(round(sum(Energias_teoricas_recortadas)/len(Energias_teoricas_recortadas),1)))
-    print("las energias recortadas son", Energias_recortadas)
+    #print("las energias recortadas son", Energias_recortadas)
 
     for j in range(3):
         for i in range(Num_golpes_modificado2[j],Num_golpes_modificado2[j+1]):
