@@ -1756,6 +1756,8 @@ def detectar_puertos():
         print(host)
     else:
         print("el socket ya existe")
+    verificacion_orden_sensores()
+    Generar_Tabla_Sensores()
 
 def detener_conexion_puerto():
 
@@ -1806,7 +1808,7 @@ def verificacion_orden_sensores():
 
 
 
-dic_sensores = {'1':'Sensor Aceleración 1', '2':'Sensor Aceleración 2', '3':'Sensor SPT 1', '4':'Sensor SPT 2', '5':'Sensor DPT 1', '6':'Sensor DPT 2', '0':'No encontrado'}
+dic_sensores = {'1':'Acceleration sensor 1', '2':'Acceleration sensor 2', '3':'Strain gauge SPT 1', '4':'Strain Gauge SPT 2', '5':'Strain Gauge DPT 1', '6':'Strain Gauge DPT 2', '0':'No encontrado'}
     
 container5_1 = ctk.CTkFrame(container5)
 
@@ -2003,7 +2005,7 @@ container5_3_1_3.grid_columnconfigure(0, weight=3)
 container5_3_1_3.grid_columnconfigure(1, weight=2)
 container5_3_1_3.grid_columnconfigure(2, weight=1)
 
-LabelLR = ctk.CTkLabel(container5_3_1_3, text="LR", font=fontTEXTcoll)
+LabelLR = ctk.CTkLabel(container5_3_1_3, text="LP", font=fontTEXTcoll)
 LabelLR.grid(row=0, column=0, sticky='nsew')
 EntryLR = ctk.CTkEntry(container5_3_1_3, font=fontTEXTcoll)
 EntryLR.insert(0, "5")
@@ -2229,6 +2231,7 @@ Button_SI = ctk.CTkButton(container5_5_1_2_unidades, text='SI', font=fontTEXTcol
 Button_SI.grid(row=1, column=0, sticky='nsew', pady=10, padx=10)
 Button_EN = ctk.CTkButton(container5_5_1_2_unidades, text='EN', font=fontTEXTcoll, command=lambda:boton_cambio_unidades_collectwire('EN'))
 Button_EN.grid(row=1, column=1, sticky='nsew', pady=10, padx=[0,10])
+Button_SI.invoke()
 
 ctk.CTkButton(container5_5_1_2, text= "Select save path", font=fontTEXTcoll, command=lambda: [escoger_ruta_guardado()]).grid(row=3, column=1, columnspan=2, sticky='nsew', padx=20, pady=(20,10))
 
